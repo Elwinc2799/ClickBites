@@ -1,5 +1,6 @@
-# create a flask backend which connects to a mongodb database
-# and returns the data in json format
+# Description: This file is the entry point for the backend application. It
+# registers the blueprints for the business, review, and user routes and
+# starts the Flask application.
 
 from flask import Flask
 from business.routes import business_bp
