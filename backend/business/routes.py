@@ -1,42 +1,80 @@
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from flask import Blueprint, Response, request
 from database import Database
-from bson import json_util
 import json
-from business.models import Business
 
+# from business.models import Business
+# from business.models import Hours
+
+# Create a Flask blueprint for business related routes
 business_bp = Blueprint("business", __name__)
+
+# Get an instance of the database
 db = Database.get_instance().get_db("business")
+
+# ************* Save retrieved data to a Business object ********************************
+# # Convert a list of dictionaries to a list of Business objects
+# def json_to_business(json_list: List) -> List[Business]:
+#     businesses = []
+#     for item in json_list:
+#         # Create a Hours object for the business
+#         hours = Hours(
+#             Monday=item["hours"].get("Monday", "") if item["hours"] else "",
+#             Tuesday=item["hours"].get("Tuesday", "") if item["hours"] else "",
+#             Wednesday=item["hours"].get("Wednesday", "") if item["hours"] else "",
+#             Thursday=item["hours"].get("Thursday", "") if item["hours"] else "",
+#             Friday=item["hours"].get("Friday", "") if item["hours"] else "",
+#             Saturday=item["hours"].get("Saturday", "") if item["hours"] else "",
+#             Sunday=item["hours"].get("Sunday", "") if item["hours"] else "",
+#         )
+#         # Create a Business object for the business
+#         business = Business(
+#             id=str(item["_id"]),
+#             name=item["name"],
+#             address=item["address"],
+#             city=item["city"],
+#             state=item["state"],
+#             latitude=item["latitude"],
+#             longitude=item["longitude"],
+#             stars=item["stars"],
+#             review_count=item["review_count"],
+#             is_open=item["is_open"],
+#             categories=item["categories"],
+#             hours=hours,
+#             description=item.get("description", ""),
+#             view_count=item.get("view_count", 0),
+#         )
+#         businesses.append(business)
+#     return businesses
+# ************************************************************************************
 
 
 @business_bp.route("/business", methods=["GET"])
 def get_business():
     try:
-        # # Query the database and convert the result to a list of Business objects
-        # cursor = db.find()
-        # documents = list(cursor)
-        # business = [Business(**doc) for doc in documents]
+        # Query the database and convert the result to a list of Business json objects
+        documents = list(db.find())
+
+        # ************* Save retrieved data to a Business object ********
+        # # Convert documents to a list of Business objects
+        # business = json_to_business(documents)
 
         # # Serialize the list of Business objects to a JSON string
-        # json_business = json.dumps(business)
+        # json_business = json_util.dumps([b.dict() for b in business])
+        # ***************************************************************
 
-        business = list(db.find())
+        # Serialize the list of documents to a JSON string
+        json_business = json.dumps(documents, default=str)
 
-        json_business = json.dumps(business, default=str)
-
-        # Return the JSON string
+        # Return the JSON string with a 200 OK status code and JSON mimetype
         return Response(
             response=json_business,
             status=200,
             mimetype="application/json",
         )
     except Exception as e:
+        # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
         return Response(
-            response=json_util.dumps(
+            response=json.dumps(
                 {
                     "message": "An error occurred while fetching the business data",
                 }
@@ -49,26 +87,25 @@ def get_business():
 @business_bp.route("/business", methods=["POST"])
 def post_business():
     try:
-        # Deserialize the JSON data into a Business object
-        data = request.get_json()
-        business = Business(**data)
+        # post business object to database
+        business = request.get_json()
+        db.insert_one(business)
 
-        # Insert the Business object into the database
-        db.insert_one(business.__dict__)
-
-        # Return a success message
+        # Return a JSON message with a 200 OK status code and JSON mimetype
         return Response(
-            response=json_util.dumps(
+            response=json.dumps(
                 {
-                    "message": "Data successfully posted to the database",
+                    "message": "The business data was successfully posted to the database",
                 }
             ),
             status=200,
             mimetype="application/json",
         )
+
     except Exception as e:
+        # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
         return Response(
-            response=json_util.dumps(
+            response=json.dumps(
                 {
                     "message": "An error occurred while posting the data to the database",
                 }
