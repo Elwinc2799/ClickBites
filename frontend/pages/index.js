@@ -1,6 +1,27 @@
 import Head from 'next/head';
+import { useState, useEffect } from 'react';
+
+function getData(setData) {
+    fetch('http://localhost:5000/business', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            setData(data);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
 
 export default function Home() {
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        getData(setData);
+    }, []);
+
     return (
         <div>
             <Head>
@@ -13,10 +34,19 @@ export default function Home() {
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
-                <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <h1 className="text-3xl font-bold">Next tailwind amazona</h1>
+
+            {data.map((item) => {
+                return (
+                    <div key={item._id}>
+                        <h1>{item.name}</h1>
+                        <p>{item.city}</p>
+                        <p>{item.address}</p>
+                    </div>
+                );
+            })}
         </div>
     );
 }
