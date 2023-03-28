@@ -9,7 +9,7 @@ business_bp = Blueprint("business", __name__)
 db = Database.get_instance().get_db("business")
 
 
-@business_bp.route("/business", methods=["GET"])
+@business_bp.route("/api/business", methods=["GET"])
 def get_business():
     try:
         # Query the database and convert the result to a list of Business json objects
@@ -38,7 +38,7 @@ def get_business():
         )
 
 
-@business_bp.route("/business", methods=["POST"])
+@business_bp.route("/api/business", methods=["POST"])
 def post_business():
     try:
         # post business object to database

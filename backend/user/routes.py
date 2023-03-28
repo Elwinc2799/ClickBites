@@ -8,7 +8,8 @@ user_bp = Blueprint("user", __name__)
 # Get an instance of the database
 db = Database.get_instance().get_db("user")
 
-@user_bp.route("/user", methods=["GET"])
+
+@user_bp.route("/api/user", methods=["GET"])
 def get_user():
     try:
         # Query the database and convert the result to a list of User json objects
@@ -36,7 +37,7 @@ def get_user():
         )
 
 
-@user_bp.route("/user", methods=["POST"])
+@user_bp.route("/api/user", methods=["POST"])
 def post_user():
     try:
         # post business object to database

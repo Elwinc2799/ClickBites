@@ -9,7 +9,7 @@ review_bp = Blueprint("review", __name__)
 db = Database.get_instance().get_db("review")
 
 
-@review_bp.route("/review", methods=["GET"])
+@review_bp.route("/api/review", methods=["GET"])
 def get_review():
     try:
         # Query the database and convert the result to a list of Review json objects
@@ -37,7 +37,7 @@ def get_review():
         )
 
 
-@review_bp.route("/user", methods=["POST"])
+@review_bp.route("/api/review", methods=["POST"])
 def post_review():
     try:
         # post business object to database
