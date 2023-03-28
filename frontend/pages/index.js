@@ -2,11 +2,20 @@ import Head from 'next/head';
 import { useState, useEffect } from 'react';
 
 function getData(setData) {
-    fetch('http://localhost:5000/business', {
+    const api_url = process.env.NEXT_PUBLIC_API_URL + '/business';
+
+    fetch(api_url, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     })
-        .then((res) => res.json())
+        .then((res) => {
+            try {
+                const data = res.json();
+                return data;
+            } catch (err) {
+                console.log(err);
+            }
+        })
         .then((data) => {
             setData(data);
         })

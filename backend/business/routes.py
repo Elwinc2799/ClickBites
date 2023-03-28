@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response, request, jsonify
 from database import Database
 import json
 
@@ -7,6 +7,7 @@ business_bp = Blueprint("business", __name__)
 
 # Get an instance of the database
 db = Database.get_instance().get_db("business")
+
 
 @business_bp.route("/business", methods=["GET"])
 def get_business():
@@ -23,6 +24,7 @@ def get_business():
             status=200,
             mimetype="application/json",
         )
+
     except Exception as e:
         # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
         return Response(
@@ -67,10 +69,6 @@ def post_business():
         )
 
 
-
-
-
-
 # ************* Save retrieved data to a Business object ********************************
 # from business.models import Business
 # from business.models import Hours
@@ -108,7 +106,7 @@ def post_business():
 #         )
 #         businesses.append(business)
 #     return businesses
-# 
+#
 # @business_bp.route("/business", methods=["GET"])
 # def get_business():
 #     try:
