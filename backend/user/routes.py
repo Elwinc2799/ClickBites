@@ -1,8 +1,9 @@
 from flask import Blueprint, Response, request
 from database import Database
 import json
+from user.models import User
 
-# Create a Flask blueprint for business related routes
+# Create a Flask blueprint for user related routes
 user_bp = Blueprint("user", __name__)
 
 # Get an instance of the database
@@ -66,3 +67,9 @@ def post_user():
             status=500,
             mimetype="application/json",
         )
+
+
+@user_bp.route("/api/user/signup", methods=["POST"])
+def signUp():
+    print(User().signUp())
+    return User().signUp()

@@ -2,7 +2,7 @@ from flask import Blueprint, Response, request
 from database import Database
 import json
 
-# Create a Flask blueprint for business related routes
+# Create a Flask blueprint for review related routes
 review_bp = Blueprint("review", __name__)
 
 # Get an instance of the database

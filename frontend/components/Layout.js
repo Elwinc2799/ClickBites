@@ -16,17 +16,23 @@ export default function Layout({ title, children }) {
                     content="width=device-width, initial-scale=1"
                 />
             </Head>
-            <div className="flex h-full flex-col justify-between">
+            <div className="flex min-h-screen flex-col justify-between">
                 <header>
                     <nav className="flex h-12 justify-between px-4 shadow-md items-center">
-                        <Link href="/" className="text-2xl font-bold text-[#3D5A80]">
+                        <Link
+                            href="/"
+                            className="text-2xl font-bold text-[#3D5A80]">
                             ClickBites
                         </Link>
                         <div className="flex flex-row w-52 justify-between">
-                            <Link href="/login" className="p-2 text-xl text-[#3D5A80]">
+                            <Link
+                                href="/LoginPage"
+                                className="p-2 text-xl text-[#3D5A80]">
                                 Login
                             </Link>
-                            <Link href="/signup" className="p-2 text-xl text-[#3D5A80]">
+                            <Link
+                                href="/SignUpPage"
+                                className="p-2 text-xl text-[#3D5A80]">
                                 Sign Up
                             </Link>
                         </div>
