@@ -13,41 +13,20 @@ export default function SignUpPage() {
 
     // send POST request to /api/user/signup using fetch
     const submitHandler = async (data) => {
-        console.log(data);
         const api_url = process.env.NEXT_PUBLIC_API_URL + '/api/user/signup';
-
-        fetch(api_url, {
+        const res = await fetch(api_url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(data),
-        })
-            .then((res) => {
-                console.log(res);
-                return res.json();
-            })
-            .then((data) => {
-                console.log(data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        });
 
-        
+        const json = await res.json();
 
+        if (!res.ok) throw Error(json.message);
 
-        // const res = await fetch(api_url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(data),
-        // });
-
-        // const json = await res.json();
-
-        // if (!res.ok) throw Error(json.message);
-
-        // console.log('Success:', json);
+        console.log(json);
     };
 
     return (
