@@ -1,8 +1,20 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 
 function SearchBox() {
+    const router = useRouter();
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const search = e.currentTarget.search.value;
+        router.push({
+            pathname: '/search',
+            query: { search },
+        });
+    };
+
     return (
-        <form className="flex items-center">
+        <form className="flex items-center" onSubmit={handleSubmit}>
             {/* <label for="voice-search" className="sr-only">Search</label> */}
             <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

@@ -9,7 +9,7 @@ export default function Home() {
     return (
         <>
             <Meta title={AppConfig.title} description={AppConfig.description} />
-            <NavBar isLanding={true} />
+            <NavBar isLanding={true} isLoggedIn={false} />
             {/* Hero */}
             <Hero
                 heading="Discover the best restaurant near you."

@@ -1,18 +1,17 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 
 interface Props {
     isLanding: boolean;
+    isLoggedIn: boolean;
 }
 
 function NavBar(props: Props) {
     const [color, setColor] = useState('transparent');
     const [textColor, setTextColor] = useState('white');
-    const [landing, setLanding] = useState(props.isLanding);
 
     useEffect(() => {
-        if (landing) {
+        if (props.isLoggedIn) {
             const changeColor = () => {
                 if (window.scrollY >= 90) {
                     setColor('#f7fafc');
@@ -27,7 +26,7 @@ function NavBar(props: Props) {
             setColor('#f7fafc');
             setTextColor('#1a202c');
         }
-    }, [landing]);
+    }, [props.isLoggedIn]);
 
     return (
         <div
@@ -42,15 +41,28 @@ function NavBar(props: Props) {
                     </h1>
                 </Link>
                 <ul style={{ color: `${textColor}` }} className="flex flex-row">
-                    <li className="p-4">
-                        <Link href="/">Home</Link>
-                    </li>
-                    <li className="p-4">
-                        <Link href="/Login">Log In</Link>
-                    </li>
-                    <li className="p-4">
-                        <Link href="/SignUp">Sign Up</Link>
-                    </li>
+                    {!props.isLoggedIn && (
+                        <li className="p-4">
+                            <Link href="/login" >
+                                Log In
+                            </Link>
+                        </li>
+                    )}
+                    {!props.isLoggedIn && (
+                        <li className="p-4">
+                            <Link href="/signup">Sign Up</Link>
+                        </li>
+                    )}
+                    {props.isLoggedIn && (
+                        <li className="p-4">
+                            <Link href="/profile">Profile</Link>
+                        </li>
+                    )}
+                    {props.isLoggedIn && (
+                        <li className="p-4">
+                            <Link href="">Sign Out</Link>
+                        </li>
+                    )}
                 </ul>
             </div>
         </div>

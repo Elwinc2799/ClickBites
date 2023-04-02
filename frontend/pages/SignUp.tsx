@@ -5,6 +5,7 @@ import Footer from '@/components/Layout/Footer';
 import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
 
 function SignUp() {
     const [name, setName] = useState('');
@@ -12,6 +13,7 @@ function SignUp() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
+    const router = useRouter();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -38,7 +40,7 @@ function SignUp() {
                 }
             );
             setMessage(response.data.message);
-            toast('Account created succesfully. Navigate to Log In.', {
+            toast('Account created succesfully. Proceed to Log In.', {
                 hideProgressBar: true,
                 autoClose: 2000,
                 type: 'success',
@@ -49,6 +51,7 @@ function SignUp() {
             setEmail('');
             setPassword('');
             setConfirmPassword('');
+            router.push('/login');
         } catch (error: any) {
             if (error.response) {
                 const responseData = error.response.data;
@@ -73,7 +76,7 @@ function SignUp() {
 
     return (
         <>
-            <NavBar isLanding={false} />
+            <NavBar isLanding={false} isLoggedIn={false}/>
             <Background color="bg-gray-100">
                 <div className="flex justify-center items-center h-[754px]">
                     <div className="w-1/3">

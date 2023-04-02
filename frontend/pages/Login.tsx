@@ -5,11 +5,15 @@ import Footer from '@/components/Layout/Footer';
 import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const router = useRouter();
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -32,6 +36,7 @@ function Login() {
             // Clear input boxes
             setEmail('');
             setPassword('');
+            router.push('/');
         } catch (error: any) {
             if (error.response) {
                 const responseData = error.response.data;
@@ -56,7 +61,7 @@ function Login() {
 
     return (
         <>
-            <NavBar isLanding={false} />
+            <NavBar isLanding={false} isLoggedIn={false}/>
             <Background color="bg-gray-100">
                 <div className="flex justify-center items-center h-[754px]">
                     <div className="w-1/3">
