@@ -17,6 +17,9 @@ def signUp():
         # get user object from response form
         user = User().get()
 
+        # TODO: Validate user input and create a new user in your database
+        # ...
+
         # search for user in database
         document = db.find_one({"email": user.get("email")})
 

@@ -28,7 +28,7 @@ function SearchBox() {
             </div>
             <button
                 type="submit"
-                className="inline-flex items-center py-2.5 px-3 ml-2 text-xl font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800  dark:bg-blue-600 dark:hover:bg-blue-700 ">
+                className="inline-flex items-center py-2.5 px-3 ml-2 text-xl font-medium text-white  rounded-lg border border-blue-600 bg-blue-600 hover:bg-blue-700 ">
                 <svg
                     aria-hidden="true"
                     className="w-5 h-5 mr-2 -ml-1"
