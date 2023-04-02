@@ -4,6 +4,7 @@ import { Background } from '@/components/Background/Background';
 import Footer from '@/components/Layout/Footer';
 import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 function SignUp() {
     const [name, setName] = useState('');
@@ -17,14 +18,19 @@ function SignUp() {
 
         if (password !== confirmPassword) {
             setMessage('Passwords do not match');
-            return;
+            toast('Passwords do not match', {
+                hideProgressBar: true,
+                autoClose: 2000,
+                type: 'error',
+                position: 'bottom-right',
+            });
         } else {
             console.log('password matched');
         }
 
         try {
             const response = await axios.post(
-                'http://127.0.0.1:5000/api/signup',
+                process.env.API_URL + '/api/signup',
                 {
                     name: name,
                     email: email,
@@ -32,12 +38,35 @@ function SignUp() {
                 }
             );
             setMessage(response.data.message);
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError;
-                console.log(axiosError.response?.data); // Use optional chaining to avoid errors when response is undefined
+            toast('Account created succesfully. Navigate to Log In.', {
+                hideProgressBar: true,
+                autoClose: 2000,
+                type: 'success',
+                position: 'bottom-right',
+            });
+            // Clear input boxes
+            setName('');
+            setEmail('');
+            setPassword('');
+            setConfirmPassword('');
+        } catch (error: any) {
+            if (error.response) {
+                const responseData = error.response.data;
+                setMessage(responseData.message);
+                toast(responseData.message, {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'error',
+                    position: 'bottom-right',
+                });
             } else {
                 setMessage('An unknown error occurred');
+                toast('An unknown error occured', {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'error',
+                    position: 'bottom-right',
+                });
             }
         }
     };
@@ -111,10 +140,8 @@ function SignUp() {
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
-                                <div className='mt-4'>
-                                    {message}
-                                </div>
-                                <div className="flex justify-center items-center">
+                                {/* <div className="mt-4">{message}</div> */}
+                                <div className="flex flex-row justify-end items-center">
                                     <button
                                         type="submit"
                                         className="border-blue-600 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4">

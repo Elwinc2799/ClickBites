@@ -6,10 +6,10 @@ interface Props {
     isLanding: boolean;
 }
 
-function NavBar({ isLanding }: Props) {
+function NavBar(props: Props) {
     const [color, setColor] = useState('transparent');
     const [textColor, setTextColor] = useState('white');
-    const [landing, setLanding] = useState(isLanding);
+    const [landing, setLanding] = useState(props.isLanding);
 
     useEffect(() => {
         if (landing) {
