@@ -1,36 +1,38 @@
 import React from 'react';
 import Link from 'next/link';
-import { CenteredFooter } from './footer/CenteredFooter';
-import { Logo } from '../Logo/Logo';
+import { CenteredFooter } from './FooterComponents/CenteredFooter';
+import { Logo } from '@/components/Logo/Logo';
+import { Background } from '@/components/Background/Background';
+import { Section } from './Section';
 
 function Footer() {
     return (
-        <div color="bg-gray-100">
-            <div className="max-w-screen-lg mx-auto px-3 py-16">
+        <Background color="bg-gray-100">
+            <Section>
                 <CenteredFooter logo={<Logo />}>
-                    <li className="mx-4">
+                    <li>
                         <Link href="/">
-                            <a>Home</a>
+                            Home
                         </Link>
                     </li>
-                    <li className="mx-4">
+                    <li>
                         <Link href="/">
-                            <a>About</a>
+                            About
                         </Link>
                     </li>
-                    <li className="mx-4">
+                    <li>
                         <Link href="/">
-                            <a>Docs</a>
+                            Docs
                         </Link>
                     </li>
-                    <li className="mx-4">
+                    <li>
                         <Link href="https://github.com/ixartz/Next-JS-Landing-Page-Starter-Template">
-                            <a>GitHub</a>
+                            GitHub
                         </Link>
                     </li>
                 </CenteredFooter>
-            </div>
-        </div>
+            </Section>
+        </Background>
     );
 }
 

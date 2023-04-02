@@ -1,117 +1,38 @@
-### What you can find useful in this project: 
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-- [x] Responsive design (mobile, tablet, desktop)
-- [x] 'NavBar' freezed when you start scrolling
-- [x] Simple 'Slider' implementation
-- [x] Project build based on TypeScript using Nextjs, TailwindCss
+## Getting Started
 
--------
+First, run the development server:
 
-### Also below some more interesting things i have learned
-
-- Example of freezed NavBar [components/NavigationBar/NavBar.tsx](components/NavigationBar/NavBar.tsx)
-
-```tsx
-  useEffect(() => {
-    const changeColor = () => {
-      if (window.scrollY >= 90) {
-        setColor("#ffffff");
-        setTextColor("#000000");
-      } else {
-        setColor("transparent");
-        setTextColor("#ffffff");
-      }
-    };
-    window.addEventListener("scroll", changeColor);
-  }, []);
-```
---------
-
-- Slider [components/Slider/Slider.tsx](components/Slider/Slider.tsx)
-
-```tsx
-const Slider = ({ slides }: Props) => {
-  const [current, setCurrent] = useState(0);
-  const length = slides.length;
-
-  const nextSlide = () => {
-    setCurrent(current === length - 1 ? 0 : current + 1);
-  };
-  const prevSlide = () => {
-    setCurrent(current === 0 ? length - 1 : current - 1);
-  };
-
-  if (!Array.isArray(slides) || slides.length <= 0) {
-    return null;
-  }
-
-  return (
-    <div id="gallery" className="max-w-[1240px] mx-auto">
-      <h1 className="text-2xl font-bold text-center p-4">Gallery</h1>
-      <div className="relative flex justify-center p-4">
-        {SliderData.map((slide, index) => {
-          return (
-            <div
-              key={index}
-              className={
-                index === current
-                  ? "opacity-[1] ease-in duration-1000"
-                  : "opacity-0"
-              }
-            >
-              <FaArrowCircleLeft
-                onClick={prevSlide}
-                className="absolute top-[50%] left-[30px] text-white/70 cursor-pointer select-none z-[2]"
-                size={50}
-              />
-              {index === current && (
-                <Image
-                  src={slide.image}
-                  alt="/"
-                  width="1440"
-                  height="600"
-                  objectFit="cover"
-                />
-              )}
-              <FaArrowCircleRight
-                onClick={nextSlide}
-                className="absolute top-[50%] right-[30px] text-white/70 cursor-pointer select-none z-[2]"
-                size={50}
-              />
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
 ```
 
---------
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- Set the root to navigate to different part of the page (please do not forget to put `id="portfolio"` for smooth scrolling)
-```js
-<Link href="/portfolio">My roads</Link>
-```
+You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-```js
-const Portfolio = () => {
-    return (
-        <div id="portfolio" className="max-w-[1240px] mx-auto py-16 text-center">
-            <h1 className="font-bold text-2xl p-4">Amazing roads</h1>
-            <div className="grid grid-rows-none md:grid-cols-5 p-4 gap-4">
-                <div className="w-full h-full col-span-2 md:col-span-3 row-span-2">
-                    <Image
-                        src="https://images.unsplash.com/photo-1520595439914-fcbb3a25d924?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1176&q=80"
-                        alt="/"
-                        layout="responsive"
-                        width="677"
-                        height="451"
-                    />
-```
----------
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-#### Reference:
-- thanks goes to @Clint Briley [youtube](https://www.youtube.com/watch?v=HVyct9EUNP8), [repo](https://github.com/fireclint/NextJS-Tailwind-Responsive)
-- try it out [Pesticide for Chrome](https://chrome.google.com/webstore/detail/pesticide-for-chrome/bakpbgckdnepkmkeaiomhmfcnejndkbi)
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

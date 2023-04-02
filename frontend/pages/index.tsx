@@ -1,31 +1,20 @@
-import Head from 'next/head';
-import Hero from '../components/Hero/Hero';
-import Slider from '../components/Slider/Slider';
-import { SliderData } from '../components/Slider/SliderData';
-import Instagram from '../components/InstagramGallery/Instagram';
-import Portfolio from '../components/Portfolio/Portfolio';
-import Contact from '../components/Contact/Contact';
-import Footer from '../components/Footer/Footer';
+import { Meta } from '@/components/Layout/Meta';
+import Hero from '@/components/Hero/Hero';
+import { AppConfig } from '@/components/utils/AppConfig';
+import Footer from '@/components/Layout/Footer';
 
-function Home() {
+export default function Home() {
     return (
         <>
-            <Head>
-                <title>Keep moving</title>
-                <meta
-                    name="description"
-                    content="Created as template for future work"
-                />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Hero heading="Let's go jogging" message="Find your road" />
-            <Slider slides={SliderData} />
-            <Instagram />
-            <Portfolio />
-            {/* <Contact /> */}
+            <Meta title={AppConfig.title} description={AppConfig.description} />
+            {/* Hero */}
+            <Hero
+                heading="Discover the best restaurant near you."
+                message="Search here"
+            />
+            {/* Category */}
+            {/* Footer */}
             <Footer />
         </>
     );
 }
-
-export default Home;
