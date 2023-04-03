@@ -4,23 +4,24 @@ import { AppConfig } from '@/components/utils/AppConfig';
 import Footer from '@/components/Layout/Footer';
 import Category from '@/components/Category/Category';
 import NavBar from '@/components/NavigationBar/NavBar';
-import { GetStaticProps } from 'next';
-import axios from 'axios';
-import { hasCookie } from 'cookies-next';
-import { useEffect, useState } from 'react';
+import { useLoginStatus } from '@/components/utils/useLoginStatus';
 
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 export default function Home() {
-    const [status, setStatus] = useState(false);
+    const status = useLoginStatus();
 
-    useEffect (() => {
-        if (hasCookie('token')) {
-            setStatus(true);
-        } else {
-            setStatus(false);
+    useEffect(() => {
+        if (status) {
+            toast('Log in succesfully', {
+                hideProgressBar: true,
+                autoClose: 2000,
+                type: 'success',
+                position: 'bottom-right',
+            });
         }
-    }, [hasCookie('token')]);
-
+    }, [status]);
 
     return (
         <>

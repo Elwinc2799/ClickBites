@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { deleteCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 interface Props {
     isLanding: boolean;
@@ -57,6 +58,12 @@ function NavBar(props: Props) {
                                 onClick={() => {
                                     deleteCookie('token');
                                     router.push('/');
+                                    toast('Log Out succesfully', {
+                                        hideProgressBar: true,
+                                        autoClose: 2000,
+                                        type: 'success',
+                                        position: 'bottom-right',
+                                    });
                                 }}>
                                 Log Out
                             </button>

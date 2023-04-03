@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
-import { getCookie, setCookie } from 'cookies-next';
+import { setCookie } from 'cookies-next';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -27,12 +27,7 @@ function Login() {
             );
             setMessage(response.data.message);
             setCookie('token', response.data?.access_token);
-            toast('Log in succesfully', {
-                hideProgressBar: true,
-                autoClose: 2000,
-                type: 'success',
-                position: 'bottom-right',
-            });
+            
             // Clear input boxes
             setEmail('');
             setPassword('');

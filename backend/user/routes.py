@@ -1,5 +1,4 @@
-from flask import Blueprint, Response, session, request, current_app
-from flask_jwt_extended import jwt_required
+from flask import Blueprint, Response, request, jsonify
 from database import Database
 import json
 from user.models import User
@@ -11,7 +10,8 @@ import jwt
 user_bp = Blueprint("user", __name__)
 
 # Get an instance of the database
-db = Database.get_instance().get_db("user")
+db_business = Database.get_instance().get_db("user")
+db_review = Database.get_instance().get_db("review")
 
 # signup
 @user_bp.route("/api/signup", methods=["POST"])
@@ -24,12 +24,12 @@ def signUp():
         # ...
 
         # search for user in database
-        document = db.find_one({"email": user.get("email")})
+        document = db_business.find_one({"email": user.get("email")})
 
         # check if user exists
         if document is None:
             # post user object to database
-            db.insert_one(user)
+            db_business.insert_one(user)
 
             # Return a JSON message with a 200 OK status code and JSON mimetype
             return Response(
@@ -69,7 +69,7 @@ def login():
         user = User().get()
 
         # search for user in database
-        user = db.find_one(user)
+        user = db_business.find_one(user)
 
         # check if user exists
         if user is None:
@@ -107,18 +107,50 @@ def login():
         )
 
 
+# retrieve user_id from token
+@user_bp.route("/api/getUserId", methods=["GET"])
+def getUserId():
+    # get the token from the Authorization header
+    auth_header = request.headers.get("Authorization")
+    if auth_header is None:
+        return jsonify({"error": "Authorization header is missing"}), 401
+    try:
+        auth_token = auth_header.split(" ")[1]
+    except IndexError:
+        return jsonify({"error": "Invalid Authorization header format"}), 401
+
+    # the secret key used to sign the token
+    secret = "super-secret-key"
+
+    try:
+        # decode the token
+        decoded = jwt.decode(auth_token, secret, algorithms=["HS256"])
+
+        # the "sub" property contains the user ID
+        user_id = decoded["sub"]
+
+        # return the user ID as a JSON response
+        return jsonify({"userId": user_id})
+
+    except jwt.ExpiredSignatureError:
+        # handle the case where the token has expired
+        return jsonify({"error": "Token has expired"}), 401
+
+    except jwt.InvalidTokenError:
+        # handle the case where the token is invalid
+        return jsonify({"error": "Invalid token"}), 401
+
+
+
 # retrieve user profile
 @user_bp.route("/api/profile/<string:user_id>", methods=["GET"])
 def retrieveProfile(user_id):
     try:
         # get user object from database
-        document = db.find_one({"_id": ObjectId(user_id)})
+        document = db_business.find_one({"_id": ObjectId(user_id)})
 
         # check if user exists
         if document is None:
-            # Serialize the retrieved document to a JSON string
-            user = json.dumps(document, default=str)
-
             return Response(
                 response=json.dumps(
                     {
@@ -129,6 +161,12 @@ def retrieveProfile(user_id):
                 mimetype="application/json",
             )
         else:
+            # get all reviews for business
+            reviews = list(db_review.find({"user_id": ObjectId(user_id)}))
+
+            document["reviews"] = reviews
+            # Serialize the retrieved document to a JSON string
+            user = json.dumps(document, default=str)
 
             # Return the JSON string with a 200 OK status code and JSON mimetype
             return Response(
@@ -158,7 +196,7 @@ def updateProfile(user_id):
         updated_info = User().get()
 
         # search for user in database
-        user = db.find_one({"_id": ObjectId(user_id)})
+        user = db_business.find_one({"_id": ObjectId(user_id)})
 
         # check if user exists
         if user is None:
@@ -173,7 +211,7 @@ def updateProfile(user_id):
             )
         else:
             # update user object in database with this list of data
-            db.update_one(
+            db_business.update_one(
                 {"_id": ObjectId(user_id)},
                 {"$set": updated_info},
             )
