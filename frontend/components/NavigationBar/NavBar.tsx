@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { deleteCookie } from 'cookies-next';
+import { useRouter } from 'next/router';
 
 interface Props {
     isLanding: boolean;
@@ -9,9 +12,10 @@ interface Props {
 function NavBar(props: Props) {
     const [color, setColor] = useState('transparent');
     const [textColor, setTextColor] = useState('white');
+    const router = useRouter();
 
     useEffect(() => {
-        if (props.isLoggedIn) {
+        if (props.isLanding) {
             const changeColor = () => {
                 if (window.scrollY >= 90) {
                     setColor('#f7fafc');
@@ -26,7 +30,7 @@ function NavBar(props: Props) {
             setColor('#f7fafc');
             setTextColor('#1a202c');
         }
-    }, [props.isLoggedIn]);
+    }, [props.isLanding]);
 
     return (
         <div
@@ -40,30 +44,36 @@ function NavBar(props: Props) {
                         ClickBites
                     </h1>
                 </Link>
-                <ul style={{ color: `${textColor}` }} className="flex flex-row">
-                    {!props.isLoggedIn && (
-                        <li className="p-4">
-                            <Link href="/login" >
-                                Log In
-                            </Link>
-                        </li>
-                    )}
-                    {!props.isLoggedIn && (
-                        <li className="p-4">
-                            <Link href="/signup">Sign Up</Link>
-                        </li>
-                    )}
-                    {props.isLoggedIn && (
+
+                {props.isLoggedIn ? (
+                    <ul
+                        style={{ color: `${textColor}` }}
+                        className="flex flex-row">
                         <li className="p-4">
                             <Link href="/profile">Profile</Link>
                         </li>
-                    )}
-                    {props.isLoggedIn && (
                         <li className="p-4">
-                            <Link href="">Sign Out</Link>
+                            <button
+                                onClick={() => {
+                                    deleteCookie('token');
+                                    router.push('/');
+                                }}>
+                                Log Out
+                            </button>
                         </li>
-                    )}
-                </ul>
+                    </ul>
+                ) : (
+                    <ul
+                        style={{ color: `${textColor}` }}
+                        className="flex flex-row">
+                        <li className="p-4">
+                            <Link href="/login">Log In</Link>
+                        </li>
+                        <li className="p-4">
+                            <Link href="/signup">Sign Up</Link>
+                        </li>
+                    </ul>
+                )}
             </div>
         </div>
     );

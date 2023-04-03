@@ -1,8 +1,11 @@
-from flask import Blueprint, Response, request, jsonify
+from flask import Blueprint, Response, session, request, current_app
+from flask_jwt_extended import jwt_required
 from database import Database
 import json
 from user.models import User
 from bson.objectid import ObjectId
+import jwt
+
 
 # Create a Flask blueprint for user related routes
 user_bp = Blueprint("user", __name__)
@@ -80,12 +83,12 @@ def login():
                 mimetype="application/json",
             )
         else:
+            token = jwt.encode({"sub": str(user["_id"])}, "super-secret-key", algorithm="HS256")
+
             # Return a JSON message with a 200 OK status code and JSON mimetype
             return Response(
                 response=json.dumps(
-                    {
-                        "message": "The user data was successfully validated with the database",
-                    }
+                    {"message": "The user data was successfully validated with the database", "access_token": token}
                 ),
                 status=200,
                 mimetype="application/json",

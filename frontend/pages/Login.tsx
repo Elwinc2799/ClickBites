@@ -2,18 +2,17 @@ import React from 'react';
 import { Background } from '@/components/Background/Background';
 import NavBar from '@/components/NavigationBar/NavBar';
 import Footer from '@/components/Layout/Footer';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
-
+import { getCookie, setCookie } from 'cookies-next';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const router = useRouter();
-
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -27,6 +26,7 @@ function Login() {
                 }
             );
             setMessage(response.data.message);
+            setCookie('token', response.data?.access_token);
             toast('Log in succesfully', {
                 hideProgressBar: true,
                 autoClose: 2000,
@@ -61,7 +61,7 @@ function Login() {
 
     return (
         <>
-            <NavBar isLanding={false} isLoggedIn={false}/>
+            <NavBar isLanding={false} isLoggedIn={false} />
             <Background color="bg-gray-100">
                 <div className="flex justify-center items-center h-[754px]">
                     <div className="w-1/3">
@@ -73,7 +73,7 @@ function Login() {
                         <div className="flex justify-center items-center">
                             <form className="w-full" onSubmit={handleSubmit}>
                                 <div className="flex flex-col my-4">
-                                    <label htmlFor="email">Email</label>
+                                    <label htmlFor="email">Email:</label>
                                     <input
                                         type="email"
                                         name="email"
@@ -86,7 +86,7 @@ function Login() {
                                     />
                                 </div>
                                 <div className="flex flex-col my-4">
-                                    <label htmlFor="password">Password</label>
+                                    <label htmlFor="password">Password:</label>
                                     <input
                                         type="password"
                                         name="password"
