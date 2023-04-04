@@ -31,7 +31,7 @@ function SearchBox() {
     return (
         <form className="flex items-center" onSubmit={handleSubmit}>
             {/* <label for="voice-search" className="sr-only">Search</label> */}
-            <div className="relative w-full">
+            <div className="relative w-full rounded-md">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg
                         aria-hidden="true"
@@ -55,7 +55,7 @@ function SearchBox() {
             </div>
             <button
                 type="submit"
-                className="inline-flex items-center py-2.5 px-3 ml-2 text-xl font-medium text-white  rounded-lg border border-blue-600 bg-blue-600 hover:bg-blue-700 ">
+                className="btn mx-4 rounded-md">
                 <svg
                     aria-hidden="true"
                     className="w-5 h-5 mr-2 -ml-1"

@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import NavBar from '@/components/NavigationBar/NavBar';
 import Footer from '@/components/Layout/Footer';
 import { Background } from '@/components/Background/Background';
-import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
 import Image from 'next/image';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
@@ -28,7 +27,6 @@ interface Review {
 }
 
 function Profile() {
-    const status = UseLoginStatus();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');

@@ -4,7 +4,6 @@ import { AppConfig } from '@/components/utils/AppConfig';
 import Footer from '@/components/Layout/Footer';
 import Category from '@/components/Category/Category';
 import NavBar from '@/components/NavigationBar/NavBar';
-import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
 
 export default function Home() {
     return (

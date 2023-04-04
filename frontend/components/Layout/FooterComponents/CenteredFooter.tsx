@@ -24,7 +24,7 @@ const CenteredFooter = (props: ICenteredFooterProps) => (
         <style jsx>
             {`
                 .navbar :global(li) {
-                    margin-left: 1rem/* 16px */;
+                    margin-left: 1rem /* 16px */;
                     margin-right: 1rem /* 16px */;
                 }
             `}

@@ -55,7 +55,7 @@ const categories: ResCategory[] = [
 function Category() {
     return (
         <Background color="bg-gray-100">
-            <div className="max-w-[1240px] mx-auto text-center py-12">
+            <div className="max-w-screen mx-auto text-center py-12 px-44">
                 <p className="text-4xl font-bold text-gray-800">Categories</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-4">
                     {categories.map((category) => (

@@ -2,7 +2,7 @@ import React from 'react';
 import NavBar from '@/components/NavigationBar/NavBar';
 import { Background } from '@/components/Background/Background';
 import Footer from '@/components/Layout/Footer';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
@@ -76,7 +76,7 @@ function SignUp() {
 
     return (
         <>
-            <NavBar isLanding={false} isLoggedIn={false}/>
+            <NavBar isLanding={false} />
             <Background color="bg-gray-100">
                 <div className="flex justify-center items-center h-[754px]">
                     <div className="w-1/3">
@@ -147,7 +147,7 @@ function SignUp() {
                                 <div className="flex flex-row justify-end items-center">
                                     <button
                                         type="submit"
-                                        className="border-blue-600 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4">
+                                        className="btn rounded-md">
                                         Sign Up
                                     </button>
                                 </div>

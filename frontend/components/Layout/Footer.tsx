@@ -7,12 +7,10 @@ import { Section } from './Section';
 
 function Footer() {
     return (
-        <Background color="bg-gray-200">
             <Section>
                 <CenteredFooter logo={<Logo />}>
                 </CenteredFooter>
             </Section>
-        </Background>
     );
 }
 

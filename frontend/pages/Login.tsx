@@ -112,7 +112,7 @@ function Login() {
                                 <div className="flex flex-row justify-end items-center">
                                     <button
                                         type="submit"
-                                        className="border-blue-600 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4">
+                                        className="btn rounded-md">
                                         Login
                                     </button>
                                 </div>

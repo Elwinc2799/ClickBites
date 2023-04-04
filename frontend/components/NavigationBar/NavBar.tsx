@@ -13,6 +13,7 @@ interface Props {
 function NavBar(props: Props) {
     const [color, setColor] = useState('transparent');
     const [textColor, setTextColor] = useState('white');
+    const [borderColor, setBorderColor] = useState('transparent');
     const router = useRouter();
 
     const [status, setStatus] = useState(false);
@@ -23,9 +24,11 @@ function NavBar(props: Props) {
                 if (window.scrollY >= 90) {
                     setColor('#f7fafc');
                     setTextColor('#1a202c');
+                    setBorderColor('#e2e8f0')          
                 } else {
                     setColor('transparent');
                     setTextColor('#f7fafc');
+                    setBorderColor('transparent')
                 }
             };
             window.addEventListener('scroll', changeColor);
@@ -97,6 +100,7 @@ function NavBar(props: Props) {
                     </ul>
                 )}
             </div>
+            <hr className="border-1 w-full"  style={{ borderBlockColor: `${borderColor}` }}/>
         </div>
     );
 }
