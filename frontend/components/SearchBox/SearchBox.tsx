@@ -1,16 +1,31 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import { UseLoginStatus } from '../utils/UseLoginStatus';
+import { toast } from 'react-toastify';
 
 function SearchBox() {
     const router = useRouter();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const search = e.currentTarget.search.value;
-        router.push({
-            pathname: '/search',
-            query: { search },
-        });
+
+        if (!UseLoginStatus()) {
+            toast('Please log in first', {
+                hideProgressBar: true,
+                autoClose: 2000,
+                type: 'error',
+                position: 'bottom-right',
+            });
+            setTimeout(() => {
+                router.push('/login');
+            }, 2100);
+        } else {
+            const search_query = e.currentTarget.search_query.value;
+            router.push({
+                pathname: '/results',
+                query: { search_query },
+            });
+        }
     };
 
     return (
@@ -32,7 +47,7 @@ function SearchBox() {
                 </div>
                 <input
                     type="text"
-                    id="search"
+                    id="search_query"
                     className="bg-gray-100 border border-gray-300 text-gray-800 text-xl rounded-lg block w-full pl-10 p-2.5 focus:outline-none "
                     placeholder="Search Western, Coffee, Sushi, etc"
                     required

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import NavBar from '@/components/NavigationBar/NavBar';
 import Footer from '@/components/Layout/Footer';
 import { Background } from '@/components/Background/Background';
-import { useLoginStatus } from '@/components/utils/useLoginStatus';
+import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
 import Image from 'next/image';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
@@ -20,13 +20,15 @@ interface Review {
     business_id: {
         $oid: string;
     };
+    business_name: string;
+    business_city: string;
     stars: number;
     text: string;
     date: string;
 }
 
 function Profile() {
-    const status = useLoginStatus();
+    const status = UseLoginStatus();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -45,6 +47,8 @@ function Profile() {
             business_id: {
                 $oid: '',
             },
+            business_name: '',
+            business_city: '',
             stars: 0,
             text: '',
             date: '',
@@ -94,6 +98,8 @@ function Profile() {
                 _id: { $oid: userReview._id.$oid },
                 user_id: { $oid: userReview.user_id.$oid },
                 business_id: { $oid: userReview.business_id.$oid },
+                business_name: userReview.business_name,
+                business_city: userReview.business_city,
                 stars: userReview.stars,
                 text: userReview.text,
                 date: userReview.date,
@@ -107,7 +113,7 @@ function Profile() {
 
     return (
         <>
-            <NavBar isLanding={true} isLoggedIn={status} />
+            <NavBar isLanding={true}  />
             <Background color="bg-gray-100">
                 <main className="profile-page">
                     <section className="relative block h-[500px]">
@@ -143,7 +149,7 @@ function Profile() {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="flex w-4/12 px-4 order-4 text-right self-center">
+                                        <div className="flex w-4/12 px-4 order-4 text-right self-center justify-between">
                                             <div className="mr-4 p-3 text-center">
                                                 <span className="text-xl font-bold block tracking-wide text-gray-900">
                                                     {state}
@@ -177,7 +183,7 @@ function Profile() {
                                             </div> */}
                                         </div>
                                         <div className="px-4 order-1">
-                                            <div className="flex justify-center py-4 lg:pt-4 pt-8">
+                                            <div className="flex justify-between py-4 lg:pt-4 pt-8">
                                                 <div className="mr-4 p-3 text-center">
                                                     <span className="text-xl font-bold block tracking-wide text-gray-900">
                                                         {email}

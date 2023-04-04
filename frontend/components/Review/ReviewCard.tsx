@@ -13,6 +13,8 @@ interface Review {
     business_id: {
         $oid: string;
     };
+    business_name: string;
+    business_city: string;
     stars: number;
     text: string;
     date: string;
@@ -24,10 +26,10 @@ interface ReviewCardProps {
 
 export default function ReviewCard({ review }: ReviewCardProps) {
     const stars = Array.from({ length: review.stars }, (_, i) => (
-        <FontAwesomeIcon key={i} icon={faStar} className="text-yellow-500" />
+        <FontAwesomeIcon key={i} icon={faStar} className="text-yellow-300" />
     ));
     const emptyStars = Array.from({ length: 5 - review.stars }, (_, i) => (
-        <FontAwesomeIcon key={i} icon={farStar} className="text-yellow-500" />
+        <FontAwesomeIcon key={i} icon={farStar} className="text-yellow-300" />
     ));
 
     return (
@@ -43,6 +45,9 @@ export default function ReviewCard({ review }: ReviewCardProps) {
                     {emptyStars}
                 </p>
             </div>
+            <p className="mt-2 text-end text-lg text-gray-800">
+                {review.business_name}, {review.business_city}
+            </p>
             <p className="mt-2 text-end text-sm text-gray-500">{review.date}</p>
         </div>
     );

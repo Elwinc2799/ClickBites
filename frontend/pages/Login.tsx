@@ -16,6 +16,8 @@ function Login() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        const expiryDate = new Date();
+        expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000); // 1 hour from now
 
         try {
             const response = await axios.post(
@@ -26,12 +28,25 @@ function Login() {
                 }
             );
             setMessage(response.data.message);
-            setCookie('token', response.data?.access_token);
-            
+            setCookie('token', response.data?.access_token, {
+                expires: expiryDate,
+                path: '/', // recommended to set the path to '/' to make the cookie accessible to all pages
+                secure: true, // recommended for HTTPS connections
+                sameSite: 'strict', // recommended to prevent cross-site request forgery (CSRF) attacks
+            });
+
             // Clear input boxes
             setEmail('');
             setPassword('');
-            router.push('/');
+            toast('Log in succesfully', {
+                hideProgressBar: true,
+                autoClose: 2000,
+                type: 'success',
+                position: 'bottom-right',
+            });
+            setTimeout(() => {
+                router.push('/');
+            }, 2100);
         } catch (error: any) {
             if (error.response) {
                 const responseData = error.response.data;
@@ -56,7 +71,7 @@ function Login() {
 
     return (
         <>
-            <NavBar isLanding={false} isLoggedIn={false} />
+            <NavBar isLanding={false} />
             <Background color="bg-gray-100">
                 <div className="flex justify-center items-center h-[754px]">
                     <div className="w-1/3">

@@ -10,8 +10,9 @@ import jwt
 user_bp = Blueprint("user", __name__)
 
 # Get an instance of the database
-db_business = Database.get_instance().get_db("user")
+db_user = Database.get_instance().get_db("user")
 db_review = Database.get_instance().get_db("review")
+db_business = Database.get_instance().get_db("business")
 
 # signup
 @user_bp.route("/api/signup", methods=["POST"])
@@ -24,12 +25,12 @@ def signUp():
         # ...
 
         # search for user in database
-        document = db_business.find_one({"email": user.get("email")})
+        document = db_user.find_one({"email": user.get("email")})
 
         # check if user exists
         if document is None:
             # post user object to database
-            db_business.insert_one(user)
+            db_user.insert_one(user)
 
             # Return a JSON message with a 200 OK status code and JSON mimetype
             return Response(
@@ -69,7 +70,7 @@ def login():
         user = User().get()
 
         # search for user in database
-        user = db_business.find_one(user)
+        user = db_user.find_one(user)
 
         # check if user exists
         if user is None:
@@ -141,13 +142,12 @@ def getUserId():
         return jsonify({"error": "Invalid token"}), 401
 
 
-
 # retrieve user profile
 @user_bp.route("/api/profile/<string:user_id>", methods=["GET"])
 def retrieveProfile(user_id):
     try:
         # get user object from database
-        document = db_business.find_one({"_id": ObjectId(user_id)})
+        document = db_user.find_one({"_id": ObjectId(user_id)})
 
         # check if user exists
         if document is None:
@@ -163,6 +163,12 @@ def retrieveProfile(user_id):
         else:
             # get all reviews for business
             reviews = list(db_review.find({"user_id": ObjectId(user_id)}))
+
+            for review in reviews:
+                # get business name
+                business = db_business.find_one({"_id": ObjectId(review["business_id"])})
+                review["business_name"] = business["name"]
+                review["business_city"] = business["city"]
 
             document["reviews"] = reviews
             # Serialize the retrieved document to a JSON string
@@ -196,7 +202,7 @@ def updateProfile(user_id):
         updated_info = User().get()
 
         # search for user in database
-        user = db_business.find_one({"_id": ObjectId(user_id)})
+        user = db_user.find_one({"_id": ObjectId(user_id)})
 
         # check if user exists
         if user is None:
@@ -211,7 +217,7 @@ def updateProfile(user_id):
             )
         else:
             # update user object in database with this list of data
-            db_business.update_one(
+            db_user.update_one(
                 {"_id": ObjectId(user_id)},
                 {"$set": updated_info},
             )

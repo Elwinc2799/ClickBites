@@ -1,18 +1,16 @@
 import { useState, useEffect } from 'react';
 import { hasCookie } from 'cookies-next';
 
-function useLoginStatus() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+function UseLoginStatus() {
+    var isLoggedIn = false;
 
-    useEffect(() => {
-        if (hasCookie('token')) {
-            setIsLoggedIn(true);
-        } else {
-            setIsLoggedIn(false);
-        }
-    }, []);
+    if (hasCookie('token')) {
+        isLoggedIn = true;
+    } else {
+        isLoggedIn = false;
+    }
 
     return isLoggedIn;
 }
 
-export { useLoginStatus };
+export { UseLoginStatus };

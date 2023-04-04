@@ -4,16 +4,18 @@ import axios from 'axios';
 import { deleteCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
 
 interface Props {
     isLanding: boolean;
-    isLoggedIn: boolean;
 }
 
 function NavBar(props: Props) {
     const [color, setColor] = useState('transparent');
     const [textColor, setTextColor] = useState('white');
     const router = useRouter();
+
+    const [status, setStatus] = useState(false);
 
     useEffect(() => {
         if (props.isLanding) {
@@ -33,6 +35,14 @@ function NavBar(props: Props) {
         }
     }, [props.isLanding]);
 
+    useEffect(() => {
+        if (UseLoginStatus()) {
+            setStatus(true);
+        } else {
+            setStatus(false);
+        }
+    }, [status]);
+
     return (
         <div
             style={{ backgroundColor: `${color}` }}
@@ -46,7 +56,7 @@ function NavBar(props: Props) {
                     </h1>
                 </Link>
 
-                {props.isLoggedIn ? (
+                {status ? (
                     <ul
                         style={{ color: `${textColor}` }}
                         className="flex flex-row">
@@ -57,13 +67,18 @@ function NavBar(props: Props) {
                             <button
                                 onClick={() => {
                                     deleteCookie('token');
-                                    router.push('/');
+
                                     toast('Log Out succesfully', {
                                         hideProgressBar: true,
                                         autoClose: 2000,
                                         type: 'success',
                                         position: 'bottom-right',
                                     });
+
+                                    setTimeout(() => {
+                                        setStatus(!status);
+                                        router.push('/');
+                                    }, 2100);
                                 }}>
                                 Log Out
                             </button>
