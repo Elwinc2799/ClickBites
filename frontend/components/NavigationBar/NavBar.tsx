@@ -23,18 +23,17 @@ function NavBar(props: Props) {
             const changeColor = () => {
                 if (window.scrollY >= 90) {
                     setColor('#f7fafc');
-                    setTextColor('#1a202c');
-                    setBorderColor('#e2e8f0')          
+                    setTextColor('#1a202c');        
                 } else {
                     setColor('transparent');
                     setTextColor('#f7fafc');
-                    setBorderColor('transparent')
                 }
             };
             window.addEventListener('scroll', changeColor);
         } else {
             setColor('#f7fafc');
             setTextColor('#1a202c');
+            setBorderColor('#e2e8f0')      
         }
     }, [props.isLanding]);
 

@@ -1,13 +1,39 @@
 import Image from 'next/image';
 import React from 'react';
+import { UseLoginStatus } from '../utils/UseLoginStatus';
+import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 interface Props {
     categoryImg: any;
     categoryName: string;
 }
-const InstagramImg = ({ categoryImg, categoryName }: Props) => {
+
+const CategoryCard = ({ categoryImg, categoryName }: Props) => {
+    const router = useRouter();
+
+    const handleClick = () => {
+        if (!UseLoginStatus()) {
+            toast('Please log in first', {
+                hideProgressBar: true,
+                autoClose: 2000,
+                type: 'error',
+                position: 'bottom-right',
+            });
+            setTimeout(() => {
+                router.push('/login');
+            }, 2100);
+        } else {
+            const search_query = categoryName;
+            router.push({
+                pathname: '/results',
+                query: { search_query },
+            });
+        }
+    };
+
     return (
-        <div className="relative m-2">
+        <button className="relative m-2" onClick={handleClick}>
             <Image
                 src={categoryImg}
                 alt="/"
@@ -21,8 +47,8 @@ const InstagramImg = ({ categoryImg, categoryName }: Props) => {
                     {categoryName}
                 </p>
             </div>
-        </div>
+        </button>
     );
 };
 
-export default InstagramImg;
+export default CategoryCard;

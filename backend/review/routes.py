@@ -9,7 +9,8 @@ from bson.objectid import ObjectId
 review_bp = Blueprint("review", __name__)
 
 # Get an instance of the database
-db = Database.get_instance().get_db("review")
+db_review = Database.get_instance().get_db("review")
+db_business = Database.get_instance().get_db("business")
 
 # create a review for a business
 @review_bp.route("/api/business/<string:business_id>", methods=["POST"])
@@ -21,8 +22,17 @@ def createReview(business_id):
         # add business id to review object
         review["business_id"] = ObjectId(business_id)
 
+        # convert the review user id to an object id
+        review["user_id"] = ObjectId(review["user_id"])
+
         # post review object to database
-        db.insert_one(review)
+        db_review.insert_one(review)
+
+        # increment the number of reviews for the business
+        db_business.update_one(
+            {"_id": ObjectId(business_id)},
+            {"$inc": {"review_count": 1}},
+        )
 
         # Return a JSON message with a 200 OK status code and JSON mimetype
         return Response(
@@ -52,7 +62,7 @@ def updateReview(business_id, review_id):
         updated_info = Review().get()
 
         # update review object in database with this list of data
-        db.update_one(
+        db_review.update_one(
             {"_id": ObjectId(review_id)},
             {"$set": updated_info},
         )
@@ -86,7 +96,7 @@ def updateReview(business_id, review_id):
 def deleteReview(business_id, review_id):
     try:
         # delete review object from database
-        db.delete_one({"_id": ObjectId(review_id)})
+        db_review.delete_one({"_id": ObjectId(review_id)})
 
         # Return a JSON message with a 200 OK status code and JSON mimetype
         return Response(

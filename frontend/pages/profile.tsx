@@ -10,15 +10,9 @@ import { useState } from 'react';
 import ReviewCard from '@/components/Review/ReviewCard';
 
 interface Review {
-    _id: {
-        $oid: string;
-    };
-    user_id: {
-        $oid: string;
-    };
-    business_id: {
-        $oid: string;
-    };
+    _id: string;
+    user_id: string;
+    business_id: string;
     business_name: string;
     business_city: string;
     stars: number;
@@ -36,15 +30,9 @@ function Profile() {
     const [stars, setStars] = useState(0);
     const [reviews, setReviews] = useState<Review[]>([
         {
-            _id: {
-                $oid: '1',
-            },
-            user_id: {
-                $oid: '',
-            },
-            business_id: {
-                $oid: '',
-            },
+            _id: '',
+            user_id: '',
+            business_id: '',
             business_name: '',
             business_city: '',
             stars: 0,
@@ -93,9 +81,9 @@ function Profile() {
             setStars(userData.average_stars);
 
             const newReviews = userData.reviews.map((userReview: Review) => ({
-                _id: { $oid: userReview._id.$oid },
-                user_id: { $oid: userReview.user_id.$oid },
-                business_id: { $oid: userReview.business_id.$oid },
+                _id: userReview._id,
+                user_id: userReview.user_id,
+                business_id: userReview.business_id,
                 business_name: userReview.business_name,
                 business_city: userReview.business_city,
                 stars: userReview.stars,
@@ -105,13 +93,12 @@ function Profile() {
 
             setReviews(newReviews);
         };
-
         fetchDataAndUserData();
     }, []);
 
     return (
         <>
-            <NavBar isLanding={true}  />
+            <NavBar isLanding={true} />
             <Background color="bg-gray-100">
                 <main className="profile-page">
                     <section className="relative block h-[500px]">
@@ -245,6 +232,7 @@ function Profile() {
                                                         <ReviewCard
                                                             key={index.toString()}
                                                             review={review}
+                                                            isUser={true}
                                                         />
                                                     )
                                                 )}

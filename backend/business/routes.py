@@ -11,6 +11,7 @@ business_bp = Blueprint("business", __name__)
 # Get an instance of the database
 db_business = Database.get_instance().get_db("business")
 db_review = Database.get_instance().get_db("review")
+db_user = Database.get_instance().get_db("user")
 
 
 # register a new business
@@ -58,12 +59,53 @@ def registerBusiness():
         )
 
 
-# retrieve a list of businesses
-@business_bp.route("/api/business", methods=["GET"])
-def getBusinesses():
+# retrieve all businesses id
+@business_bp.route("/api/businessid", methods=["GET"])
+def getAllBusinessesId():
     try:
-        # Query the database and convert the result to a list of Business json objects
+        # Get all documents from the business collection
         documents = list(db_business.find())
+
+        # Extract the business id from each document
+        businesses = [document["_id"] for document in documents]
+
+        # Serialize the list of documents to a JSON string
+        json_business = json.dumps(businesses, default=str)
+
+        # Return the JSON string with a 200 OK status code and JSON mimetype
+        return Response(
+            response=json_business,
+            status=200,
+            mimetype="application/json",
+        )
+
+    except Exception as e:
+        # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
+        return Response(
+            response=json.dumps(
+                {
+                    "message": "An error occurred while fetching the business data",
+                }
+            ),
+            status=500,
+            mimetype="application/json",
+        )
+
+
+# retrieve a list of businesses based on search query
+@business_bp.route("/api/results", methods=["GET"])
+def getSearchResults():
+    try:
+        search_query = request.args.get("search_query")
+
+        # Perform a case-insensitive search for the search query in the business categories
+        documents = list(db_business.find({"categories": {"$regex": search_query, "$options": "i"}}))
+
+        # Perform a case-insensitive search for the search query in the business name
+        documents += list(db_business.find({"name": {"$regex": search_query, "$options": "i"}}))
+
+        # Remove duplicate in documents
+        documents = list({document["_id"]: document for document in documents}.values())
 
         # Serialize the list of documents to a JSON string
         json_business = json.dumps(documents, default=str)
@@ -107,10 +149,19 @@ def getBusinessDetails(business_id):
                 mimetype="application/json",
             )
         else:
+
             # get all reviews for business
             reviews = list(db_review.find({"business_id": ObjectId(business_id)}))
 
+            for review in reviews:
+                # get user name
+                user = db_user.find_one({"_id": ObjectId(review["user_id"])})
+                review["user_name"] = user["name"]
+
             document["reviews"] = reviews
+
+            # Increment the view count
+            db_business.update_one({"_id": ObjectId(business_id)}, {"$inc": {"view_count": 1}})
 
             # Serialize the retrieved document to a JSON string
             business = json.dumps(document, default=str)
