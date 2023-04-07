@@ -37,12 +37,6 @@ function Results() {
     const router = useRouter();
     const search_query = router.query.search_query;
 
-    const images = [
-        '/images/642080f221370718e6b89a4e.jpg',
-        '/images/642080f221370718e6b89a4f.jpg',
-        '/images/642080f221370718e6b89a56.jpg',
-    ];
-
     const [businesses, setBusinesses] = useState<Business[]>([
         {
             _id: '',
@@ -123,7 +117,6 @@ function Results() {
                                 key={index}
                                 business={business}
                                 index={index}
-                                imageUrl={images[index]}
                             />
                         ))}
                     </div>

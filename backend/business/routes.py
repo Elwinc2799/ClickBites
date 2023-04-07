@@ -104,6 +104,9 @@ def getSearchResults():
         # Perform a case-insensitive search for the search query in the business name
         documents += list(db_business.find({"name": {"$regex": search_query, "$options": "i"}}))
 
+        # Perform a case-insensitive search for the search query in the business address, city and state
+        documents += list(db_business.find({"$or": [{"address": {"$regex": search_query, "$options": "i"}}, {"city": {"$regex": search_query, "$options": "i"}}, {"state": {"$regex": search_query, "$options": "i"}}]}))
+
         # Remove duplicate in documents
         documents = list({document["_id"]: document for document in documents}.values())
 

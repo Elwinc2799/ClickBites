@@ -16,10 +16,9 @@ interface Business {
 interface ResultCardProps {
     business: Business;
     index: number;
-    imageUrl: string;
 }
 
-function ResultCard({ business, index, imageUrl }: ResultCardProps) {
+function ResultCard({ business, index}: ResultCardProps) {
 
     return (
         <>
@@ -27,20 +26,20 @@ function ResultCard({ business, index, imageUrl }: ResultCardProps) {
                 <button
                     key={business._id}
                     type="submit"
-                    className="px-10 py-5 w-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+                    className="px-10 py-5 w-[700px] overflow-wrap height-auto transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
                     <div className="card card-side bg-base-100 shadow-sm w-full">
-                        <figure>
+                        <figure className='w-96'>
                             <Image
-                                src={imageUrl}
+                                src={`/images/${business._id}.jpg`}
                                 alt="Business Image"
                                 width={0}
                                 height={0}
                                 sizes="(max-width: 768px) 100vw, 48vw"
-                                className="object-cover h-full w-48"
+                                className="object-cover h-full w-full"
                             />
                         </figure>
                         <div className="card-body flex-col items-start justify-between">
-                            <h2 className="card-title">
+                            <h2 className="card-title text-left">
                                 {index + 1}. {business.name}
                             </h2>
                             <h3>
@@ -53,7 +52,7 @@ function ResultCard({ business, index, imageUrl }: ResultCardProps) {
                                     .map((category, index) => (
                                         <span
                                             key={index}
-                                            className="badge badge-primary mr-3">
+                                            className="badge badge-primary mr-3 text-center h-full">
                                             {category}
                                         </span>
                                     ))}
