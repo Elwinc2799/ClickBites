@@ -3,6 +3,7 @@ from database import Database
 import json
 from review.models import Review
 from bson.objectid import ObjectId
+#from ai.generate_vector import generate_vector
 
 
 # Create a Flask blueprint for review related routes
@@ -24,6 +25,9 @@ def createReview(business_id):
 
         # convert the review user id to an object id
         review["user_id"] = ObjectId(review["user_id"])
+
+        # get the vector score for the review text
+        # review["vector_score"] = generate_vector(review["text"])
 
         # post review object to database
         db_review.insert_one(review)

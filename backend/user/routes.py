@@ -244,3 +244,4 @@ def updateProfile(user_id):
             status=500,
             mimetype="application/json",
         )
+    

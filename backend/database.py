@@ -21,6 +21,7 @@ class Database:
                 print("Connected to MongoDB")
                 Database.__instance = self
             except Exception as e:
+                print(e)
                 print("Could not connect to MongoDB")
 
     def get_db(self, db_name):

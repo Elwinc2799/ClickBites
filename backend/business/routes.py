@@ -3,7 +3,9 @@ from database import Database
 import json
 from bson.objectid import ObjectId
 from business.models import Business
-
+import jwt
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 # Create a Flask blueprint for business related routes
 business_bp = Blueprint("business", __name__)
@@ -96,7 +98,31 @@ def getAllBusinessesId():
 @business_bp.route("/api/results", methods=["GET"])
 def getSearchResults():
     try:
+        # get the token from the Authorization header
+        auth_header = request.headers.get("Authorization")
+        if auth_header is None:
+            return jsonify({"error": "Authorization header is missing"}), 401
+        try:
+            auth_token = auth_header.split(" ")[1]
+        except IndexError:
+            return jsonify({"error": "Invalid Authorization header format"}), 401
+
+        # the secret key used to sign the token
+        secret = "super-secret-key"
+
+        # decode the token
+        decoded = jwt.decode(auth_token, secret, algorithms=["HS256"])
+
+        # the "sub" property contains the user ID
+        user_id = decoded["sub"]
+
         search_query = request.args.get("search_query")
+
+        # Fetch user document by user_id
+        user_document = db_user.find_one({"_id": ObjectId(user_id)})
+
+        # Get user vector
+        user_vector = np.array(user_document["vector"]).reshape(1, -1)
 
         # Perform a case-insensitive search for the search query in the business categories
         documents = list(db_business.find({"categories": {"$regex": search_query, "$options": "i"}}))
@@ -105,10 +131,28 @@ def getSearchResults():
         documents += list(db_business.find({"name": {"$regex": search_query, "$options": "i"}}))
 
         # Perform a case-insensitive search for the search query in the business address, city and state
-        documents += list(db_business.find({"$or": [{"address": {"$regex": search_query, "$options": "i"}}, {"city": {"$regex": search_query, "$options": "i"}}, {"state": {"$regex": search_query, "$options": "i"}}]}))
+        documents += list(
+            db_business.find(
+                {
+                    "$or": [
+                        {"address": {"$regex": search_query, "$options": "i"}},
+                        {"city": {"$regex": search_query, "$options": "i"}},
+                        {"state": {"$regex": search_query, "$options": "i"}},
+                    ]
+                }
+            )
+        )
 
         # Remove duplicate in documents
         documents = list({document["_id"]: document for document in documents}.values())
+
+        # Compute cosine similarity for each business and store it with the business document
+        for document in documents:
+            business_vector = np.array(document["vector"]).reshape(1, -1)
+            document["similarity"] = cosine_similarity(user_vector, business_vector)[0][0]
+
+        # Sort documents by cosine similarity in descending order
+        documents.sort(key=lambda x: x["similarity"], reverse=True)
 
         # Serialize the list of documents to a JSON string
         json_business = json.dumps(documents, default=str)
@@ -152,7 +196,6 @@ def getBusinessDetails(business_id):
                 mimetype="application/json",
             )
         else:
-
             # get all reviews for business
             reviews = list(db_review.find({"business_id": ObjectId(business_id)}))
 
