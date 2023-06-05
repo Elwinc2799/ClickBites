@@ -10,9 +10,6 @@ import numpy as np
 # SpaCy library for natural language processing tasks
 import spacy
 
-# Scikit-learn libraries for model training, evaluation, and metrics calculation
-from sklearn.metrics.pairwise import cosine_similarity
-
 # Transformers from HuggingFace for BERT model
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
@@ -27,19 +24,21 @@ random.seed(random_seed)
 nlp = spacy.load("en_core_web_sm")
 
 # Load the fine-tuned model and tokenizer
-model = AutoModelForSequenceClassification.from_pretrained("./backend/ai/fine_tuned_model")
+model_path = "./ai/fine_tuned_model"
+model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
 # Initialize tokenizer
 model_used = "bert-large-uncased"
 tokenizer = AutoTokenizer.from_pretrained(model_used)
 
 # Load the label encoder
-with open("./backend/ai/label_encoder.pkl", "rb") as f:
+with open("./ai/label_encoder.pkl", "rb") as f:
     label_encoder = pickle.load(f)
+
+print("Loading the model...")
 
 # Initialize the VADER sentiment analyzer
 analyzer = SentimentIntensityAnalyzer()
-
 
 # Function to make predictions
 def predict_category(target, threshold=0.5):
@@ -196,7 +195,8 @@ def generate_vector(text):
     vector = process_review_text(text)
     return vector
 
-# Main function
+
+# # Main function
 # if __name__ == "__main__":
 #     vector = generate_vector(
 #         """

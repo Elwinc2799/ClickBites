@@ -4,6 +4,9 @@ import json
 from user.models import User
 from bson.objectid import ObjectId
 import jwt
+from werkzeug.utils import secure_filename
+import os
+import base64
 
 
 # Create a Flask blueprint for user related routes
@@ -18,11 +21,34 @@ db_business = Database.get_instance().get_db("business")
 @user_bp.route("/api/signup", methods=["POST"])
 def signUp():
     try:
-        # get user object from response form
-        user = User().get()
+        # Extract user details and image
+        user = json.loads(request.form.get('user'))
+        profile_pic = request.files.get('profile_pic')
 
         # TODO: Validate user input and create a new user in your database
         # ...
+
+        # Handle the image file
+        if profile_pic:
+            filename = secure_filename(profile_pic.filename)
+            profile_pic.save(filename)
+
+            # Now open the image file in binary mode
+            with open(filename, 'rb') as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+
+            # Add the encoded image to user_details
+            user['profile_pic'] = encoded_string
+
+            # Remove image file after reading it
+            os.remove(filename)
+
+        # initialize other necessary fields with 0/null
+        user["review_count"] = 0
+        user["average_stars"] = 0
+        user["favourite"] = None
+        user["history"] = None
+        user["vector"] = [0] * 5
 
         # search for user in database
         document = db_user.find_one({"email": user.get("email")})
@@ -169,8 +195,12 @@ def retrieveProfile(user_id):
                 business = db_business.find_one({"_id": ObjectId(review["business_id"])})
                 review["business_name"] = business["name"]
                 review["business_city"] = business["city"]
-
+            
             document["reviews"] = reviews
+            
+            # Include profile picture in the document
+            document["profile_pic"] = document.get("profile_pic", "")
+
             # Serialize the retrieved document to a JSON string
             user = json.dumps(document, default=str)
 

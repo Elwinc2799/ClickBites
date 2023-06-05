@@ -2,7 +2,7 @@ import json
 from pymongo import MongoClient, InsertOne
 
 client = MongoClient("mongodb+srv://windev:windev@cluster0.mkcvmve.mongodb.net/")
-db = client.ckbt_db2
+db = client.ckbt_db3
 
 # List of collections and corresponding file paths
 collections_files = [
