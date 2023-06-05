@@ -29,29 +29,30 @@ export default function ReviewCard({ review, isUser }: ReviewCardProps) {
     ));
 
     return (
-        <div className="p-4 my-2 bg-white shadow-md rounded-lg">
-            <div className="flex items-center justify-between">
-                <div className="w-4/5">
-                    <h3 className="text-lg text-justify font-medium">
-                        {review.text}
-                    </h3>
-                </div>
-                <p className="text-lg font-medium text-yellow-500">
-                    {stars}
-                    {emptyStars}
-                </p>
+        <div className="h-full p-4 my-2 bg-white shadow-md rounded-lg flex flex-row justify-between items-start">
+            <div className="w-4/5">
+                <h3 className="text-lg text-justify font-medium">
+                    {review.text}
+                </h3>
             </div>
-            {isUser ? (
-                <p className="mt-2 text-end text-lg text-gray-800">
-                    {review.business_name}, {review.business_city}
-                </p>
-            ) : (
-                <p className="mt-2 text-end text-lg text-gray-800">
-                    {review.user_name}
-                </p>
-            )}
-
-            <p className="mt-2 text-end text-sm text-gray-500">{review.date}</p>
+            <div className="w-1/5 pl-5 h-full flex flex-col items-end justify-between">
+                <div className="flex flex-col items-end">
+                    {isUser ? (
+                        <p className="mt-2 text-lg text-gray-800 text-end">
+                            {review.business_name}, {review.business_city}
+                        </p>
+                    ) : (
+                        <p className="mt-2 text-lg text-gray-800 text-end">
+                            {review.user_name}
+                        </p>
+                    )}
+                    <p className="text-lg font-medium text-yellow-500">
+                        {stars}
+                        {emptyStars}
+                    </p>
+                </div>
+                <p className="mt-2 text-sm text-gray-500">{review.date}</p>
+            </div>
         </div>
     );
 }

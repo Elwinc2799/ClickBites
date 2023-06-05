@@ -12,12 +12,17 @@ function SignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
+    const [state, setState] = useState('');
+    const [city, setCity] = useState('');
+    const [profilePic, setProfilePic] = useState<File | null>(null);
     const [message, setMessage] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
+    
         if (password !== confirmPassword) {
             setMessage('Passwords do not match');
             toast('Passwords do not match', {
@@ -27,58 +32,75 @@ function SignUp() {
                 position: 'bottom-right',
             });
         } else {
-            console.log('password matched');
-        }
-
-        try {
-            const response = await axios.post(
-                process.env.API_URL + '/api/signup',
-                {
+            try {
+                const formData = new FormData();
+                formData.append('user', JSON.stringify({
                     name: name,
                     email: email,
                     password: password,
+                    address: address,
+                    phone: phone,
+                    state: state,
+                    city: city,
+                }));
+                if (profilePic) {
+                    formData.append('profile_pic', profilePic);
                 }
-            );
-            setMessage(response.data.message);
-            toast('Account created succesfully. Proceed to Log In.', {
-                hideProgressBar: true,
-                autoClose: 2000,
-                type: 'success',
-                position: 'bottom-right',
-            });
-            // Clear input boxes
-            setName('');
-            setEmail('');
-            setPassword('');
-            setConfirmPassword('');
-            router.push('/login');
-        } catch (error: any) {
-            if (error.response) {
-                const responseData = error.response.data;
-                setMessage(responseData.message);
-                toast(responseData.message, {
+    
+                const response = await axios.post(
+                    process.env.API_URL + '/api/signup',
+                    formData,
+                    { headers: { 'Content-Type': 'multipart/form-data' } }
+                );
+    
+                setMessage(response.data.message);
+                toast('Account created succesfully. Proceed to Log In.', {
                     hideProgressBar: true,
                     autoClose: 2000,
-                    type: 'error',
+                    type: 'success',
                     position: 'bottom-right',
                 });
-            } else {
-                setMessage('An unknown error occurred');
-                toast('An unknown error occured', {
-                    hideProgressBar: true,
-                    autoClose: 2000,
-                    type: 'error',
-                    position: 'bottom-right',
-                });
+    
+                // Clear input boxes
+                setName('');
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
+                setAddress('');
+                setPhone('');
+                setState('');
+                setCity('');
+                setProfilePic(null);
+    
+                router.push('/login');
+            } catch (error: any) {
+                if (error.response) {
+                    const responseData = error.response.data;
+                    setMessage(responseData.message);
+                    toast(responseData.message, {
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                        type: 'error',
+                        position: 'bottom-right',
+                    });
+                } else {
+                    setMessage('An unknown error occurred');
+                    toast('An unknown error occured', {
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                        type: 'error',
+                        position: 'bottom-right',
+                    });
+                }
             }
         }
-    };
+    };    
 
     return (
         <>
             <NavBar isLanding={false} />
             <Background color="bg-gray-100">
-                <div className="flex justify-center items-center h-[754px]">
+                <div className="pb-24 pt-40 flex flex-col justify-center items-center">
                     <div className="w-1/3">
                         <div className="flex justify-center items-center">
                             <h1 className="text-3xl font-bold text-gray-800">
@@ -140,6 +162,73 @@ function SignUp() {
                                                 event.target.value
                                             )
                                         }
+                                        className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex flex-col my-4">
+                                    <label htmlFor="phone">Phone Number:</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        id="phone"
+                                        value={phone}
+                                        onChange={(event) =>
+                                            setPhone(event.target.value)
+                                        }
+                                        className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex flex-col my-4">
+                                    <label htmlFor="address">Address:</label>
+                                    <input
+                                        type="text"
+                                        name="address"
+                                        id="address"
+                                        value={address}
+                                        onChange={(event) =>
+                                            setAddress(event.target.value)
+                                        }
+                                        className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex flex-col my-4">
+                                    <label htmlFor="city">City:</label>
+                                    <input
+                                        type="text"
+                                        name="city"
+                                        id="city"
+                                        value={city}
+                                        onChange={(event) =>
+                                            setCity(event.target.value)
+                                        }
+                                        className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex flex-col my-4">
+                                    <label htmlFor="state">State:</label>
+                                    <input
+                                        type="text"
+                                        name="state"
+                                        id="state"
+                                        value={state}
+                                        onChange={(event) =>
+                                            setState(event.target.value)
+                                        }
+                                        className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex flex-col my-4">
+                                    <label htmlFor="profile_pic">Profile Picture:</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        name="profile_pic"
+                                        id="profile_pic"
+                                        onChange={(event) => {
+                                            if (event.target.files && event.target.files[0]) {
+                                                setProfilePic(event.target.files[0]);
+                                            }
+                                        }}                   
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { getCookie } from 'cookies-next';
 import { useState } from 'react';
 import ReviewCard from '@/components/Review/ReviewCard';
+import RegisterUserModal from '@/components/UserDetails/RegisterUserModal';
 
 interface Review {
     _id: string;
@@ -19,6 +20,11 @@ interface Review {
     text: string;
     date: string;
 }
+declare global {
+    interface Window {
+        my_modal_1: HTMLDialogElement | null;
+    }
+}
 
 function Profile() {
     const [name, setName] = useState('');
@@ -28,6 +34,7 @@ function Profile() {
     const [state, setState] = useState('');
     const [reviewCount, setReviewCount] = useState(0);
     const [stars, setStars] = useState(0);
+    const [profilePic, setProfilePic] = useState('');
     const [reviews, setReviews] = useState<Review[]>([
         {
             _id: '',
@@ -79,6 +86,7 @@ function Profile() {
             setState(userData.state);
             setReviewCount(userData.review_count);
             setStars(userData.average_stars);
+            setProfilePic(userData.profile_pic);
 
             const newReviews = userData.reviews.map((userReview: Review) => ({
                 _id: userReview._id,
@@ -120,20 +128,35 @@ function Profile() {
                     <section className="relative py-16 bg-blueGray-200">
                         <div className="container mx-auto px-20">
                             <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg -mt-64">
+                                <div className="absolute right-2 top-4">
+                                    <RegisterUserModal
+                                        name={name}
+                                        email={email}
+                                        phone={phone}
+                                        address={address}
+                                        state={state}
+                                        profilePic={profilePic}
+                                    />
+                                </div>
                                 <div className="px-6">
                                     <div className="flex flex-wrap justify-center">
                                         <div className="w-full lg:w-3/12 px-4 lg:order-2 flex justify-center">
                                             <div className="absolute top left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                                 <Image
-                                                    alt="..."
-                                                    src="/images/avatar.png"
+                                                    alt="Profile picture"
+                                                    src={
+                                                        profilePic
+                                                            ? `data:image/jpeg;base64,${profilePic}`
+                                                            : '/images/blank-profilepic.png'
+                                                    }
                                                     width="0"
                                                     height="0"
                                                     sizes="100vw"
-                                                    className="w-44 rounded-full border-none shadow-xl"
+                                                    className="w-44 h-44 object-cover rounded-full border-none shadow-xl"
                                                 />
                                             </div>
                                         </div>
+
                                         <div className="flex w-4/12 px-4 order-4 text-right self-center justify-between">
                                             <div className="mr-4 p-3 text-center">
                                                 <span className="text-xl font-bold block tracking-wide text-gray-900">
@@ -159,13 +182,6 @@ function Profile() {
                                                     Average Stars
                                                 </span>
                                             </div>
-                                            {/* <div className="py-6 px-3 mt-32 sm:mt-0">
-                                                <button
-                                                    className="bg-blue-600 active:bg-blueGray-600 uppercase text-gray-100 font-bold hover:shadow-md shadow text-xs px-4 py-2 rounded outline-none focus:outline-none sm:mr-2 mb-1 ease-linear transition-all duration-150"
-                                                    type="button">
-                                                    Connect
-                                                </button>
-                                            </div> */}
                                         </div>
                                         <div className="px-4 order-1">
                                             <div className="flex justify-between py-4 lg:pt-4 pt-8">
@@ -196,29 +212,8 @@ function Profile() {
                                             <i className="fas fa-map-marker-alt mr-2 text-lg text-gray-900"></i>{' '}
                                             {address}
                                         </div>
-                                        {/* <div className="mb-2 text-blueGray-600">
-                                            <i className="fas fa-university mr-2 text-lg text-gray-900"></i>
-                                            Universiti Sains Malaysia
-                                        </div> */}
                                     </div>
-                                    {/* <div className="mt-10 py-10 border-t border-gray-300 text-center">
-                                        <div className="flex flex-wrap justify-center">
-                                            <div className="w-full lg:w-9/12 px-4">
-                                                <p className="mb-4 text-lg leading-relaxed text-gray-900">
-                                                    An artist of considerable
-                                                    range, Jenna the name taken
-                                                    by Melbourne-raised,
-                                                    Brooklyn-based Nick Murphy
-                                                    writes, performs and records
-                                                    all of his own music, giving
-                                                    it a warm, intimate feel
-                                                    with a solid groove
-                                                    structure. An artist of
-                                                    considerable range.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div> */}
+
                                     <div className="mt-10 py-10 border-t border-gray-300 text-center">
                                         <div className="flex flex-col items-center justify-center">
                                             <div className="w-full lg:w-9/12 px-4">
@@ -227,6 +222,13 @@ function Profile() {
                                                 </p>
                                             </div>
                                             <div className="w-full px-4">
+                                                {reviews.length === 0 && (
+                                                    <div className="flex flex-col items-center justify-center">
+                                                        <p className="mb-4 text-lg leading-relaxed text-gray-900">
+                                                            No reviews yet
+                                                        </p>
+                                                    </div>
+                                                )}
                                                 {reviews.map(
                                                     (review, index) => (
                                                         <ReviewCard
