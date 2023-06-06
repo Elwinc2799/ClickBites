@@ -17,13 +17,14 @@ db_user = Database.get_instance().get_db("user")
 db_review = Database.get_instance().get_db("review")
 db_business = Database.get_instance().get_db("business")
 
+
 # signup
 @user_bp.route("/api/signup", methods=["POST"])
 def signUp():
     try:
         # Extract user details and image
-        user = json.loads(request.form.get('user'))
-        profile_pic = request.files.get('profile_pic')
+        user = json.loads(request.form.get("user"))
+        profile_pic = request.files.get("profile_pic")
 
         # TODO: Validate user input and create a new user in your database
         # ...
@@ -34,11 +35,11 @@ def signUp():
             profile_pic.save(filename)
 
             # Now open the image file in binary mode
-            with open(filename, 'rb') as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            with open(filename, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
 
             # Add the encoded image to user_details
-            user['profile_pic'] = encoded_string
+            user["profile_pic"] = encoded_string
 
             # Remove image file after reading it
             os.remove(filename)
@@ -134,6 +135,38 @@ def login():
         )
 
 
+def decodeToken():
+    # get the token from the Authorization header
+    auth_header = request.headers.get("Authorization")
+    if auth_header is None:
+        return jsonify({"error": "Authorization header is missing"}), 401
+    try:
+        auth_token = auth_header.split(" ")[1]
+    except IndexError:
+        return jsonify({"error": "Invalid Authorization header format"}), 401
+
+    # the secret key used to sign the token
+    secret = "super-secret-key"
+
+    try:
+        # decode the token
+        decoded = jwt.decode(auth_token, secret, algorithms=["HS256"])
+
+        # the "sub" property contains the user ID
+        user_id = decoded["sub"]
+
+        # return the user ID as a JSON response
+        return str(user_id)
+
+    except jwt.ExpiredSignatureError:
+        # handle the case where the token has expired
+        print("Token has expired")
+
+    except jwt.InvalidTokenError:
+        # handle the case where the token is invalid
+        print("Invalid token")
+
+
 # retrieve user_id from token
 @user_bp.route("/api/getUserId", methods=["GET"])
 def getUserId():
@@ -168,6 +201,36 @@ def getUserId():
         return jsonify({"error": "Invalid token"}), 401
 
 
+# retrieve hasBusiness boolean flag
+@user_bp.route("/api/getHasBusinessFlag", methods=["GET"])
+def getHasBusinessFlag():
+    # get user_id from token
+    user_id = decodeToken()
+
+    # search for user in database
+    user = db_user.find_one({"_id": ObjectId(decodeToken())})
+
+    # check if user exists
+    if user is None:
+        
+        return Response(
+            response=json.dumps(
+                {
+                    "message": "The user data was not found in the database",
+                }
+            ),
+            status=404,
+            mimetype="application/json",
+        )
+    else:
+        # Return a JSON message with a 200 OK status code and JSON mimetype
+        return Response(
+            response=json.dumps({"has_business": user["has_business"]}),
+            status=200,
+            mimetype="application/json",
+        )
+
+
 # retrieve user profile
 @user_bp.route("/api/profile/<string:user_id>", methods=["GET"])
 def retrieveProfile(user_id):
@@ -195,9 +258,9 @@ def retrieveProfile(user_id):
                 business = db_business.find_one({"_id": ObjectId(review["business_id"])})
                 review["business_name"] = business["name"]
                 review["business_city"] = business["city"]
-            
+
             document["reviews"] = reviews
-            
+
             # Include profile picture in the document
             document["profile_pic"] = document.get("profile_pic", "")
 
@@ -229,7 +292,23 @@ def retrieveProfile(user_id):
 def updateProfile(user_id):
     try:
         # get user object from response form
-        updated_info = User().get()
+        updated_info = json.loads(request.form.get("user"))
+        profile_pic = request.files.get("profile_pic")
+
+        # Handle the image file
+        if profile_pic:
+            filename = secure_filename(profile_pic.filename)
+            profile_pic.save(filename)
+
+            # Now open the image file in binary mode
+            with open(filename, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+
+            # Add the encoded image to user_details
+            updated_info["profile_pic"] = encoded_string
+
+            # Remove image file after reading it
+            os.remove(filename)
 
         # search for user in database
         user = db_user.find_one({"_id": ObjectId(user_id)})
@@ -274,4 +353,3 @@ def updateProfile(user_id):
             status=500,
             mimetype="application/json",
         )
-    

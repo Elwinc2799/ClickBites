@@ -27,11 +27,13 @@ declare global {
 }
 
 function Profile() {
+    const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [state, setState] = useState('');
+    const [city, setCity] = useState('');
     const [reviewCount, setReviewCount] = useState(0);
     const [stars, setStars] = useState(0);
     const [profilePic, setProfilePic] = useState('');
@@ -77,6 +79,8 @@ function Profile() {
 
         const fetchDataAndUserData = async () => {
             const userId = await fetchData();
+            setId(userId);
+
             const userData = await fetchUserData(userId);
 
             setName(userData.name);
@@ -84,6 +88,7 @@ function Profile() {
             setPhone(userData.phone);
             setAddress(userData.address);
             setState(userData.state);
+            setCity(userData.city);
             setReviewCount(userData.review_count);
             setStars(userData.average_stars);
             setProfilePic(userData.profile_pic);
@@ -130,11 +135,12 @@ function Profile() {
                             <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg -mt-64">
                                 <div className="absolute right-2 top-4">
                                     <RegisterUserModal
+                                        id={id}
                                         name={name}
-                                        email={email}
                                         phone={phone}
                                         address={address}
                                         state={state}
+                                        city={city}
                                         profilePic={profilePic}
                                     />
                                 </div>
@@ -147,7 +153,7 @@ function Profile() {
                                                     src={
                                                         profilePic
                                                             ? `data:image/jpeg;base64,${profilePic}`
-                                                            : '/images/blank-profilepic.png'
+                                                            : '/images/blank-profilepic.jpg'
                                                     }
                                                     width="0"
                                                     height="0"
@@ -160,10 +166,10 @@ function Profile() {
                                         <div className="flex w-4/12 px-4 order-4 text-right self-center justify-between">
                                             <div className="mr-4 p-3 text-center">
                                                 <span className="text-xl font-bold block tracking-wide text-gray-900">
-                                                    {state}
+                                                    {city}
                                                 </span>
                                                 <span className="text-sm text-gray-900">
-                                                    State
+                                                    City
                                                 </span>
                                             </div>
                                             <div className="mr-4 p-3 text-center">
@@ -210,7 +216,7 @@ function Profile() {
                                         </h3>
                                         <div className="text-lg leading-normal mt-0 mb-2 text-gray-900 font-bold uppercase">
                                             <i className="fas fa-map-marker-alt mr-2 text-lg text-gray-900"></i>{' '}
-                                            {address}
+                                            {address}, {state}
                                         </div>
                                     </div>
 

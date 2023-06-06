@@ -1,47 +1,104 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import {useRouter} from 'next/router';
 
 interface User {
+    id: string;
     name: string;
-    email: string;
     phone: string;
     address: string;
     state: string;
+    city: string
     profilePic: string;
 }
 
 function RegisterUserModal(user: User) {
     const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [state, setState] = useState('');
-    const [profilePic, setProfilePic] = useState(user.profilePic || '');
+    const [city, setCity] = useState('');
+    const [profilePic, setProfilePic] = useState<File | null>(null);
+    const router = useRouter();
 
     const [modalVisible, setModalVisible] = useState(false);
 
     const openModal = () => setModalVisible(true);
     const closeModal = () => setModalVisible(false);
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // TODO: Handle the update operation here.
-        closeModal();
-    };
+    
+        try {
+            const formData = new FormData();
+            const data = {}
+            
 
-    const handleProfilePictureChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        if (event.target.files && event.target.files[0]) {
-            const reader = new FileReader();
+            formData.append('user', JSON.stringify({
+                name: name || user.name,
+                address: address || user.address,
+                phone: phone || user.phone,
+                state: state || user.state,
+                city: city || user.city,
+            }));
 
-            reader.onloadend = () => {
-                setProfilePic(reader.result as string);
-            };
+            if (profilePic) {
+                formData.append('profile_pic', profilePic || user.profilePic);
+            }
 
-            reader.readAsDataURL(event.target.files[0]);
+            console.log(formData)
+
+            const response = await axios.put(
+                process.env.API_URL + '/api/profile/' + user.id,
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+            
+            // Display success message
+            if (response.status === 200){
+                toast('User information updated succesfully', {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'success',
+                    position: 'bottom-right',
+                });
+            }
+
+            // Clear input boxes
+            setName('');
+            setAddress('');
+            setPhone('');
+            setState('');
+            setCity('');
+            setProfilePic(null);
+
+            setTimeout(() => {
+                router.reload();
+            }
+            , 2100);
+        } catch (error: any) {
+            if (error.response) {
+                const responseData = error.response.data;
+                toast(responseData.message, {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'error',
+                    position: 'bottom-right',
+                });
+            } else {
+                toast('An unknown error occured', {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'error',
+                    position: 'bottom-right',
+                });
+            }
         }
-    };
+        
+    };    
 
     return (
         <>
@@ -72,8 +129,8 @@ function RegisterUserModal(user: User) {
                                     <Image
                                         alt="Profile picture"
                                         src={
-                                            profilePic
-                                                ? `data:image/jpeg;base64,${profilePic}`
+                                            user.profilePic
+                                                ? `data:image/jpeg;base64,${user.profilePic}`
                                                 : '/images/blank-profilepic.png'
                                         }
                                         width="0"
@@ -82,12 +139,22 @@ function RegisterUserModal(user: User) {
                                         className="w-44 h-44 object-cover rounded-full border-none shadow-xl"
                                     />
                                 </div>
-                                <label className="absolute bottom-0 right-40 border border-gray-500 bg-gray-100 text-gray-500 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer">
+                                <label
+                                    className="absolute bottom-0 right-40 border border-gray-500 bg-gray-100 text-gray-500 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer">
                                     <input
                                         className="hidden"
                                         type="file"
                                         accept="image/*"
-                                        onChange={handleProfilePictureChange}
+                                        onChange={(event) => {
+                                            if (
+                                                event.target.files &&
+                                                event.target.files[0]
+                                            ) {
+                                                setProfilePic(
+                                                    event.target.files[0]
+                                                );
+                                            }
+                                        }}
                                     />
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -106,37 +173,37 @@ function RegisterUserModal(user: User) {
                             <input
                                 className="input input-bordered w-full mb-5"
                                 type="text"
-                                placeholder="Name"
-                                value={user.name}
+                                placeholder={user.name}
+                                value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
                             <input
                                 className="input input-bordered w-full mb-5"
-                                type="email"
-                                placeholder="Email"
-                                value={user.email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <input
-                                className="input input-bordered w-full mb-5"
                                 type="text"
-                                placeholder="Phone"
-                                value={user.phone}
+                                placeholder={user.phone}
+                                value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                             />
                             <input
                                 className="input input-bordered w-full mb-5"
                                 type="text"
-                                placeholder="Address"
-                                value={user.address}
+                                placeholder={user.address}
+                                value={address}
                                 onChange={(e) => setAddress(e.target.value)}
                             />
                             <input
                                 className="input input-bordered w-full mb-5"
                                 type="text"
-                                placeholder="State"
-                                value={user.state}
+                                placeholder={user.state}
+                                value={state}
                                 onChange={(e) => setState(e.target.value)}
+                            />
+                            <input
+                                className="input input-bordered w-full mb-5"
+                                type="text"
+                                placeholder={user.city}
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
                             />
                             <div className="modal-action justify-between">
                                 <button

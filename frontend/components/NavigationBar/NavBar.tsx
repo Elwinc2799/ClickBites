@@ -5,6 +5,7 @@ import { deleteCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
+import UseHasBusinessStatus from '../utils/UseHasBusinessStatus';
 
 interface Props {
     isLanding: boolean;
@@ -14,6 +15,8 @@ function NavBar(props: Props) {
     const [color, setColor] = useState('transparent');
     const [textColor, setTextColor] = useState('white');
     const [borderColor, setBorderColor] = useState('transparent');
+    const businessStatus = UseHasBusinessStatus();
+
     const router = useRouter();
 
     const [status, setStatus] = useState(false);
@@ -23,7 +26,7 @@ function NavBar(props: Props) {
             const changeColor = () => {
                 if (window.scrollY >= 90) {
                     setColor('#f7fafc');
-                    setTextColor('#1a202c');        
+                    setTextColor('#1a202c');
                 } else {
                     setColor('transparent');
                     setTextColor('#f7fafc');
@@ -33,7 +36,7 @@ function NavBar(props: Props) {
         } else {
             setColor('#f7fafc');
             setTextColor('#1a202c');
-            setBorderColor('#e2e8f0')      
+            setBorderColor('#e2e8f0');
         }
     }, [props.isLanding]);
 
@@ -62,6 +65,19 @@ function NavBar(props: Props) {
                     <ul
                         style={{ color: `${textColor}` }}
                         className="flex flex-row">
+                        <li className="p-4">
+                            {businessStatus == null ? (
+                                <div></div>
+                            ): businessStatus ? (
+                                <Link href="/dashboard">Dashboard</Link>
+                            ) : (
+                                <Link
+                                    className="bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
+                                    href="/registerbusiness">
+                                    Register a business
+                                </Link>
+                            )}
+                        </li>
                         <li className="p-4">
                             <Link href="/profile">Profile</Link>
                         </li>
@@ -99,7 +115,10 @@ function NavBar(props: Props) {
                     </ul>
                 )}
             </div>
-            <hr className="border-1 w-full"  style={{ borderBlockColor: `${borderColor}` }}/>
+            <hr
+                className="border-1 w-full"
+                style={{ borderBlockColor: `${borderColor}` }}
+            />
         </div>
     );
 }
