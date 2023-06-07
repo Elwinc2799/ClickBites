@@ -182,7 +182,7 @@ function Profile() {
                                             </div>
                                             <div className="mr-4 p-3 text-center">
                                                 <span className="text-xl font-bold block uppercase tracking-wide text-gray-900">
-                                                    {stars}
+                                                    {Number(stars.toFixed(2))}
                                                 </span>
                                                 <span className="text-sm text-gray-900">
                                                     Average Stars

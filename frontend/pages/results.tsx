@@ -31,6 +31,7 @@ interface Business {
     };
     description: string;
     view_count: number;
+    business_pic: string;
 }
 
 function Results() {
@@ -61,6 +62,7 @@ function Results() {
             },
             description: '',
             view_count: 0,
+            business_pic: '',
         },
     ]);
 
@@ -92,6 +94,7 @@ function Results() {
                 hours: business.hours,
                 description: business.description,
                 view_count: business.view_count,
+                business_pic: business.business_pic,
             }));
 
             setBusinesses(newBusinessData);

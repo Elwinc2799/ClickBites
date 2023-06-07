@@ -11,6 +11,7 @@ interface Business {
     view_count: number;
     review_count: number;
     stars: number;
+    business_pic: string;
 }
 
 interface ResultCardProps {
@@ -30,7 +31,7 @@ function ResultCard({ business, index}: ResultCardProps) {
                     <div className="card card-side bg-base-100 shadow-sm w-full">
                         <figure className='w-96'>
                             <Image
-                                src={`/images/${business._id}.jpg`}
+                                src={`data:image/jpeg;base64,${business.business_pic}`}
                                 alt="Business Image"
                                 width={0}
                                 height={0}
@@ -84,7 +85,7 @@ function ResultCard({ business, index}: ResultCardProps) {
                                             Rating
                                         </div>
                                         <div className="stat-value text-center">
-                                            {business.stars}
+                                            {Number(business.stars.toFixed(1))}
                                         </div>
                                     </div>
                                 </div>

@@ -36,6 +36,7 @@ interface Business {
     };
     description: string;
     view_count: number;
+    business_pic: string;
     reviews: {
         _id: string;
         user_id: string;
@@ -49,7 +50,6 @@ interface Business {
 
 function Business(props: { business: Business }) {
     const { business } = props;
-    const imageUrl = `/images/${business._id}.jpg`;
     const [showForm, setShowForm] = useState(false);
 
     const handleClick = () => {
@@ -62,7 +62,7 @@ function Business(props: { business: Business }) {
             <Background color="bg-gray-100">
                 <div className="px-44 py-24 flex flex-col w-full justify-start items-center">
                     <Image
-                        src={imageUrl}
+                        src={`data:image/jpeg;base64,${business.business_pic}`}
                         alt="restaurant image"
                         width={0}
                         height={0}
@@ -125,7 +125,7 @@ function Business(props: { business: Business }) {
                                                     Rating
                                                 </div>
                                                 <div className="stat-value text-center">
-                                                    {business.stars}
+                                                    {Number(business.stars.toFixed(2))}
                                                 </div>
                                             </div>
                                         </div>

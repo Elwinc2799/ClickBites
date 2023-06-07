@@ -1,9 +1,274 @@
-import React from 'react'
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import NavBar from '@/components/NavigationBar/NavBar';
+import { Background } from '@/components/Background/Background';
+import Footer from '@/components/Layout/Footer';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+import { getCookie } from 'cookies-next';
 
-function registerbusiness() {
-  return (
-    <div>registerbusiness</div>
-  )
+interface Business {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    categories: string;
+    description: string;
+    hours: Record<string, string>;
 }
 
-export default registerbusiness
+function RegisterBusiness() {
+    const initialBusinessState: Business = {
+        name: '',
+        address: '',
+        city: '',
+        state: '',
+        categories: '',
+        description: '',
+        hours: {
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+    };
+
+    const [business, setBusiness] = useState<Business>(initialBusinessState);
+    const [businessPic, setBusinessPic] = useState<File | null>(null);
+    const router = useRouter();
+
+    const handleInputChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target;
+        setBusiness({ ...business, [name]: value });
+    };
+
+    const handleHoursChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setBusiness({
+            ...business,
+            hours: { ...business.hours, [name]: value },
+        });
+    };
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('business', JSON.stringify(business));
+
+        if (businessPic) {
+            formData.append('business_pic', businessPic);
+        }
+
+        try {
+            const response = await axios.post(
+                process.env.API_URL + '/api/business',
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${getCookie('token')}`,
+                    },
+                    withCredentials: true,
+                }
+            );
+
+            toast('Business created succesfully. ', {
+                hideProgressBar: true,
+                autoClose: 2000,
+                type: 'success',
+                position: 'bottom-right',
+            });
+
+            // Clear form after submission
+            setBusiness(initialBusinessState);
+            setBusinessPic(null);
+
+            router.push('/dashboard');
+        } catch (error : any) {
+            if (error.response) {
+                const responseData = error.response.data;
+                toast(responseData.message, {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'error',
+                    position: 'bottom-right',
+                });
+            } else {
+                toast('An unknown error occured', {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'error',
+                    position: 'bottom-right',
+                });
+            }
+        }
+    };
+
+    return (
+        <>
+            <NavBar isLanding={false} />
+            <Background color="bg-gray-100">
+                <div className="pb-24 pt-40 flex flex-col justify-center items-center">
+                    <div className="w-full px-20">
+                        <div className="flex justify-center items-center">
+                            <h1 className="text-3xl font-bold text-gray-800">
+                                Register Business
+                            </h1>
+                        </div>
+                        <div className="flex justify-center items-center">
+                            <form className="w-full" onSubmit={handleSubmit}>
+                                <div className="flex flex-row">
+                                    <div className="flex flex-col my-4 w-1/2">
+                                        <label htmlFor="name">
+                                            Business Name:
+                                        </label>
+                                        <input
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            className="mb-4 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
+                                            placeholder="Name"
+                                            value={business.name}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label htmlFor="address">
+                                            Address:
+                                        </label>
+                                        <input
+                                            id="address"
+                                            name="address"
+                                            type="text"
+                                            className="mb-4 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
+                                            placeholder="Address"
+                                            value={business.address}
+                                            onChange={handleInputChange}
+                                        />
+                                        <div className="flex flex-row mb-4 justify-between">
+                                            <div className="flex flex-col w-1/2 pr-4">
+                                                <label htmlFor="city">
+                                                    City:
+                                                </label>
+                                                <input
+                                                    id="city"
+                                                    name="city"
+                                                    type="text"
+                                                    className="border-2 border-gray-300 p-2 rounded-md focus:outline-none w-full"
+                                                    placeholder="City"
+                                                    value={business.city}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </div>
+                                            <div className="flex flex-col w-1/2 pr-4">
+                                                <label htmlFor="state">
+                                                    State:
+                                                </label>
+                                                <input
+                                                    id="state"
+                                                    name="state"
+                                                    type="text"
+                                                    className="border-2 border-gray-300 p-2 rounded-md focus:outline-none w-full"
+                                                    placeholder="State"
+                                                    value={business.state}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <label htmlFor="categories">
+                                            Categories:
+                                        </label>
+                                        <input
+                                            id="categories"
+                                            name="categories"
+                                            type="text"
+                                            className="mb-4 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
+                                            placeholder="Categories"
+                                            value={business.categories}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label htmlFor="description">
+                                            Description:
+                                        </label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            className="mb-4 h-40 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
+                                            placeholder="Description"
+                                            value={business.description}
+                                            onChange={handleInputChange}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col my-4 w-1/2">
+                                        <div className="flex flex-wrap justify-between">
+                                            {Object.keys(business.hours).map(
+                                                (day) => (
+                                                    <div
+                                                        key={day}
+                                                        className="flex flex-col mb-4 w-1/3 pr-4">
+                                                        <label
+                                                            htmlFor={
+                                                                day
+                                                            }>{`${day} Hours:`}</label>
+                                                        <input
+                                                            id={day}
+                                                            name={day}
+                                                            type="text"
+                                                            className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
+                                                            placeholder="00:00-23:59"
+                                                            value={
+                                                                business.hours[
+                                                                    day
+                                                                ]
+                                                            }
+                                                            onChange={
+                                                                handleHoursChange
+                                                            }
+                                                        />
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                        <label htmlFor="image">Image:</label>
+                                        <input
+                                            id="image"
+                                            name="image"
+                                            type="file"
+                                            accept="image/*"
+                                            className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
+                                            onChange={(event) => {
+                                                if (
+                                                    event.target.files &&
+                                                    event.target.files[0]
+                                                ) {
+                                                    setBusinessPic(
+                                                        event.target.files[0]
+                                                    );
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-row justify-end items-center">
+                                    <button
+                                        type="submit"
+                                        className="btn bg-blue-500 hover:bg-blue-700 text-white rounded-md">
+                                        Register
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </Background>
+            <Footer />
+        </>
+    );
+}
+
+export default RegisterBusiness;

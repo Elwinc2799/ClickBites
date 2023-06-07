@@ -3,7 +3,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
+import { getCookie } from 'cookies-next';
 
 interface User {
     id: string;
@@ -11,7 +12,7 @@ interface User {
     phone: string;
     address: string;
     state: string;
-    city: string
+    city: string;
     profilePic: string;
 }
 
@@ -31,34 +32,40 @@ function RegisterUserModal(user: User) {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-    
+
         try {
             const formData = new FormData();
-            const data = {}
-            
 
-            formData.append('user', JSON.stringify({
-                name: name || user.name,
-                address: address || user.address,
-                phone: phone || user.phone,
-                state: state || user.state,
-                city: city || user.city,
-            }));
+            formData.append(
+                'user',
+                JSON.stringify({
+                    name: name || user.name,
+                    address: address || user.address,
+                    phone: phone || user.phone,
+                    state: state || user.state,
+                    city: city || user.city,
+                })
+            );
 
             if (profilePic) {
                 formData.append('profile_pic', profilePic || user.profilePic);
             }
 
-            console.log(formData)
+            console.log(formData);
 
             const response = await axios.put(
                 process.env.API_URL + '/api/profile/' + user.id,
                 formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
+                {
+                    headers: {
+                        Authorization: `Bearer ${getCookie('token')}`,
+                    },
+                    withCredentials: true,
+                }
             );
-            
+
             // Display success message
-            if (response.status === 200){
+            if (response.status === 200) {
                 toast('User information updated succesfully', {
                     hideProgressBar: true,
                     autoClose: 2000,
@@ -77,8 +84,7 @@ function RegisterUserModal(user: User) {
 
             setTimeout(() => {
                 router.reload();
-            }
-            , 2100);
+            }, 2100);
         } catch (error: any) {
             if (error.response) {
                 const responseData = error.response.data;
@@ -97,8 +103,7 @@ function RegisterUserModal(user: User) {
                 });
             }
         }
-        
-    };    
+    };
 
     return (
         <>
@@ -139,8 +144,7 @@ function RegisterUserModal(user: User) {
                                         className="w-44 h-44 object-cover rounded-full border-none shadow-xl"
                                     />
                                 </div>
-                                <label
-                                    className="absolute bottom-0 right-40 border border-gray-500 bg-gray-100 text-gray-500 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer">
+                                <label className="absolute bottom-0 right-40 border border-gray-500 bg-gray-100 text-gray-500 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer">
                                     <input
                                         className="hidden"
                                         type="file"
