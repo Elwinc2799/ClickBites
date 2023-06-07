@@ -74,7 +74,7 @@ function NavBar(props: Props) {
                                 <Link
                                     className="bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
                                     href="/registerbusiness">
-                                    Register a business
+                                    Register a Business
                                 </Link>
                             )}
                         </li>
