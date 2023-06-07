@@ -17,7 +17,7 @@ interface Props {
 
 function HoursTable(props : Props) {
     return (
-        <table className="w-full border border-gray-200">
+        <table className="w-1/4 border border-gray-200">
             <thead>
                 <tr className="bg-gray-100">
                     <th className="px-4 py-2">Day</th>

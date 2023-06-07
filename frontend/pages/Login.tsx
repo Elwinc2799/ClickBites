@@ -11,7 +11,6 @@ import { setCookie } from 'cookies-next';
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -27,7 +26,6 @@ function Login() {
                     password: password,
                 }
             );
-            setMessage(response.data.message);
             setCookie('token', response.data?.access_token, {
                 expires: expiryDate,
                 path: '/', // recommended to set the path to '/' to make the cookie accessible to all pages
@@ -50,7 +48,6 @@ function Login() {
         } catch (error: any) {
             if (error.response) {
                 const responseData = error.response.data;
-                setMessage(responseData.message);
                 toast(responseData.message, {
                     hideProgressBar: true,
                     autoClose: 2000,
@@ -58,7 +55,6 @@ function Login() {
                     position: 'bottom-right',
                 });
             } else {
-                setMessage('An unknown error occurred');
                 toast('An unknown error occured', {
                     hideProgressBar: true,
                     autoClose: 2000,

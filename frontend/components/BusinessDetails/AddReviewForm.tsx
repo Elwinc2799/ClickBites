@@ -125,14 +125,14 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
                     <label htmlFor="text" className="block font-medium mb-1">
                         Review
                     </label>
-                    <input
+                    <textarea
                         name="text"
                         id="text"
                         placeholder='Write your review here...'
                         value={review.text}
                         onChange={handleChange}
                         required
-                        className="input w-full input-bordered mb-5 "
+                        className="textarea textarea-bordered w-full mb-5 "
                     />
                     <div className="modal-action justify-between">
                         <button

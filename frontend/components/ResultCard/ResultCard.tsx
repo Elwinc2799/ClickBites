@@ -12,6 +12,7 @@ interface Business {
     review_count: number;
     stars: number;
     business_pic: string;
+    vector: number[];
 }
 
 interface ResultCardProps {
@@ -19,7 +20,30 @@ interface ResultCardProps {
     index: number;
 }
 
-function ResultCard({ business, index}: ResultCardProps) {
+function ResultCard({ business, index }: ResultCardProps) {
+    // cast business vector scores to a list with text and scores and convert scores to string
+    const vectorScores = [
+        {
+            text: 'Food',
+            score: (business.vector[0] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Serv.',
+            score: (business.vector[1] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Price',
+            score: (business.vector[2] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Ambi.',
+            score: (business.vector[3] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Misc.',
+            score: (business.vector[4] * 100).toFixed(2).toString(),
+        },
+    ];
 
     return (
         <>
@@ -29,7 +53,7 @@ function ResultCard({ business, index}: ResultCardProps) {
                     type="submit"
                     className="px-10 py-5 w-[700px] overflow-wrap height-auto transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
                     <div className="card card-side bg-base-100 shadow-sm w-full">
-                        <figure className='w-96'>
+                        <figure className="w-96">
                             <Image
                                 src={`data:image/jpeg;base64,${business.business_pic}`}
                                 alt="Business Image"
@@ -53,12 +77,12 @@ function ResultCard({ business, index}: ResultCardProps) {
                                     .map((category, index) => (
                                         <span
                                             key={index}
-                                            className="badge badge-primary mr-3 text-center h-full">
+                                            className="badge bg-blue-500 text-[#f7fafc] mr-3 text-center h-full">
                                             {category}
                                         </span>
                                     ))}
                             </div>
-                            <div className="w-full flex flex-row justify-evenly items-start">
+                            <div className="w-full flex flex-row justify-evenly items-start mb-4">
                                 <div className="stats shadow mx-2">
                                     <div className="stat">
                                         <div className="stat-title text-center">
@@ -89,6 +113,32 @@ function ResultCard({ business, index}: ResultCardProps) {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="w-full flex flex-row justify-between">
+                                {vectorScores.map((value, index) => (
+                                    <div
+                                        key={index}
+                                        className={`border-4 border-gray-200 mx-2 text-xs radial-progress  ${
+                                            // if score is less than 0, make text red, else make text green
+                                            parseFloat(value.score) < 0
+                                                ? 'text-red-500'
+                                                : 'text-green-500'
+                                        }`}
+                                        style={
+                                            {
+                                                '--value':
+                                                    parseFloat(value.score) < 0
+                                                        ? (-parseFloat(
+                                                              value.score
+                                                          )).toString()
+                                                        : value.score,
+                                                '--size': '3rem',
+                                                '--thickness': '0.3rem',
+                                            } as React.CSSProperties
+                                        }>
+                                        {value.text}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

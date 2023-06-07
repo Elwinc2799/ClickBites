@@ -17,7 +17,13 @@ function useHasBusinessStatus() {
                         withCredentials: true,
                     }
                 );
-                setHasBusiness(res.data.has_business);
+                if (res.status !== 200) {
+                    setHasBusiness(false);
+                }
+                else {
+                    setHasBusiness(res.data.has_business);
+                }
+                
             } catch (error) {
                 console.log(error);
                 setHasBusiness(false);

@@ -55,7 +55,7 @@ function SearchBox() {
             </div>
             <button
                 type="submit"
-                className="btn bg-blue-500 hover:bg-blue-700 text-white mx-4 rounded-md border-none">
+                className="btn bg-blue-500 hover:bg-blue-700 text-[#f7fafc] mx-4 rounded-md border-none">
                 <svg
                     aria-hidden="true"
                     className="w-5 h-5 mr-2 -ml-1"

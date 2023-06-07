@@ -30,71 +30,78 @@ def registerBusiness():
 
         user_id = decodeToken()
 
-        # search for user in database
-        user = db_user.find_one({"_id": ObjectId(user_id)})
+        if isinstance(user_id, str):
 
-        if user is None:
-            return Response(
-                response=json.dumps(
-                    {
-                        "message": "The user data was not found in the database",
-                    }
-                ),
-                status=404,
-                mimetype="application/json",
-            )
-        else:
-            # Update user has_business flag to True
-            db_user.update_one({"_id": ObjectId(user_id)}, {"$set": {"has_business": True}})
+            # search for user in database
+            user = db_user.find_one({"_id": ObjectId(user_id)})
 
-            # Handle the image file
-            if business_pic:
-                filename = secure_filename(business_pic.filename)
-                business_pic.save(filename)
-
-                # Now open the image file in binary mode
-                with open(filename, "rb") as image_file:
-                    encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-
-                # Add the encoded image to user_details
-                business["business_pic"] = encoded_string
-
-                # Remove image file after reading it
-                os.remove(filename)
-
-            # initialize other necessary fields with 0/null
-            business["latitude"] = 0
-            business["longitude"] = 0
-            business["stars"] = 0
-            business["review_count"] = 0
-            business["is_open"] = 0
-            business["view_count"] = 0
-            business["vector"] = [0] * 5
-
-            # search for business in database
-            document = db_business.find_one({"name": business.get("name")})
-
-            # check if business exists
-            if document is None:
-                # post business object to database
-                db_business.insert_one(business)
-
-                # Return a JSON message with a 200 OK status code and JSON mimetype
-                return Response(
-                    response=json.dumps({"message": "The business data was successfully posted to the database"}),
-                    status=200,
-                    mimetype="application/json",
-                )
-            else:
+            if user is None:
                 return Response(
                     response=json.dumps(
                         {
-                            "message": "The business data was not posted to the database because it already exists",
+                            "message": "The user data was not found in the database",
                         }
                     ),
                     status=404,
                     mimetype="application/json",
                 )
+            else:
+                # Handle the image file
+                if business_pic:
+                    filename = secure_filename(business_pic.filename)
+                    business_pic.save(filename)
+
+                    # Now open the image file in binary mode
+                    with open(filename, "rb") as image_file:
+                        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+
+                    # Add the encoded image to user_details
+                    business["business_pic"] = encoded_string
+
+                    # Remove image file after reading it
+                    os.remove(filename)
+
+                # initialize other necessary fields with 0/null
+                business["latitude"] = 0
+                business["longitude"] = 0
+                business["stars"] = 0
+                business["review_count"] = 0
+                business["is_open"] = 0
+                business["view_count"] = 0
+                business["vector"] = [0] * 5
+
+                # search for business in database
+                document = db_business.find_one({"name": business.get("name")})
+
+                # check if business exists
+                if document is None:
+                    # post business object to database
+                    db_business.insert_one(business)
+
+                    # get the inserted business id
+                    business_id = db_business.find_one({"name": business.get("name")})["_id"]
+
+                    # Update user has_business flag to True
+                    db_user.update_one({"_id": ObjectId(user_id)}, {"$set": {"has_business": True, "has_business_id": ObjectId(business_id)}})
+
+                    # Return a JSON message with a 200 OK status code and JSON mimetype
+                    return Response(
+                        response=json.dumps({"message": "The business data was successfully posted to the database"}),
+                        status=200,
+                        mimetype="application/json",
+                    )
+                else:
+                    return Response(
+                        response=json.dumps(
+                            {
+                                "message": "The business data was not posted to the database because it already exists",
+                            }
+                        ),
+                        status=404,
+                        mimetype="application/json",
+                    )
+        else:
+            return user_id
 
     except Exception as e:
         # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
@@ -146,23 +153,8 @@ def getAllBusinessesId():
 @business_bp.route("/api/results", methods=["GET"])
 def getSearchResults():
     try:
-        # get the token from the Authorization header
-        auth_header = request.headers.get("Authorization")
-        if auth_header is None:
-            return jsonify({"error": "Authorization header is missing"}), 401
-        try:
-            auth_token = auth_header.split(" ")[1]
-        except IndexError:
-            return jsonify({"error": "Invalid Authorization header format"}), 401
-
-        # the secret key used to sign the token
-        secret = "super-secret-key"
-
-        # decode the token
-        decoded = jwt.decode(auth_token, secret, algorithms=["HS256"])
-
-        # the "sub" property contains the user ID
-        user_id = decoded["sub"]
+        # Get user ID from token
+        user_id = decodeToken()
 
         search_query = request.args.get("search_query")
 
@@ -361,6 +353,74 @@ def deleteReview(business_id):
             mimetype="application/json",
         )
 
+
+# retrieve a dashboard details
+@business_bp.route("/api/dashboard", methods=["GET"])
+def getDashboardDetails():
+    try:
+        # get user id from token
+        user_id = decodeToken()
+
+        # retrieve owned business id from user database
+        user = db_user.find_one({"_id": ObjectId(user_id)})
+
+        if user["has_business"]:
+            # get business object from database
+            document = db_business.find_one({"_id": ObjectId(user["has_business_id"])})
+
+            # check if business exists
+            if document is None:
+                return Response(
+                    response=json.dumps(
+                        {
+                            "message": "The business data was not found in the database",
+                        }
+                    ),
+                    status=404,
+                    mimetype="application/json",
+                )
+            else:
+                # get all reviews for business
+                reviews = list(db_review.find({"business_id": ObjectId(user["has_business_id"])}))
+
+                for review in reviews:
+                    # get user name
+                    user = db_user.find_one({"_id": ObjectId(review["user_id"])})
+                    review["user_name"] = user["name"]
+
+                document["reviews"] = reviews
+
+                # Serialize the retrieved document to a JSON string
+                business = json.dumps(document, default=str)
+
+                # Return the JSON string with a 200 OK status code and JSON mimetype
+                return Response(
+                    response=business,
+                    status=200,
+                    mimetype="application/json",
+                )
+        else:
+            return Response(
+                response=json.dumps(
+                    {
+                        "message": "The user does not have a business",
+                    }
+                ),
+                status=404,
+                mimetype="application/json",
+            )
+        
+    except Exception as e:
+        # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
+        return Response(
+            response=json.dumps(
+                {
+                    "message": "An error occurred while retrieving business data from the database",
+                }
+            ),
+            status=500,
+            mimetype="application/json",
+        )
 
 # ************* Save retrieved data to a Business object ********************************
 # from business.models import Business

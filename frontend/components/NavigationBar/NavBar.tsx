@@ -6,16 +6,23 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
 import UseHasBusinessStatus from '../utils/UseHasBusinessStatus';
+import { getCookie } from 'cookies-next';
 
 interface Props {
     isLanding: boolean;
 }
+
+type VectorScore = {
+    text: string;
+    score: string;
+};
 
 function NavBar(props: Props) {
     const [color, setColor] = useState('transparent');
     const [textColor, setTextColor] = useState('white');
     const [borderColor, setBorderColor] = useState('transparent');
     const businessStatus = UseHasBusinessStatus();
+    const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
 
     const router = useRouter();
 
@@ -48,11 +55,61 @@ function NavBar(props: Props) {
         }
     }, [status]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await axios.get<{ userId: string }>(
+                process.env.API_URL + '/api/getUserId',
+                {
+                    headers: {
+                        Authorization: `Bearer ${getCookie('token')}`,
+                    },
+                    withCredentials: true,
+                }
+            );
+            return res.data.userId;
+        };
+
+        const fetchUserData = async (userId: string) => {
+            const res = await axios.get(
+                process.env.API_URL + '/api/profile/' + userId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${getCookie('token')}`,
+                    },
+                    withCredentials: true,
+                }
+            );
+            return res.data;
+        };
+
+        const fetchDataAndUserData = async () => {
+            const userId = await fetchData();
+
+            const userData = await fetchUserData(userId);
+
+            const newVectorText = ['Food', 'Pric.', 'Serv.', 'Ambi.', 'Misc.'];
+
+            // cast each userData.vector to a string
+            let newVector = userData.vector.map(
+                (value: number, index: number) => {
+                    return {
+                        text: newVectorText[index],
+                        score: (value * 100).toFixed(2).toString(),
+                    };
+                }
+            );
+
+            setVectorScores(newVector);
+        };
+
+        fetchDataAndUserData();
+    }, []);
+
     return (
         <div
             style={{ backgroundColor: `${color}` }}
             className="fixed left-0 top-0 w-full z-10 ease-in duration-300">
-            <div className="max-w-[1240px] m-auto flex justify-between items-center p-4 text-white">
+            <div className="max-w-[1240px] m-auto flex flex-row justify-between items-center p-4 text-white">
                 <Link href="/">
                     <h1
                         style={{ color: `${textColor}` }}
@@ -65,10 +122,38 @@ function NavBar(props: Props) {
                     <ul
                         style={{ color: `${textColor}` }}
                         className="flex flex-row">
+                        <li className='px-4'>
+                            <div className="flex flex-row">
+                                {vectorScores.map((value, index) => (
+                                    <div
+                                        key={index}
+                                        className={`bg-[#f7fafc] border-4 border-gray-200 mx-2 text-xs radial-progress  ${
+                                            // if score is less than 0, make text red, else make text green
+                                            parseFloat(value.score) < 0
+                                                ? 'text-red-500'
+                                                : 'text-orange-400'
+                                        }`}
+                                        style={
+                                            {
+                                                '--value':
+                                                    parseFloat(value.score) < 0
+                                                        ? (-parseFloat(
+                                                              value.score
+                                                          )).toString()
+                                                        : value.score,
+                                                '--size': '3rem',
+                                                '--thickness': '0.3rem',
+                                            } as React.CSSProperties
+                                        }>
+                                        {value.text}
+                                    </div>
+                                ))}
+                            </div>
+                        </li>
                         <li className="p-4">
                             {businessStatus == null ? (
                                 <div></div>
-                            ): businessStatus ? (
+                            ) : businessStatus ? (
                                 <Link href="/dashboard">Dashboard</Link>
                             ) : (
                                 <Link

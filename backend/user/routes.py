@@ -160,40 +160,6 @@ def decodeToken():
 
     except jwt.ExpiredSignatureError:
         # handle the case where the token has expired
-        print("Token has expired")
-
-    except jwt.InvalidTokenError:
-        # handle the case where the token is invalid
-        print("Invalid token")
-
-
-# retrieve user_id from token
-@user_bp.route("/api/getUserId", methods=["GET"])
-def getUserId():
-    # get the token from the Authorization header
-    auth_header = request.headers.get("Authorization")
-    if auth_header is None:
-        return jsonify({"error": "Authorization header is missing"}), 401
-    try:
-        auth_token = auth_header.split(" ")[1]
-    except IndexError:
-        return jsonify({"error": "Invalid Authorization header format"}), 401
-
-    # the secret key used to sign the token
-    secret = "super-secret-key"
-
-    try:
-        # decode the token
-        decoded = jwt.decode(auth_token, secret, algorithms=["HS256"])
-
-        # the "sub" property contains the user ID
-        user_id = decoded["sub"]
-
-        # return the user ID as a JSON response
-        return jsonify({"userId": user_id})
-
-    except jwt.ExpiredSignatureError:
-        # handle the case where the token has expired
         return jsonify({"error": "Token has expired"}), 401
 
     except jwt.InvalidTokenError:
@@ -201,32 +167,47 @@ def getUserId():
         return jsonify({"error": "Invalid token"}), 401
 
 
+# retrieve user_id from token
+@user_bp.route("/api/getUserId", methods=["GET"])
+def getUserId():
+    user_id = decodeToken()
+
+    if isinstance(user_id, str):
+        return jsonify({"userId": user_id})
+    else:
+        return user_id
+
+
 # retrieve hasBusiness boolean flag
 @user_bp.route("/api/getHasBusinessFlag", methods=["GET"])
 def getHasBusinessFlag():
+    # get user_id from token
+    user_id = decodeToken()
 
-    # search for user in database
-    user = db_user.find_one({"_id": ObjectId(decodeToken())})
+    if isinstance(user_id, str):
+        # search for user in database
+        user = db_user.find_one({"_id": ObjectId(decodeToken())})
 
-    # check if user exists
-    if user is None:
-        
-        return Response(
-            response=json.dumps(
-                {
-                    "message": "The user data was not found in the database",
-                }
-            ),
-            status=404,
-            mimetype="application/json",
-        )
+        # check if user exists
+        if user is None:
+            return Response(
+                response=json.dumps(
+                    {
+                        "message": "The user data was not found in the database",
+                    }
+                ),
+                status=404,
+                mimetype="application/json",
+            )
+        else:
+            # Return a JSON message with a 200 OK status code and JSON mimetype
+            return Response(
+                response=json.dumps({"has_business": user["has_business"]}),
+                status=200,
+                mimetype="application/json",
+            )
     else:
-        # Return a JSON message with a 200 OK status code and JSON mimetype
-        return Response(
-            response=json.dumps({"has_business": user["has_business"]}),
-            status=200,
-            mimetype="application/json",
-        )
+        return user_id
 
 
 # retrieve user profile
@@ -254,8 +235,9 @@ def retrieveProfile(user_id):
             for review in reviews:
                 # get business name
                 business = db_business.find_one({"_id": ObjectId(review["business_id"])})
-                review["business_name"] = business["name"]
-                review["business_city"] = business["city"]
+                if business is not None:
+                    review["business_name"] = business["name"]
+                    review["business_city"] = business["city"]
 
             document["reviews"] = reviews
 

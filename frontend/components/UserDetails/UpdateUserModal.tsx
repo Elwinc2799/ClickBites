@@ -16,7 +16,7 @@ interface User {
     profilePic: string;
 }
 
-function RegisterUserModal(user: User) {
+function UpdateUserModal(user: User) {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
@@ -230,4 +230,4 @@ function RegisterUserModal(user: User) {
     );
 }
 
-export default RegisterUserModal;
+export default UpdateUserModal;

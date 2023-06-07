@@ -36,6 +36,7 @@ interface Business {
     };
     description: string;
     view_count: number;
+    vector: number[];
     business_pic: string;
     reviews: {
         _id: string;
@@ -51,6 +52,30 @@ interface Business {
 function Business(props: { business: Business }) {
     const { business } = props;
     const [showForm, setShowForm] = useState(false);
+
+    // cast business vector scores to a list with text and scores and convert scores to string
+    const vectorScores = [
+        {
+            text: 'Food',
+            score: (business.vector[0] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Serv.',
+            score: (business.vector[1] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Price',
+            score: (business.vector[2] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Ambi.',
+            score: (business.vector[3] * 100).toFixed(2).toString(),
+        },
+        {
+            text: 'Misc.',
+            score: (business.vector[4] * 100).toFixed(2).toString(),
+        },
+    ];
 
     const handleClick = () => {
         setShowForm(true);
@@ -69,8 +94,8 @@ function Business(props: { business: Business }) {
                         sizes="(max-width: 640px) 640px, 100vw"
                         className="w-full h-96 object-cover rounded-tl-lg rounded-tr-lg"
                     />
-                    <div className="flex items-center justify-center">
-                        <div className="bg-white rounded-bl-lg rounded-br-lg p-6 shadow-lg">
+                    <div className="flex items-center justify-center w-full">
+                        <div className="bg-white rounded-bl-lg rounded-br-lg p-6 shadow-lg w-full">
                             <div className="flex flex-row justify-between items-start">
                                 <div>
                                     <h1 className="text-3xl font-bold">
@@ -125,7 +150,11 @@ function Business(props: { business: Business }) {
                                                     Rating
                                                 </div>
                                                 <div className="stat-value text-center">
-                                                    {Number(business.stars.toFixed(2))}
+                                                    {Number(
+                                                        business.stars.toFixed(
+                                                            2
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -133,8 +162,8 @@ function Business(props: { business: Business }) {
                                 </div>
                             </div>
 
-                            <div className="flex flex-row justify-between items-start">
-                                <div className="flex flex-col justify-start items-start mr-10">
+                            <div className="flex flex-row justify-between items-start w-full">
+                                <div className="flex flex-col justify-start items-start mr-10 w-full">
                                     <p className="text-gray-600 text-justify mb-5">
                                         {business.description}
                                     </p>
@@ -179,6 +208,36 @@ function Business(props: { business: Business }) {
                                 {business.hours && (
                                     <HoursTable business={business} />
                                 )}
+                            </div>
+                            <hr className="mt-9 mb-4 border-1 border-gray-300 w-full" />
+                            <h1 className="text-2xl font-bold leading-relaxed  text-gray-900">
+                                Aspect Analysis
+                            </h1>
+                            <div className="w-3/4 flex flex-row justify-between p-4">
+                                {vectorScores.map((value, index) => (
+                                    <div
+                                        key={index}
+                                        className={`border-4 border-gray-200 mx-2 text-xl radial-progress  ${
+                                            // if score is less than 0, make text red, else make text green
+                                            parseFloat(value.score) < 0
+                                                ? 'text-red-500'
+                                                : 'text-green-500'
+                                        }`}
+                                        style={
+                                            {
+                                                '--value':
+                                                    parseFloat(value.score) < 0
+                                                        ? (-parseFloat(
+                                                              value.score
+                                                          )).toString()
+                                                        : value.score,
+                                                '--size': '10rem',
+                                                '--thickness': '1rem',
+                                            } as React.CSSProperties
+                                        }>
+                                        {value.text}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
