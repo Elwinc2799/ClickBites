@@ -6,6 +6,10 @@ from business.models import Business
 import jwt
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+from werkzeug.utils import secure_filename
+import os
+import base64
+from user.routes import decodeToken
 
 # Create a Flask blueprint for business related routes
 business_bp = Blueprint("business", __name__)
@@ -20,33 +24,77 @@ db_user = Database.get_instance().get_db("user")
 @business_bp.route("/api/business", methods=["POST"])
 def registerBusiness():
     try:
-        # get business object from response form
-        business = Business().get()
+        # Extract business details and image
+        business = json.loads(request.form.get("business"))
+        business_pic = request.files.get("business_pic")
 
-        # search for business in database
-        document = db_business.find_one({"name": business.get("name")})
+        user_id = decodeToken()
 
-        # check if business exists
-        if document is None:
-            # post business object to database
-            db_business.insert_one(business)
+        # search for user in database
+        user = db_user.find_one({"_id": ObjectId(user_id)})
 
-            # Return a JSON message with a 200 OK status code and JSON mimetype
-            return Response(
-                response=json.dumps({"message": "The business data was successfully posted to the database"}),
-                status=200,
-                mimetype="application/json",
-            )
-        else:
+        if user is None:
             return Response(
                 response=json.dumps(
                     {
-                        "message": "The business data was not posted to the database because it already exists",
+                        "message": "The user data was not found in the database",
                     }
                 ),
                 status=404,
                 mimetype="application/json",
             )
+        else:
+            # Update user has_business flag to True
+            db_user.update_one({"_id": ObjectId(user_id)}, {"$set": {"has_business": True}})
+
+            # Handle the image file
+            if business_pic:
+                filename = secure_filename(business_pic.filename)
+                business_pic.save(filename)
+
+                # Now open the image file in binary mode
+                with open(filename, "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+
+                # Add the encoded image to user_details
+                business["business_pic"] = encoded_string
+
+                # Remove image file after reading it
+                os.remove(filename)
+
+            # initialize other necessary fields with 0/null
+            business["latitude"] = 0
+            business["longitude"] = 0
+            business["stars"] = 0
+            business["review_count"] = 0
+            business["is_open"] = 0
+            business["view_count"] = 0
+            business["vector"] = [0] * 5
+
+            # search for business in database
+            document = db_business.find_one({"name": business.get("name")})
+
+            # check if business exists
+            if document is None:
+                # post business object to database
+                db_business.insert_one(business)
+
+                # Return a JSON message with a 200 OK status code and JSON mimetype
+                return Response(
+                    response=json.dumps({"message": "The business data was successfully posted to the database"}),
+                    status=200,
+                    mimetype="application/json",
+                )
+            else:
+                return Response(
+                    response=json.dumps(
+                        {
+                            "message": "The business data was not posted to the database because it already exists",
+                        }
+                    ),
+                    status=404,
+                    mimetype="application/json",
+                )
 
     except Exception as e:
         # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype

@@ -36,7 +36,7 @@ def createReview(business_id):
         review["vector"] = vector_score
 
         # post review object to database
-        # db_review.insert_one(review)
+        db_review.insert_one(review)
 
         # retrieve the all reviews for the user
         user_reviews = list(db_review.find({"user_id": ObjectId(review["user_id"])}))

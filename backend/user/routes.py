@@ -104,7 +104,7 @@ def login():
             return Response(
                 response=json.dumps(
                     {
-                        "message": "The user data was not found in the database",
+                        "message": "The user data was not found in the database, please proceed to sign up",
                     }
                 ),
                 status=404,
@@ -204,8 +204,6 @@ def getUserId():
 # retrieve hasBusiness boolean flag
 @user_bp.route("/api/getHasBusinessFlag", methods=["GET"])
 def getHasBusinessFlag():
-    # get user_id from token
-    user_id = decodeToken()
 
     # search for user in database
     user = db_user.find_one({"_id": ObjectId(decodeToken())})
@@ -260,9 +258,6 @@ def retrieveProfile(user_id):
                 review["business_city"] = business["city"]
 
             document["reviews"] = reviews
-
-            # Include profile picture in the document
-            document["profile_pic"] = document.get("profile_pic", "")
 
             # Serialize the retrieved document to a JSON string
             user = json.dumps(document, default=str)
