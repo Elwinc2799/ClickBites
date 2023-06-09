@@ -12,6 +12,7 @@ import HoursTable from '@/components/BusinessDetails/HoursTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import AddReviewForm from '@/components/BusinessDetails/AddReviewForm';
+import AspectRadar from '@/components/UserDetails/AspectRadar';
 
 interface Business {
     _id: string;
@@ -60,7 +61,7 @@ function Business(props: { business: Business }) {
             score: (business.vector[0] * 100).toFixed(2).toString(),
         },
         {
-            text: 'Serv.',
+            text: 'Service',
             score: (business.vector[1] * 100).toFixed(2).toString(),
         },
         {
@@ -68,11 +69,11 @@ function Business(props: { business: Business }) {
             score: (business.vector[2] * 100).toFixed(2).toString(),
         },
         {
-            text: 'Ambi.',
+            text: 'Ambience',
             score: (business.vector[3] * 100).toFixed(2).toString(),
         },
         {
-            text: 'Misc.',
+            text: 'Miscellaneous',
             score: (business.vector[4] * 100).toFixed(2).toString(),
         },
     ];
@@ -213,31 +214,8 @@ function Business(props: { business: Business }) {
                             <h1 className="text-2xl font-bold leading-relaxed  text-gray-900">
                                 Aspect Analysis
                             </h1>
-                            <div className="w-3/4 flex flex-row justify-between p-4">
-                                {vectorScores.map((value, index) => (
-                                    <div
-                                        key={index}
-                                        className={`border-4 border-gray-200 mx-2 text-xl radial-progress  ${
-                                            // if score is less than 0, make text red, else make text green
-                                            parseFloat(value.score) < 0
-                                                ? 'text-red-500'
-                                                : 'text-green-500'
-                                        }`}
-                                        style={
-                                            {
-                                                '--value':
-                                                    parseFloat(value.score) < 0
-                                                        ? (-parseFloat(
-                                                              value.score
-                                                          )).toString()
-                                                        : value.score,
-                                                '--size': '10rem',
-                                                '--thickness': '1rem',
-                                            } as React.CSSProperties
-                                        }>
-                                        {value.text}
-                                    </div>
-                                ))}
+                            <div className="w-full h-full flex justify-center items-center">
+                                <AspectRadar vectorScores={vectorScores} isBusiness={true}/>
                             </div>
                         </div>
                     </div>
@@ -275,3 +253,29 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 };
 export default Business;
+
+// radial progress bar
+// {vectorScores.map((value, index) => (
+//     <div
+//         key={index}
+//         className={`border-4 border-gray-200 mx-2 text-xl radial-progress  ${
+//             // if score is less than 0, make text red, else make text green
+//             parseFloat(value.score) < 0
+//                 ? 'text-red-500'
+//                 : 'text-green-500'
+//         }`}
+//         style={
+//             {
+//                 '--value':
+//                     parseFloat(value.score) < 0
+//                         ? (-parseFloat(
+//                               value.score
+//                           )).toString()
+//                         : value.score,
+//                 '--size': '10rem',
+//                 '--thickness': '1rem',
+//             } as React.CSSProperties
+//         }>
+//         {value.text}
+//     </div>
+// ))}

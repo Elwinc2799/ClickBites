@@ -23,6 +23,7 @@ function NavBar(props: Props) {
     const [borderColor, setBorderColor] = useState('transparent');
     const businessStatus = UseHasBusinessStatus();
     const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const router = useRouter();
 
@@ -50,60 +51,67 @@ function NavBar(props: Props) {
     useEffect(() => {
         if (UseLoginStatus()) {
             setStatus(true);
+
+            setIsLoading(true);
+
+            const fetchData = async () => {
+                const res = await axios.get<{ userId: string }>(
+                    process.env.API_URL + '/api/getUserId',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${getCookie('token')}`,
+                        },
+                        withCredentials: true,
+                    }
+                );
+                return res.data.userId;
+            };
+
+            const fetchUserData = async (userId: string) => {
+                const res = await axios.get(
+                    process.env.API_URL + '/api/profile/' + userId,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${getCookie('token')}`,
+                        },
+                        withCredentials: true,
+                    }
+                );
+                return res.data;
+            };
+
+            const fetchDataAndUserData = async () => {
+                const userId = await fetchData();
+
+                const userData = await fetchUserData(userId);
+
+                const newVectorText = [
+                    'Food',
+                    'Serv.',
+                    'Pric.',
+                    'Ambi.',
+                    'Misc.',
+                ];
+
+                // cast each userData.vector to a string
+                let newVector = userData.vector.map(
+                    (value: number, index: number) => {
+                        return {
+                            text: newVectorText[index],
+                            score: (value * 100).toFixed(2).toString(),
+                        };
+                    }
+                );
+
+                setVectorScores(newVector);
+                setIsLoading(false);
+            };
+
+            fetchDataAndUserData();
         } else {
             setStatus(false);
         }
     }, [status]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await axios.get<{ userId: string }>(
-                process.env.API_URL + '/api/getUserId',
-                {
-                    headers: {
-                        Authorization: `Bearer ${getCookie('token')}`,
-                    },
-                    withCredentials: true,
-                }
-            );
-            return res.data.userId;
-        };
-
-        const fetchUserData = async (userId: string) => {
-            const res = await axios.get(
-                process.env.API_URL + '/api/profile/' + userId,
-                {
-                    headers: {
-                        Authorization: `Bearer ${getCookie('token')}`,
-                    },
-                    withCredentials: true,
-                }
-            );
-            return res.data;
-        };
-
-        const fetchDataAndUserData = async () => {
-            const userId = await fetchData();
-
-            const userData = await fetchUserData(userId);
-
-            const newVectorText = ['Food', 'Pric.', 'Serv.', 'Ambi.', 'Misc.'];
-
-            // cast each userData.vector to a string
-            let newVector = userData.vector.map(
-                (value: number, index: number) => {
-                    return {
-                        text: newVectorText[index],
-                        score: (value * 100).toFixed(2).toString(),
-                    };
-                }
-            );
-
-            setVectorScores(newVector);
-        };
-
-        fetchDataAndUserData();
-    }, []);
 
     return (
         <div
@@ -122,39 +130,53 @@ function NavBar(props: Props) {
                     <ul
                         style={{ color: `${textColor}` }}
                         className="flex flex-row">
-                        <li className='px-4'>
-                            <div className="flex flex-row">
-                                {vectorScores.map((value, index) => (
-                                    <div
-                                        key={index}
-                                        className={`bg-[#f7fafc] border-4 border-gray-200 mx-2 text-xs radial-progress  ${
-                                            // if score is less than 0, make text red, else make text green
-                                            parseFloat(value.score) < 0
-                                                ? 'text-red-500'
-                                                : 'text-orange-400'
-                                        }`}
-                                        style={
-                                            {
-                                                '--value':
-                                                    parseFloat(value.score) < 0
-                                                        ? (-parseFloat(
-                                                              value.score
-                                                          )).toString()
-                                                        : value.score,
-                                                '--size': '3rem',
-                                                '--thickness': '0.3rem',
-                                            } as React.CSSProperties
-                                        }>
-                                        {value.text}
+                        <li className="px-4">
+                            {isLoading ? (
+                                <>
+                                    <div className="w-full h-full flex justify-center items-center space-x-1">
+                                        <div className="bg-orange-400 h-2 w-2 rounded-full animate-bounce animation-delay-200"></div>
+                                        <div className="bg-orange-400 h-2 w-2 rounded-full animate-bounce animation-delay-400"></div>
+                                        <div className="bg-orange-400 h-2 w-2 rounded-full animate-bounce animation-delay-600"></div>
                                     </div>
-                                ))}
-                            </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex flex-row">
+                                        {vectorScores.map((value, index) => (
+                                            <div
+                                                key={index}
+                                                className={`bg-[#f7fafc] border-4 border-gray-200 mx-2 text-xs radial-progress  ${
+                                                    // if score is less than 0, make text red, else make text green
+                                                    parseFloat(value.score) < 0
+                                                        ? 'text-red-500'
+                                                        : 'text-orange-400'
+                                                }`}
+                                                style={
+                                                    {
+                                                        '--value':
+                                                            parseFloat(
+                                                                value.score
+                                                            ) < 0
+                                                                ? (-parseFloat(
+                                                                      value.score
+                                                                  )).toString()
+                                                                : value.score,
+                                                        '--size': '3rem',
+                                                        '--thickness': '0.3rem',
+                                                    } as React.CSSProperties
+                                                }>
+                                                {value.text}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
                         </li>
                         <li className="p-4">
                             {businessStatus == null ? (
                                 <div></div>
                             ) : businessStatus ? (
-                                <Link href="/dashboard">Dashboard</Link>
+                                <Link href="/dashboard">Business</Link>
                             ) : (
                                 <Link
                                     className="bg-gray-900 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"

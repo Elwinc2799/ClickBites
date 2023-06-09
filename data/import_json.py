@@ -1,8 +1,10 @@
 import json
 from pymongo import MongoClient, InsertOne
+import os
+import base64
 
 client = MongoClient("mongodb+srv://windev:windev@cluster0.mkcvmve.mongodb.net/")
-db = client.ckbt_db
+db = client.ckbt_db2
 
 # List of collections and corresponding file paths
 collections_files = [
@@ -11,21 +13,46 @@ collections_files = [
     ("review", "./data/review.json"),
 ]
 
+# Define directory path for the photos
+photo_dir_path = "./data/business_photo"
+
+i = 0
 for collection_name, file_path in collections_files:
+    print(f"Importing {collection_name} collection...")
     collection = db[collection_name]
     requests = []
 
     with open(file_path, "r") as f:
         for jsonObj in f:
             document = json.loads(jsonObj)
+
+            # If it's the business collection, handle the photo
+            if collection_name == "business":
+                # Define path for business photo
+                photo_path = os.path.join(photo_dir_path, document["business_id"] + ".jpg")
+
+                # If photo exists, encode it and store in the document
+                if os.path.exists(photo_path):
+                    with open(photo_path, "rb") as image_file:
+                        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+                    document["business_pic"] = encoded_string
+
             requests.append(InsertOne(document))
+            i += 1
+            print(f"Inserted {i} {collection_name} documents", end="\r")
 
     result = collection.bulk_write(requests)
+
+    i = 0
+
+print("Importing complete!")
+print("Creating mapping indexes...")
 
 # Create dictionary mapping business_id and user_id to _id in the 'business' and 'user' collections
 business_id_map = {doc["business_id"]: doc["_id"] for doc in db.business.find()}
 user_id_map = {doc["user_id"]: doc["_id"] for doc in db.user.find()}
 
+j = 0
 # Iterate over the 'review' collection
 for review in db.review.find():
     # If the business_id in the review exists in the business_id_map
@@ -37,7 +64,10 @@ for review in db.review.find():
     if review["user_id"] in user_id_map:
         # Update the review's user_id to the corresponding _id from 'user' collection
         db.review.update_one({"_id": review["_id"]}, {"$set": {"user_id": user_id_map[review["user_id"]]}})
+    j += 1
+    print(f"Updated {j} review documents", end="\r")
 
+k = 0
 # Iterate over the 'user' collection for history attribute
 for user in db.user.find():
     if user.get("history", {}).get("business_id") in business_id_map:
@@ -45,6 +75,8 @@ for user in db.user.find():
         db.user.update_one(
             {"_id": user["_id"]}, {"$set": {"history.business_id": business_id_map[user["history"]["business_id"]]}}
         )
+    k += 1
+    print(f"Updated {k} user documents", end="\r")
 
 # Remove 'business_id' from 'business' collection and 'user_id' from 'user' collection
 db.business.update_many({}, {"$unset": {"business_id": ""}})

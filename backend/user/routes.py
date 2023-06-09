@@ -200,6 +200,9 @@ def getHasBusinessFlag():
                 mimetype="application/json",
             )
         else:
+            # initialize hasBusiness flag if it does not exist
+            if user.get("has_business") is None:
+                user["has_business"] = False
             # Return a JSON message with a 200 OK status code and JSON mimetype
             return Response(
                 response=json.dumps({"has_business": user["has_business"]}),

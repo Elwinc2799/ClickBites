@@ -31,7 +31,6 @@ def registerBusiness():
         user_id = decodeToken()
 
         if isinstance(user_id, str):
-
             # search for user in database
             user = db_user.find_one({"_id": ObjectId(user_id)})
 
@@ -82,7 +81,10 @@ def registerBusiness():
                     business_id = db_business.find_one({"name": business.get("name")})["_id"]
 
                     # Update user has_business flag to True
-                    db_user.update_one({"_id": ObjectId(user_id)}, {"$set": {"has_business": True, "has_business_id": ObjectId(business_id)}})
+                    db_user.update_one(
+                        {"_id": ObjectId(user_id)},
+                        {"$set": {"has_business": True, "has_business_id": ObjectId(business_id)}},
+                    )
 
                     # Return a JSON message with a 200 OK status code and JSON mimetype
                     return Response(
@@ -164,20 +166,27 @@ def getSearchResults():
         # Get user vector
         user_vector = np.array(user_document["vector"]).reshape(1, -1)
 
+        def search_query_to_regex(search_query):
+            words = search_query.split()
+            return '|'.join(words)
+
+        # Get the search query regex
+        search_query_regex = search_query_to_regex(search_query)
+
         # Perform a case-insensitive search for the search query in the business categories
-        documents = list(db_business.find({"categories": {"$regex": search_query, "$options": "i"}}))
+        documents = list(db_business.find({"categories": {"$regex": search_query_regex, "$options": "i"}}))
 
         # Perform a case-insensitive search for the search query in the business name
-        documents += list(db_business.find({"name": {"$regex": search_query, "$options": "i"}}))
+        documents += list(db_business.find({"name": {"$regex": search_query_regex, "$options": "i"}}))
 
         # Perform a case-insensitive search for the search query in the business address, city and state
         documents += list(
             db_business.find(
                 {
                     "$or": [
-                        {"address": {"$regex": search_query, "$options": "i"}},
-                        {"city": {"$regex": search_query, "$options": "i"}},
-                        {"state": {"$regex": search_query, "$options": "i"}},
+                        {"address": {"$regex": search_query_regex, "$options": "i"}},
+                        {"city": {"$regex": search_query_regex, "$options": "i"}},
+                        {"state": {"$regex": search_query_regex, "$options": "i"}},
                     ]
                 }
             )
@@ -186,23 +195,29 @@ def getSearchResults():
         # Remove duplicate in documents
         documents = list({document["_id"]: document for document in documents}.values())
 
-        # Compute cosine similarity for each business and store it with the business document
-        for document in documents:
-            business_vector = np.array(document["vector"]).reshape(1, -1)
-            document["similarity"] = cosine_similarity(user_vector, business_vector)[0][0]
+        if documents is not None:
 
-        # Sort documents by cosine similarity in descending order
-        documents.sort(key=lambda x: x["similarity"], reverse=True)
+            if user_vector is not [0] * 5:
+                # Compute cosine similarity for each business and store it with the business document
+                for document in documents:
+                    business_vector = np.array(document["vector"]).reshape(1, -1)
+                    document["similarity"] = cosine_similarity(user_vector, business_vector)[0][0]
 
-        # Serialize the list of documents to a JSON string
-        json_business = json.dumps(documents, default=str)
+                # Sort documents by cosine similarity in descending order
+                documents.sort(key=lambda x: x["similarity"], reverse=True)
+            else:
+                # Sort documents by average stars in descending order
+                documents.sort(key=lambda x: x["stars"], reverse=True)
 
-        # Return the JSON string with a 200 OK status code and JSON mimetype
-        return Response(
-            response=json_business,
-            status=200,
-            mimetype="application/json",
-        )
+            # Serialize the list of documents to a JSON string
+            json_business = json.dumps(documents, default=str)
+
+            # Return the JSON string with a 200 OK status code and JSON mimetype
+            return Response(
+                response=json_business,
+                status=200,
+                mimetype="application/json",
+            )
 
     except Exception as e:
         # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
@@ -409,7 +424,7 @@ def getDashboardDetails():
                 status=404,
                 mimetype="application/json",
             )
-        
+
     except Exception as e:
         # If an error occurred, return a JSON error message with a 500 Internal Server Error status code and JSON mimetype
         return Response(
@@ -421,6 +436,7 @@ def getDashboardDetails():
             status=500,
             mimetype="application/json",
         )
+
 
 # ************* Save retrieved data to a Business object ********************************
 # from business.models import Business

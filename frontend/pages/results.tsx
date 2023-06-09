@@ -48,7 +48,7 @@ function Results() {
             setIsLoading(true);
             const res = await axios.get(
                 process.env.API_URL +
-                    `/api/results?search_query=${search_query}`,
+                    `/api/results?search_query=fast+food`,
                 {
                     headers: {
                         Authorization: `Bearer ${getCookie('token')}`,
@@ -56,6 +56,8 @@ function Results() {
                     withCredentials: true,
                 }
             );
+
+            console.log(res.data);
 
             const newBusinessData = res.data.map((business: Business) => ({
                 _id: business._id,

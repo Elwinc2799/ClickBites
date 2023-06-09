@@ -3,10 +3,6 @@ import { AppConfig } from '@/components/utils/AppConfig';
 const FooterCopyright = () => (
     <div className="footer-copyright text-gray-800">
         © Copyright {new Date().getFullYear()} {AppConfig.title}. Developed by{' '}
-        <span role="img" aria-label="Love">
-            ♥
-        </span>{' '}
-        by{' '}
         <a href="https://www.linkedin.com/in/elwin-chiong-3602b5222/">
             Elwin Chiong, Malaysia
         </a>

@@ -10,6 +10,7 @@ import { useState } from 'react';
 import ReviewCard from '@/components/Review/ReviewCard';
 import UpdateUserModal from '@/components/UserDetails/UpdateUserModal';
 import UseLoadingAnimation from '@/components/utils/UseLoadingAnimation';
+import AspectRadar from '@/components/UserDetails/AspectRadar';
 
 interface Review {
     _id: string;
@@ -102,7 +103,7 @@ function Profile() {
             setStars(userData.average_stars);
             setProfilePic(userData.profile_pic);
 
-            const newVectorText = ['Food', 'Pric.', 'Serv.', 'Ambi.', 'Misc.'];
+            const newVectorText = ['Food', 'Service', 'Price', 'Ambience', 'Miscellaneous'];
 
             // cast each userData.vector to a string
             let newVector = userData.vector.map(
@@ -261,7 +262,7 @@ function Profile() {
                                                         {reviews.length ===
                                                             0 && (
                                                             <div className="flex flex-col items-center justify-center">
-                                                                <p className="mb-4 text-lg leading-relaxed text-gray-900">
+                                                                <p className="mb-4 text-lg font-medium leading-relaxed text-gray-900">
                                                                     No reviews
                                                                     yet
                                                                 </p>
@@ -290,40 +291,8 @@ function Profile() {
                                                             Aspect Analysis
                                                         </p>
                                                     </div>
-                                                    <div className="w-full flex flex-row justify-between p-4">
-                                                        {vectorScores.map(
-                                                            (value, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className={`border-4 border-gray-200 mx-2 text-xl radial-progress  ${
-                                                                        // if score is less than 0, make text red, else make text green
-                                                                        parseFloat(
-                                                                            value.score
-                                                                        ) < 0
-                                                                            ? 'text-red-500'
-                                                                            : 'text-green-500'
-                                                                    }`}
-                                                                    style={
-                                                                        {
-                                                                            '--value':
-                                                                                parseFloat(
-                                                                                    value.score
-                                                                                ) <
-                                                                                0
-                                                                                    ? (-parseFloat(
-                                                                                          value.score
-                                                                                      )).toString()
-                                                                                    : value.score,
-                                                                            '--size':
-                                                                                '10rem',
-                                                                            '--thickness':
-                                                                                '1rem',
-                                                                        } as React.CSSProperties
-                                                                    }>
-                                                                    {value.text}
-                                                                </div>
-                                                            )
-                                                        )}
+                                                    <div className="w-full h-full flex justify-center items-center">
+                                                        <AspectRadar vectorScores={vectorScores} isBusiness={false} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -341,3 +310,38 @@ function Profile() {
 }
 
 export default Profile;
+
+// display vector scores using radial progress bar
+// {vectorScores.map(
+//     (value, index) => (
+//         <div
+//             key={index}
+//             className={`border-4 border-gray-200 mx-2 text-xl radial-progress  ${
+//                 // if score is less than 0, make text red, else make text green
+//                 parseFloat(
+//                     value.score
+//                 ) < 0
+//                     ? 'text-red-500'
+//                     : 'text-green-500'
+//             }`}
+//             style={
+//                 {
+//                     '--value':
+//                         parseFloat(
+//                             value.score
+//                         ) <
+//                         0
+//                             ? (-parseFloat(
+//                                     value.score
+//                                 )).toString()
+//                             : value.score,
+//                     '--size':
+//                         '10rem',
+//                     '--thickness':
+//                         '1rem',
+//                 } as React.CSSProperties
+//             }>
+//             {value.text}
+//         </div>
+//     )
+// )}
