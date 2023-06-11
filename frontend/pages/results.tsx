@@ -19,7 +19,6 @@ interface Business {
     longitude: number;
     stars: number;
     review_count: number;
-    is_open: number;
     categories: string;
     hours: {
         Monday: string;
@@ -34,15 +33,23 @@ interface Business {
     view_count: number;
     vector: number[];
     business_pic: string;
+    similarity: number;
 }
-
 
 function Results() {
     const router = useRouter();
     const search_query = router.query.search_query;
 
     const [businesses, setBusinesses] = useState<Business[]>([]);
+    const [filteredSortedBusinesses, setFilteredSortedBusinesses] = useState<
+        Business[]
+    >([]);
+    const [starsFilter, setStarsFilter] = useState<number>(0);
+    const [isOpenNowFilter, setIsOpenNowFilter] = useState<boolean>(false);
+
     const [isLoading, setIsLoading] = useState(true);
+
+    const [isToggled, setIsToggled] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,7 +81,13 @@ function Results() {
                 view_count: business.view_count,
                 vector: business.vector,
                 business_pic: business.business_pic,
+                similarity: business.similarity,
             }));
+
+            // set all cities
+            const allCities = newBusinessData.map(
+                (business: Business) => business.city
+            );
 
             setBusinesses(newBusinessData);
             setIsLoading(false);
@@ -82,6 +95,79 @@ function Results() {
 
         fetchData();
     }, [search_query]);
+
+    // Filter and sort businesses
+    useEffect(() => {
+        const filterAndSortBusinesses = () => {
+            let filteredBusinesses = businesses.filter((business: Business) => {
+                let meetsStarsCondition = business.stars >= starsFilter;
+                let meetsOpenNowCondition = !isOpenNowFilter;
+
+                if (isOpenNowFilter) {
+                    // assumes business.hours has the current day's hours in HH:MM - HH:MM format
+                    let today = new Date();
+                    let todayName = [
+                        'Sunday',
+                        'Monday',
+                        'Tuesday',
+                        'Wednesday',
+                        'Thursday',
+                        'Friday',
+                        'Saturday',
+                    ][today.getDay()] as
+                        | 'Sunday'
+                        | 'Monday'
+                        | 'Tuesday'
+                        | 'Wednesday'
+                        | 'Thursday'
+                        | 'Friday'
+                        | 'Saturday';
+
+                    if (!business.hours) {
+                        return false;
+                    }
+                    let hoursToday = business.hours[todayName];
+
+                    if (hoursToday) {
+                        let [start, end] = hoursToday.split('-');
+                        let startHour = parseInt(start.split(':')[0]);
+                        let startMinute = parseInt(start.split(':')[1]);
+                        let endHour = parseInt(end.split(':')[0]);
+                        let endMinute = parseInt(end.split(':')[1]);
+
+                        let startTime = new Date();
+                        startTime.setHours(startHour, startMinute);
+
+                        let endTime = new Date();
+                        if (endHour < startHour) {
+                            // end time is on the next day
+                            endTime.setDate(endTime.getDate() + 1);
+                        }
+                        endTime.setHours(endHour, endMinute);
+
+                        meetsOpenNowCondition =
+                            today >= startTime && today <= endTime;
+                    }
+                }
+
+                return meetsStarsCondition && meetsOpenNowCondition;
+            });
+
+            if (isToggled) {
+                filteredBusinesses.sort(
+                    (a: Business, b: Business) => b.similarity - a.similarity
+                ); // sort by similarity
+            } else {
+                filteredBusinesses.sort(
+                    (a: Business, b: Business) => b.stars - a.stars
+                ); // sort by stars
+            }
+
+            setFilteredSortedBusinesses(filteredBusinesses);
+        };
+
+        filterAndSortBusinesses();
+    }, [isToggled, businesses, starsFilter, isOpenNowFilter]);
 
     return (
         <>
@@ -91,30 +177,108 @@ function Results() {
                 <>
                     <NavBar isLanding={false} />
                     <Background color="bg-gray-100">
-                        <div className="px-44 py-24 flex flex-row justify-around items-start">
-                            <div className=" w-2/3 flex flex-col justify-start items-start px-20">
-                                <div className="w-9/12 px-4 py-4">
+                        <div className="w-full h-full pl-10  pt-24 pb-4 flex flex-row justify-around items-start">
+                            <div className="w-2/12 px-4 py-4 shrink-0 h-screen flex flex-col border-r-2 border-gray-200">
+                                {/* Filters for categories*/}
+                                <div className="w-full flex flex-row items-center justify-between mt-2 mb-4">
                                     <p className="text-2xl font-bold leading-relaxed text-gray-900">
+                                        Filters
+                                    </p>
+                                </div>
+                                <div className="flex flex-col justify-center items-start mb-8">
+                                    <label className="mb-2">Min Stars</label>
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max="5"
+                                        value={starsFilter}
+                                        className={`range range-xs ${
+                                            starsFilter > 0 && 'range-info'
+                                        }`}
+                                        step="1"
+                                        onChange={(e) =>
+                                            setStarsFilter(
+                                                parseFloat(e.target.value)
+                                            )
+                                        }
+                                    />
+                                    <div className="w-full flex justify-between text-xs px-2">
+                                        <span>|</span>
+                                        <span>|</span>
+                                        <span>|</span>
+                                        <span>|</span>
+                                        <span>|</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-row justify-between items-start mb-6">
+                                    <label className="mb-2 mr-2">
+                                        Open Now
+                                    </label>
+                                    <input
+                                        type="checkbox"
+                                        className={`checkbox ${
+                                            isOpenNowFilter && 'checkbox-info'
+                                        }`}
+                                        checked={isOpenNowFilter}
+                                        onChange={(e) =>
+                                            setIsOpenNowFilter(e.target.checked)
+                                        }
+                                    />
+                                </div>
+                            </div>
+                            <div className="w-6/12 px-4 pt-4 shrink-0 flex flex-col justify-start items-start h-screen">
+                                <div className="w-full flex flex-row items-center justify-between">
+                                    <p className="text-2xl font-bold leading-relaxed text-gray-900 py-2">
                                         Search Results: {search_query}
+                                    </p>
+                                    <p className="text-xl font-semibold leading-relaxed text-gray-700 py-2">
+                                        Total: {filteredSortedBusinesses.length}
                                     </p>
                                 </div>
                                 <hr className="my-4 border-1 border-gray-300 w-full" />
-                                {businesses.map((business, index) => (
-                                    <ResultCard
-                                        key={index}
-                                        business={business}
-                                        index={index}
-                                    />
-                                ))}
+                                <div className="form-control ml-5 mb-4 w-full pr-10 items-end">
+                                    <label className="label cursor-pointer">
+                                        <span className="label-text">
+                                            {isToggled
+                                                ? 'Recommended'
+                                                : 'Default'}
+                                        </span>
+                                        <input
+                                            type="checkbox"
+                                            className={`ml-5 toggle-info toggle ${
+                                                isToggled
+                                                    ? 'toggle-checked'
+                                                    : ''
+                                            }`}
+                                            checked={isToggled}
+                                            onChange={(e) =>
+                                                setIsToggled(e.target.checked)
+                                            }
+                                        />
+                                    </label>
+                                </div>
+                                <div className="h-full w-full flex flex-col overflow-x-hidden overflow-y-scroll no-scrollbar">
+                                    {filteredSortedBusinesses.map(
+                                        (business, index) => (
+                                            <ResultCard
+                                                key={index}
+                                                business={business}
+                                                index={index}
+                                                isToggled={isToggled}
+                                            />
+                                        )
+                                    )}
+                                    <div className="divider">END</div>
+                                </div>
                             </div>
-                            <div className="bg-slate-200 w-1/3 relative h-full overflow-hidden shadow-inner">
+                            <div className="h-screen w-4/12 shrink-0 flex px-4 py-4 border-l-2 border-gray-200">
                                 <Image
                                     src="/images/map.jpg"
                                     alt="Map"
                                     width={0}
                                     height={0}
-                                    sizes="(max-width: 768px) 100vw, 48vw"
-                                    className="object-cover h-screen w-full"
+                                    sizes="100vw, 48vw"
+                                    className="object-cover h-full w-full"
                                 />
                             </div>
                         </div>

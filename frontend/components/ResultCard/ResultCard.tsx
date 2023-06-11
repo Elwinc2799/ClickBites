@@ -14,11 +14,13 @@ interface Business {
     stars: number;
     business_pic: string;
     vector: number[];
+    similarity: number;
 }
 
 interface ResultCardProps {
     business: Business;
     index: number;
+    isToggled: boolean;
 }
 
 const blankBusinessPics = [
@@ -29,7 +31,7 @@ const blankBusinessPics = [
     'business_5.jpg',
 ];
 
-function ResultCard({ business, index }: ResultCardProps) {
+function ResultCard({ business, index, isToggled }: ResultCardProps) {
     if (business.vector == null) {
         business.vector = [0, 0, 0, 0, 0];
     }
@@ -74,9 +76,9 @@ function ResultCard({ business, index }: ResultCardProps) {
                 <button
                     key={business._id}
                     type="submit"
-                    className="px-10 py-5 w-[700px] overflow-wrap height-auto transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
-                    <div className="card card-side bg-base-100 shadow-sm w-full">
-                        <figure className="w-96">
+                    className="px-5 py-5 w-full h-56 overflow-wrap transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+                    <div className="card card-side bg-base-100 shadow-md w-full">
+                        <figure className="w-64">
                             <Image
                                 src={
                                     business.business_pic
@@ -91,9 +93,25 @@ function ResultCard({ business, index }: ResultCardProps) {
                             />
                         </figure>
                         <div className="card-body flex-col items-start justify-between">
-                            <h2 className="card-title text-left">
-                                {index + 1}. {business.name}
-                            </h2>
+                            <div className="w-full flex flex-row items-center justify-between">
+                                <h2 className="card-title text-left">
+                                    {index + 1}. {business.name}
+                                </h2>
+                                {isToggled && (
+                                    <div
+                                        className="radial-progress text-[#39c1f6]"
+                                        style={
+                                            {
+                                                '--value':
+                                                    business.similarity * 100,
+                                                '--size': '3rem',
+                                                '--thickness': '0.2rem',
+                                            } as React.CSSProperties
+                                        }>
+                                        {(business.similarity * 100).toFixed(1)}
+                                    </div>
+                                )}
+                            </div>
                             <h3>
                                 {business.city}, {business.state}
                             </h3>
@@ -104,7 +122,7 @@ function ResultCard({ business, index }: ResultCardProps) {
                                     .map((category, index) => (
                                         <span
                                             key={index}
-                                            className="badge bg-blue-500 text-[#f7fafc] mr-3 text-center h-full">
+                                            className="badge bg-[#39c1f6] text-[#f7fafc] mr-3 text-center h-full">
                                             {category}
                                         </span>
                                     ))}

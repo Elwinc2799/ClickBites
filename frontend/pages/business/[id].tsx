@@ -24,7 +24,6 @@ interface Business {
     longitude: number;
     stars: number;
     review_count: number;
-    is_open: number;
     categories: string;
     hours: {
         Monday: string;
