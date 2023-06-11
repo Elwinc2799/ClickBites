@@ -4,8 +4,10 @@ import torch
 import pickle
 import re
 import random
-import pandas as pd
-import numpy as np
+import os
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 # SpaCy library for natural language processing tasks
 import spacy
@@ -39,6 +41,14 @@ print("Loading the model...")
 
 # Initialize the VADER sentiment analyzer
 analyzer = SentimentIntensityAnalyzer()
+
+# Set the NLTK_DATA environment variable to point to the NLTK data location
+os.environ['NLTK_DATA'] = './ai/nltk_data'
+
+# Load punkt and stopwords nltk packages
+nltk.download('punkt', download_dir=os.getenv('NLTK_DATA'))
+nltk.download('stopwords', download_dir=os.getenv('NLTK_DATA'))
+stop_words = set(stopwords.words('english'))
 
 # Function to make predictions
 def predict_category(target, threshold=0.5):
@@ -149,6 +159,11 @@ def process_review_text(review_text):
 
     # Process each sentence
     for sentence in sentences:
+        
+        ### STOPWORD REMOVAL ###
+        tokenized_sentence = word_tokenize(sentence)
+        sentence = ' '.join([word for word in tokenized_sentence if word not in stop_words])
+
         # Predict categories for the given sentence
         predicted_categories = predict_categories(sentence)
 

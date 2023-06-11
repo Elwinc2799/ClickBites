@@ -66,7 +66,6 @@ def registerBusiness():
                 business["longitude"] = 0
                 business["stars"] = 0
                 business["review_count"] = 0
-                business["is_open"] = 0
                 business["view_count"] = 0
                 business["vector"] = [0] * 5
 

@@ -12,7 +12,7 @@ import HoursTable from '@/components/BusinessDetails/HoursTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import AddReviewForm from '@/components/BusinessDetails/AddReviewForm';
-import AspectRadar from '@/components/UserDetails/AspectRadar';
+import AspectRadar from '@/components/SharedComponents/AspectRadar';
 
 interface Business {
     _id: string;
@@ -138,11 +138,10 @@ function Business(props: { business: Business }) {
                                     <div className="flex flex-row mt-2 mb-6">
                                         {business.categories
                                             .split(', ')
-                                            .slice(0, 3)
                                             .map((category, index) => (
                                                 <span
                                                     key={index}
-                                                    className="badge badge-primary mr-3">
+                                                    className="badge bg-[#39c1f6] text-[#f7fafc] badge-lg mr-3">
                                                     {category}
                                                 </span>
                                             ))}
@@ -156,7 +155,10 @@ function Business(props: { business: Business }) {
                                                     Views
                                                 </div>
                                                 <div className="stat-value text-center">
-                                                    {business.view_count}
+                                                    {business.view_count <
+                                                    business.review_count
+                                                        ? business.review_count
+                                                        : business.view_count}
                                                 </div>
                                             </div>
                                         </div>
@@ -191,7 +193,11 @@ function Business(props: { business: Business }) {
                             <div className="flex flex-row justify-between items-start w-full">
                                 <div className="flex flex-col justify-start items-start mr-10 w-full">
                                     <p className="text-gray-600 text-justify mb-5">
-                                        {business.description}
+                                        {business.description == 'hello world'
+                                            ? 'Welcome to ' +
+                                              business.name +
+                                              '! Enjoy delicious food and drinks at our restaurant.'
+                                            : business.description}
                                     </p>
                                     <hr className="my-4 border-1 border-gray-300 w-full" />
                                     <div className="flex flex-col w-full items-start justify-start">
@@ -250,6 +256,7 @@ function Business(props: { business: Business }) {
                                 <AspectRadar
                                     vectorScores={vectorScores}
                                     isBusiness={true}
+                                    isUser={true}
                                 />
                             </div>
                         </div>

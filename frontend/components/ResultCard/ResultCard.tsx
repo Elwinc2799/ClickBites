@@ -134,7 +134,10 @@ function ResultCard({ business, index, isToggled }: ResultCardProps) {
                                             Views
                                         </div>
                                         <div className="stat-value text-center">
-                                            {business.view_count}
+                                            {business.view_count <
+                                            business.review_count
+                                                ? business.review_count
+                                                : business.view_count}
                                         </div>
                                     </div>
                                 </div>

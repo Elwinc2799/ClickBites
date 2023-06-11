@@ -268,7 +268,7 @@ function Results() {
                                             />
                                         )
                                     )}
-                                    <div className="divider">END</div>
+                                    <div className="divider mt-10">END</div>
                                 </div>
                             </div>
                             <div className="h-screen w-4/12 shrink-0 flex px-4 py-4 border-l-2 border-gray-200">

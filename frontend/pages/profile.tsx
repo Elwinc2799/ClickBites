@@ -10,7 +10,7 @@ import { useState } from 'react';
 import ReviewCard from '@/components/Review/ReviewCard';
 import UpdateUserModal from '@/components/UserDetails/UpdateUserModal';
 import UseLoadingAnimation from '@/components/utils/UseLoadingAnimation';
-import AspectRadar from '@/components/UserDetails/AspectRadar';
+import AspectRadar from '@/components/SharedComponents/AspectRadar';
 
 interface Review {
     _id: string;
@@ -321,6 +321,7 @@ function Profile() {
                                                                 vectorScores
                                                             }
                                                             isBusiness={false}
+                                                            isUser={true}
                                                         />
                                                     </div>
                                                 </div>
