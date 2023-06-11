@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 import os
 import base64
 from user.routes import decodeToken
+from urllib.parse import unquote
 
 # Create a Flask blueprint for business related routes
 business_bp = Blueprint("business", __name__)
@@ -164,14 +165,14 @@ def getSearchResults():
         user_document = db_user.find_one({"_id": ObjectId(user_id)})
 
         # Get user vector
-        user_vector = np.array(user_document["vector"]).reshape(1, -1)
+        user_vector = np.array(user_document["vector"])
 
         def search_query_to_regex(search_query):
             words = search_query.split()
-            return '|'.join(words)
+            return "|".join(words)
 
         # Get the search query regex
-        search_query_regex = search_query_to_regex(search_query)
+        search_query_regex = search_query
 
         # Perform a case-insensitive search for the search query in the business categories
         documents = list(db_business.find({"categories": {"$regex": search_query_regex, "$options": "i"}}))
@@ -195,13 +196,19 @@ def getSearchResults():
         # Remove duplicate in documents
         documents = list({document["_id"]: document for document in documents}.values())
 
-        if documents is not None:
+        print(len(documents))
 
-            if user_vector is not [0] * 5:
+        if documents is not None:
+            # check is user vector is not numpy array of 5 zeros
+            if not np.array_equal(user_vector, np.zeros(5)):
+                user_vector = user_vector.reshape(1, -1)
                 # Compute cosine similarity for each business and store it with the business document
                 for document in documents:
-                    business_vector = np.array(document["vector"]).reshape(1, -1)
-                    document["similarity"] = cosine_similarity(user_vector, business_vector)[0][0]
+                    if document["vector"] == None:
+                        document["similarity"] = 0
+                    else:
+                        business_vector = np.array(document["vector"]).reshape(1, -1)
+                        document["similarity"] = cosine_similarity(user_vector, business_vector)[0][0]
 
                 # Sort documents by cosine similarity in descending order
                 documents.sort(key=lambda x: x["similarity"], reverse=True)

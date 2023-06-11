@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 interface Business {
     _id: string;
@@ -20,7 +21,19 @@ interface ResultCardProps {
     index: number;
 }
 
+const blankBusinessPics = [
+    'business_1.jpg',
+    'business_2.jpg',
+    'business_3.jpg',
+    'business_4.jpg',
+    'business_5.jpg',
+];
+
 function ResultCard({ business, index }: ResultCardProps) {
+    if (business.vector == null) {
+        business.vector = [0, 0, 0, 0, 0];
+    }
+
     // cast business vector scores to a list with text and scores and convert scores to string
     const vectorScores = [
         {
@@ -45,6 +58,16 @@ function ResultCard({ business, index }: ResultCardProps) {
         },
     ];
 
+    const [defaultPic, setDefaultPic] = useState('');
+
+    useEffect(() => {
+        const randomPic =
+            blankBusinessPics[
+                Math.floor(Math.random() * blankBusinessPics.length)
+            ];
+        setDefaultPic(randomPic);
+    }, []);
+
     return (
         <>
             <Link href={`/business/${business._id}`}>
@@ -55,7 +78,11 @@ function ResultCard({ business, index }: ResultCardProps) {
                     <div className="card card-side bg-base-100 shadow-sm w-full">
                         <figure className="w-96">
                             <Image
-                                src={`data:image/jpeg;base64,${business.business_pic}`}
+                                src={
+                                    business.business_pic
+                                        ? `data:image/jpeg;base64,${business.business_pic}`
+                                        : `/images/${defaultPic}`
+                                }
                                 alt="Business Image"
                                 width={0}
                                 height={0}

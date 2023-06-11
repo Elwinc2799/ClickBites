@@ -25,4 +25,4 @@ class Database:
                 print("Could not connect to MongoDB")
 
     def get_db(self, db_name):
-        return self.client.ckbt_db[db_name]
+        return self.client.ckbt_db2[db_name]

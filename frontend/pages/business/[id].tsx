@@ -1,5 +1,5 @@
 import { GetServerSideProps, GetStaticProps } from 'next';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
 import NavBar from '@/components/NavigationBar/NavBar';
@@ -50,9 +50,21 @@ interface Business {
     }[];
 }
 
+const blankBusinessPics = [
+    'business_1.jpg',
+    'business_2.jpg',
+    'business_3.jpg',
+    'business_4.jpg',
+    'business_5.jpg',
+];
+
 function Business(props: { business: Business }) {
     const { business } = props;
     const [showForm, setShowForm] = useState(false);
+
+    if (business.vector == null) {
+        business.vector = [0, 0, 0, 0, 0];
+    }
 
     // cast business vector scores to a list with text and scores and convert scores to string
     const vectorScores = [
@@ -82,13 +94,27 @@ function Business(props: { business: Business }) {
         setShowForm(true);
     };
 
+    const [defaultPic, setDefaultPic] = useState('');
+
+    useEffect(() => {
+        const randomPic =
+            blankBusinessPics[
+                Math.floor(Math.random() * blankBusinessPics.length)
+            ];
+        setDefaultPic(randomPic);
+    }, []);
+
     return (
         <>
             <NavBar isLanding={false} />
             <Background color="bg-gray-100">
                 <div className="px-44 py-24 flex flex-col w-full justify-start items-center">
                     <Image
-                        src={`data:image/jpeg;base64,${business.business_pic}`}
+                        src={
+                            business.business_pic
+                                ? `data:image/jpeg;base64,${business.business_pic}`
+                                : `/images/${defaultPic}`
+                        }
                         alt="restaurant image"
                         width={0}
                         height={0}
@@ -193,6 +219,13 @@ function Business(props: { business: Business }) {
                                         </div>
 
                                         <div className="w-full">
+                                            {business.reviews.length === 0 && (
+                                                <div className="flex flex-col items-start justify-center">
+                                                    <p className="mb-4 text-lg font-medium leading-relaxed text-gray-900">
+                                                        No reviews yet
+                                                    </p>
+                                                </div>
+                                            )}
                                             {business.reviews.map(
                                                 (review, index) => (
                                                     <ReviewCard
@@ -215,7 +248,10 @@ function Business(props: { business: Business }) {
                                 Aspect Analysis
                             </h1>
                             <div className="w-full h-full flex justify-center items-center">
-                                <AspectRadar vectorScores={vectorScores} isBusiness={true}/>
+                                <AspectRadar
+                                    vectorScores={vectorScores}
+                                    isBusiness={true}
+                                />
                             </div>
                         </div>
                     </div>

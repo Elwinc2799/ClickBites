@@ -36,6 +36,7 @@ interface Business {
     business_pic: string;
 }
 
+
 function Results() {
     const router = useRouter();
     const search_query = router.query.search_query;
@@ -48,7 +49,7 @@ function Results() {
             setIsLoading(true);
             const res = await axios.get(
                 process.env.API_URL +
-                    `/api/results?search_query=fast+food`,
+                    `/api/results?search_query=${search_query}`,
                 {
                     headers: {
                         Authorization: `Bearer ${getCookie('token')}`,
@@ -56,8 +57,6 @@ function Results() {
                     withCredentials: true,
                 }
             );
-
-            console.log(res.data);
 
             const newBusinessData = res.data.map((business: Business) => ({
                 _id: business._id,
@@ -69,7 +68,6 @@ function Results() {
                 longitude: business.longitude,
                 stars: business.stars,
                 review_count: business.review_count,
-                is_open: business.is_open,
                 categories: business.categories,
                 hours: business.hours,
                 description: business.description,
