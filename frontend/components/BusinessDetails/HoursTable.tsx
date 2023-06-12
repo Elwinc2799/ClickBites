@@ -14,8 +14,7 @@ interface Props {
     };
 }
 
-
-function HoursTable(props : Props) {
+function HoursTable(props: Props) {
     return (
         <table className="w-1/4 border border-gray-200">
             <thead>
@@ -28,7 +27,9 @@ function HoursTable(props : Props) {
                 <tr>
                     <td className="border border-gray-200 px-4 py-2">Monday</td>
                     <td className="border border-gray-200 px-4 py-2">
-                        {props.business.hours.Monday}
+                        {props.business.hours.Monday == ''
+                            ? 'Closed'
+                            : props.business.hours.Monday}
                     </td>
                 </tr>
                 <tr>
@@ -36,7 +37,9 @@ function HoursTable(props : Props) {
                         Tuesday
                     </td>
                     <td className="border border-gray-200 px-4 py-2">
-                        {props.business.hours.Tuesday}
+                        {props.business.hours.Tuesday == ''
+                            ? 'Closed'
+                            : props.business.hours.Tuesday}
                     </td>
                 </tr>
                 <tr>
@@ -44,7 +47,9 @@ function HoursTable(props : Props) {
                         Wednesday
                     </td>
                     <td className="border border-gray-200 px-4 py-2">
-                        {props.business.hours.Wednesday}
+                        {props.business.hours.Wednesday == ''
+                            ? 'Closed'
+                            : props.business.hours.Wednesday}
                     </td>
                 </tr>
                 <tr>
@@ -52,13 +57,17 @@ function HoursTable(props : Props) {
                         Thursday
                     </td>
                     <td className="border border-gray-200 px-4 py-2">
-                        {props.business.hours.Thursday}
+                        {props.business.hours.Thursday == ''
+                            ? 'Closed'
+                            : props.business.hours.Thursday}
                     </td>
                 </tr>
                 <tr>
                     <td className="border border-gray-200 px-4 py-2">Friday</td>
                     <td className="border border-gray-200 px-4 py-2">
-                        {props.business.hours.Friday}
+                        {props.business.hours.Friday == ''
+                            ? 'Closed'
+                            : props.business.hours.Friday}
                     </td>
                 </tr>
                 <tr>
@@ -66,13 +75,17 @@ function HoursTable(props : Props) {
                         Saturday
                     </td>
                     <td className="border border-gray-200 px-4 py-2">
-                        {props.business.hours.Saturday}
+                        {props.business.hours.Saturday == ''
+                            ? 'Closed'
+                            : props.business.hours.Saturday}
                     </td>
                 </tr>
                 <tr>
                     <td className="border border-gray-200 px-4 py-2">Sunday</td>
                     <td className="border border-gray-200 px-4 py-2">
-                        {props.business.hours.Sunday}
+                        {props.business.hours.Sunday == ''
+                            ? 'Closed'
+                            : props.business.hours.Sunday}
                     </td>
                 </tr>
             </tbody>

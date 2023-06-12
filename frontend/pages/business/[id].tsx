@@ -111,7 +111,7 @@ function Business(props: { business: Business }) {
                     <Image
                         src={
                             business.business_pic
-                                ? `data:image/jpeg;base64,${business.business_pic}`
+                                ? `${business.business_pic}`
                                 : `/images/${defaultPic}`
                         }
                         alt="restaurant image"

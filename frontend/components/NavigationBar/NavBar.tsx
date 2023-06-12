@@ -22,6 +22,7 @@ function NavBar(props: Props) {
     const [textColor, setTextColor] = useState('white');
     const [borderColor, setBorderColor] = useState('transparent');
     const businessStatus = UseHasBusinessStatus();
+    // const [businessStatus, setBusinessStatus] = useState(false);
     const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -104,6 +105,7 @@ function NavBar(props: Props) {
                 );
 
                 setVectorScores(newVector);
+
                 setIsLoading(false);
             };
 
@@ -111,13 +113,13 @@ function NavBar(props: Props) {
         } else {
             setStatus(false);
         }
-    }, [status]);
+    }, []);
 
     return (
         <div
             style={{ backgroundColor: `${color}` }}
             className="fixed left-0 top-0 w-full z-10 ease-in duration-300">
-            <div className="max-w-[1240px] m-auto flex flex-row justify-between items-center p-4 text-white">
+            <div className="w-full m-auto flex flex-row justify-between items-center py-4 px-20 text-white">
                 <Link href="/">
                     <h1
                         style={{ color: `${textColor}` }}
@@ -174,7 +176,7 @@ function NavBar(props: Props) {
                         </li>
                         <li className="p-4">
                             {businessStatus == null ? (
-                                <div></div>
+                                <></>
                             ) : businessStatus ? (
                                 <Link href="/dashboard">Business</Link>
                             ) : (

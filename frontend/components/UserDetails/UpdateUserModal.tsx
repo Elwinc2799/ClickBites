@@ -23,6 +23,7 @@ function UpdateUserModal(user: User) {
     const [state, setState] = useState('');
     const [city, setCity] = useState('');
     const [profilePic, setProfilePic] = useState<File | null>(null);
+    const [disabled, setDisabled] = useState(true);
     const router = useRouter();
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -105,6 +106,14 @@ function UpdateUserModal(user: User) {
         }
     };
 
+    useEffect(() => {
+        if (name || phone || address || state || city || profilePic) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    }, [name, phone, address, state, city, profilePic]);
+
     return (
         <>
             <button className="" onClick={openModal}>
@@ -135,7 +144,7 @@ function UpdateUserModal(user: User) {
                                         alt="Profile picture"
                                         src={
                                             user.profilePic
-                                                ? `data:image/jpeg;base64,${user.profilePic}`
+                                                ? `${user.profilePic}`
                                                 : '/images/blank-profilepic.png'
                                         }
                                         width="0"
@@ -218,6 +227,7 @@ function UpdateUserModal(user: User) {
                                 </button>
                                 <button
                                     type="submit"
+                                    disabled={disabled}
                                     className="btn bg-blue-500 hover:bg-blue-700 text-white rounded-md border-none">
                                     Save
                                 </button>

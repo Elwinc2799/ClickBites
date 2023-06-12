@@ -11,6 +11,9 @@ import os
 import base64
 from user.routes import decodeToken
 from urllib.parse import unquote
+from PIL import Image
+import io
+import time
 
 # Create a Flask blueprint for business related routes
 business_bp = Blueprint("business", __name__)
@@ -20,6 +23,8 @@ db_business = Database.get_instance().get_db("business")
 db_review = Database.get_instance().get_db("review")
 db_user = Database.get_instance().get_db("user")
 
+# Define directory path for the photos
+photo_dir_path = "/Users/elwin/Desktop/yelp_photos/business_photo"
 
 # register a new business
 @business_bp.route("/api/business", methods=["POST"])
@@ -49,17 +54,11 @@ def registerBusiness():
                 # Handle the image file
                 if business_pic:
                     filename = secure_filename(business_pic.filename)
-                    business_pic.save(filename)
-
-                    # Now open the image file in binary mode
-                    with open(filename, "rb") as image_file:
-                        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+                    filepath = os.path.join(photo_dir_path, filename)
+                    business_pic.save(filepath)
 
                     # Add the encoded image to user_details
-                    business["business_pic"] = encoded_string
-
-                    # Remove image file after reading it
-                    os.remove(filename)
+                    business["business_pic"] = filepath
 
                 # initialize other necessary fields with 0/null
                 business["latitude"] = 0
@@ -173,27 +172,20 @@ def getSearchResults():
         # Get the search query regex
         search_query_regex = search_query
 
-        # Perform a case-insensitive search for the search query in the business categories
-        documents = list(db_business.find({"categories": {"$regex": search_query_regex, "$options": "i"}}))
-
-        # Perform a case-insensitive search for the search query in the business name
-        documents += list(db_business.find({"name": {"$regex": search_query_regex, "$options": "i"}}))
-
-        # Perform a case-insensitive search for the search query in the business address, city and state
-        documents += list(
+        # Perform a case-insensitive search for the search query in the business
+        documents = list(
             db_business.find(
                 {
                     "$or": [
-                        {"address": {"$regex": search_query_regex, "$options": "i"}},
-                        {"city": {"$regex": search_query_regex, "$options": "i"}},
-                        {"state": {"$regex": search_query_regex, "$options": "i"}},
+                        {"categories": {"$regex": search_query_regex}},
+                        {"name": {"$regex": search_query_regex}},
+                        {"address": {"$regex": search_query_regex}},
+                        {"city": {"$regex": search_query_regex}},
+                        {"state": {"$regex": search_query_regex}},
                     ]
                 }
             )
         )
-
-        # Remove duplicate in documents
-        documents = list({document["_id"]: document for document in documents}.values())
 
         print(len(documents))
 
@@ -299,7 +291,6 @@ def getBusinessDetails(business_id):
 @business_bp.route("/api/business/<string:business_id>", methods=["PUT"])
 def updateBusiness(business_id):
     try:
-
         # get user object from response form
         updated_info = json.loads(request.form.get("business"))
         business_pic = request.files.get("business_pic")
@@ -307,17 +298,11 @@ def updateBusiness(business_id):
         # Handle the image file
         if business_pic:
             filename = secure_filename(business_pic.filename)
-            business_pic.save(filename)
-
-            # Now open the image file in binary mode
-            with open(filename, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+            filepath = os.path.join(photo_dir_path, filename)
+            business_pic.save(filepath)
 
             # Add the encoded image to user_details
-            updated_info["business_pic"] = encoded_string
-
-            # Remove image file after reading it
-            os.remove(filename)
+            business["business_pic"] = filepath
 
         # search for business in database
         business = db_business.find_one({"_id": ObjectId(business_id)})

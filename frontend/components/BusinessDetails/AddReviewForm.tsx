@@ -17,8 +17,20 @@ interface Props {
     setShowForm: (showForm: boolean) => void;
 }
 
+function formatDateTime(date: Date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed in JS
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 const AddReviewForm = ({ businessId, setShowForm }: Props) => {
     const router = useRouter();
+    const [selectedStar, setSelectedStar] = useState<number>(1);
 
     const closeModal = () => {
         setShowForm(false);
@@ -48,10 +60,14 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
 
         const addUserIdDate = async () => {
             const userId = await fetchData();
+            const dateInMalaysia = new Date().toLocaleString('en-US', {
+                timeZone: 'Asia/Kuala_Lumpur',
+            });
+            const formattedDate = formatDateTime(new Date(dateInMalaysia));
             setReview((prevState) => ({
                 ...prevState,
                 user_id: userId,
-                date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+                date: formattedDate,
             }));
         };
 
@@ -61,10 +77,13 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        // Add selectedStar to review
+        const reviewWithStar = { ...review, stars: selectedStar };
+
         // post review to database
         const response = await axios.post(
             process.env.API_URL + '/api/business/' + businessId,
-            review,
+            reviewWithStar,
             {
                 headers: {
                     Authorization: `Bearer ${getCookie('token')}`,
@@ -110,8 +129,20 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
                     <label htmlFor="stars" className="block font-medium mb-1">
                         Rating
                     </label>
+                    <div className="rating rating-md w-full mb-5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <input
+                                key={star}
+                                type="radio"
+                                name="rating-2"
+                                className="mask mask-star-2 bg-orange-400 mr-1"
+                                checked={selectedStar === star}
+                                onChange={() => setSelectedStar(star)}
+                            />
+                        ))}
+                    </div>
 
-                    <input
+                    {/* <input
                         type="number"
                         name="stars"
                         id="stars"
@@ -121,14 +152,14 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
                         onChange={handleChange}
                         required
                         className="input input-bordered w-full mb-5"
-                    />
+                    /> */}
                     <label htmlFor="text" className="block font-medium mb-1">
                         Review
                     </label>
                     <textarea
                         name="text"
                         id="text"
-                        placeholder='Write your review here...'
+                        placeholder="Write your review here..."
                         value={review.text}
                         onChange={handleChange}
                         required

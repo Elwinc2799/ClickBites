@@ -7,6 +7,8 @@ import jwt
 from werkzeug.utils import secure_filename
 import os
 import base64
+from PIL import Image
+import io
 
 
 # Create a Flask blueprint for user related routes
@@ -17,6 +19,8 @@ db_user = Database.get_instance().get_db("user")
 db_review = Database.get_instance().get_db("review")
 db_business = Database.get_instance().get_db("business")
 
+# Define directory path for the photos
+photo_dir_path = "/Users/elwin/Desktop/yelp_photos/user_photo"
 
 # signup
 @user_bp.route("/api/signup", methods=["POST"])
@@ -32,17 +36,11 @@ def signUp():
         # Handle the image file
         if profile_pic:
             filename = secure_filename(profile_pic.filename)
-            profile_pic.save(filename)
+            filepath = os.path.join(photo_dir_path, filename)
+            profile_pic.save(filepath)
 
-            # Now open the image file in binary mode
-            with open(filename, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-
-            # Add the encoded image to user_details
-            user["profile_pic"] = encoded_string
-
-            # Remove image file after reading it
-            os.remove(filename)
+            # Save the image filepath to user_details
+            user["profile_pic"] = filepath
 
         # initialize other necessary fields with 0/null
         user["review_count"] = 0
@@ -97,21 +95,34 @@ def login():
         user = User().get()
 
         # search for user in database
-        user = db_user.find_one(user)
+        found = db_user.find_one(user)
 
         # check if user exists
-        if user is None:
-            return Response(
-                response=json.dumps(
-                    {
-                        "message": "The user data was not found in the database, please proceed to sign up",
-                    }
-                ),
-                status=404,
-                mimetype="application/json",
-            )
+        if found is None:
+            # check if user email exists
+            exists = db_user.find_one({"email": user.get("email")})
+            if exists is None:
+                return Response(
+                    response=json.dumps(
+                        {
+                            "message": "The user data was not found in the database, please proceed to sign up",
+                        }
+                    ),
+                    status=404,
+                    mimetype="application/json",
+                )
+            else:
+                return Response(
+                    response=json.dumps(
+                        {
+                            "message": "Password incorrect",
+                        }
+                    ),
+                    status=404,
+                    mimetype="application/json",
+                )
         else:
-            token = jwt.encode({"sub": str(user["_id"])}, "super-secret-key", algorithm="HS256")
+            token = jwt.encode({"sub": str(found["_id"])}, "super-secret-key", algorithm="HS256")
 
             # Return a JSON message with a 200 OK status code and JSON mimetype
             return Response(
@@ -186,7 +197,7 @@ def getHasBusinessFlag():
 
     if isinstance(user_id, str):
         # search for user in database
-        user = db_user.find_one({"_id": ObjectId(decodeToken())})
+        user = db_user.find_one({"_id": ObjectId(user_id)})
 
         # check if user exists
         if user is None:
@@ -203,6 +214,7 @@ def getHasBusinessFlag():
             # initialize hasBusiness flag if it does not exist
             if user.get("has_business") is None:
                 user["has_business"] = False
+
             # Return a JSON message with a 200 OK status code and JSON mimetype
             return Response(
                 response=json.dumps({"has_business": user["has_business"]}),
@@ -278,17 +290,11 @@ def updateProfile(user_id):
         # Handle the image file
         if profile_pic:
             filename = secure_filename(profile_pic.filename)
-            profile_pic.save(filename)
+            filepath = os.path.join(photo_dir_path, filename)
+            profile_pic.save(filepath)
 
-            # Now open the image file in binary mode
-            with open(filename, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-
-            # Add the encoded image to user_details
-            updated_info["profile_pic"] = encoded_string
-
-            # Remove image file after reading it
-            os.remove(filename)
+            # Save the image filepath to user_details
+            user["profile_pic"] = filepath
 
         # search for user in database
         user = db_user.find_one({"_id": ObjectId(user_id)})

@@ -22,7 +22,7 @@ function ReviewsTable({ business }: ReviewsTableProps) {
             <h1 className="text-2xl font-bold leading-relaxed text-gray-900 pl-4">
                 Reviews
             </h1>
-            <div className="overflow-y-auto h-[600px] w-full px-4 my-5">
+            <div className="overflow-y-auto h-[600px] w-full px-4 my-5 no-scrollbar">
                 <table className="table table-zebra border table-pin-rows table-pin-cols">
                     {/* head */}
                     <thead className="text-xl text-gray-900">

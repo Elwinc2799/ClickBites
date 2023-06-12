@@ -144,7 +144,7 @@ function UpdateUserModal(business: Business) {
                                         alt="Business picture"
                                         src={
                                             business.business_pic
-                                                ? `data:image/jpeg;base64,${business.business_pic}`
+                                                ? `${business.business_pic}`
                                                 : '/images/blank-businesspic.jpg'
                                         }
                                         width="0"

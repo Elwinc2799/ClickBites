@@ -1,7 +1,6 @@
 import json
 from pymongo import MongoClient, InsertOne
 import os
-import base64
 
 client = MongoClient("mongodb+srv://windev:windev@cluster0.mkcvmve.mongodb.net/")
 db = client.ckbt_db2
@@ -14,7 +13,7 @@ collections_files = [
 ]
 
 # Define directory path for the photos
-photo_dir_path = "./data/business_photo"
+photo_dir_path = "/Users/elwin/Desktop/yelp_photos/business_photo"
 
 i = 0
 for collection_name, file_path in collections_files:
@@ -31,11 +30,9 @@ for collection_name, file_path in collections_files:
                 # Define path for business photo
                 photo_path = os.path.join(photo_dir_path, document["business_id"] + ".jpg")
 
-                # If photo exists, encode it and store in the document
+                # If photo exists, store in the document
                 if os.path.exists(photo_path):
-                    with open(photo_path, "rb") as image_file:
-                        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-                    document["business_pic"] = encoded_string
+                    document["business_pic"] = photo_path
 
             requests.append(InsertOne(document))
             i += 1

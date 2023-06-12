@@ -45,7 +45,7 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
                                 alt="..."
                                 src={
                                     business?.business_pic
-                                        ? `data:image/jpeg;base64,${business.business_pic}`
+                                        ? `${business.business_pic}`
                                         : `/images/${defaultPic}`
                                 }
                                 width="0"

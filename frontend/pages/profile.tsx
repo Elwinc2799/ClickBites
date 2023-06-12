@@ -205,7 +205,7 @@ function Profile() {
                                                             alt="Profile picture"
                                                             src={
                                                                 profilePic
-                                                                    ? `data:image/jpeg;base64,${profilePic}`
+                                                                    ? `${profilePic}`
                                                                     : `/images/${defaultPic}`
                                                             }
                                                             width="0"
