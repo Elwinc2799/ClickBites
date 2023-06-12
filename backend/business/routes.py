@@ -297,8 +297,25 @@ def getBusinessDetails(business_id):
 @business_bp.route("/api/business/<string:business_id>", methods=["PUT"])
 def updateBusiness(business_id):
     try:
-        # get business object from response form
-        updated_info = Business().get()
+
+        # get user object from response form
+        updated_info = json.loads(request.form.get("business"))
+        business_pic = request.files.get("business_pic")
+
+        # Handle the image file
+        if business_pic:
+            filename = secure_filename(business_pic.filename)
+            business_pic.save(filename)
+
+            # Now open the image file in binary mode
+            with open(filename, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+
+            # Add the encoded image to user_details
+            updated_info["business_pic"] = encoded_string
+
+            # Remove image file after reading it
+            os.remove(filename)
 
         # search for business in database
         business = db_business.find_one({"_id": ObjectId(business_id)})

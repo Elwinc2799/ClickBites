@@ -2,8 +2,10 @@ import React, { ReactEventHandler } from 'react';
 import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
+import UpdateBusinessModal from './UpdateBusinessModal';
 
 interface Business {
+    _id: string;
     name: string;
     address: string;
     city: string;
@@ -30,12 +32,12 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
         setShowMore(!showMore);
     };
 
-    const shortDescription = `${business?.description.substring(0, 300)}...`;
+    const shortDescription = `${business?.description.substring(0, 250)}...`;
     const fullDescription = business?.description;
 
     return (
         <>
-            <div className="flex flex-col min-w-0 break-words bg-white w-4/12 mb-6 shadow-xl rounded-lg mt-20">
+            <div className="flex flex-col min-w-0 break-words bg-white w-4/12 h-[840px] mb-6 shadow-xl rounded-lg mt-20">
                 <div className="flex flex-wrap justify-center">
                     <div className="w-full flex justify-center">
                         <div className="w-full">
@@ -54,13 +56,29 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
                         </div>
                     </div>
                 </div>
-                <div className="text-center mt-12">
+                <div className="relative">
+                    <div className="absolute top-5 right-5">
+                        <UpdateBusinessModal
+                            _id={business?._id}
+                            name={business?.name}
+                            address={business?.address}
+                            city={business?.city}
+                            state={business?.state}
+                            latitude={business?.latitude}
+                            longitude={business?.longitude}
+                            categories={business?.categories}
+                            description={business?.description}
+                            business_pic={business?.business_pic}
+                        />
+                    </div>
+                </div>
+                <div className="text-center mt-5">
                     <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-900">
                         {business?.name}
                     </h3>
                     <Link
                         href={`https://www.google.com/maps/place/${business?.latitude},${business?.longitude}`}>
-                        <div className="text-blue-500 underline mt-3 flex flex-row justify-center">
+                        <div className="text-blue-500 underline mt-3 flex flex-row justify-center items-center">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"

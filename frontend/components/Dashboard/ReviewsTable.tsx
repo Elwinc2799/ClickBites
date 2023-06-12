@@ -18,12 +18,12 @@ interface ReviewsTableProps {
 
 function ReviewsTable({ business }: ReviewsTableProps) {
     return (
-        <>
-            <h1 className="text-2xl font-bold leading-relaxed  text-gray-900 pl-4">
+        <div className='px-10'>
+            <h1 className="text-2xl font-bold leading-relaxed text-gray-900 pl-4">
                 Reviews
             </h1>
-            <div className="overflow-x-auto w-full px-4 py-5">
-                <table className="table table-zebra ">
+            <div className="overflow-y-auto h-[600px] w-full px-4 my-5">
+                <table className="table table-zebra border table-pin-rows table-pin-cols">
                     {/* head */}
                     <thead className="text-xl text-gray-900">
                         <tr>
@@ -63,7 +63,7 @@ function ReviewsTable({ business }: ReviewsTableProps) {
                     </tbody>
                 </table>
             </div>
-        </>
+        </div>
     );
 }
 

@@ -2,14 +2,12 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { getCookie } from 'cookies-next';
 import UseLoadingAnimation from '@/components/utils/UseLoadingAnimation';
-import { Background } from '@/components/Background/Background';
-import DashboardFooter from '@/components/Layout/DashboardFooter';
 import DashboardNavbar from '@/components/NavigationBar/DashboardNavBar';
-import Image from 'next/image';
 import DashboardHeader from '@/components/Layout/DashboardHeader';
 import CardProfile from '@/components/Dashboard/CardProfile';
 import ReviewsTable from '@/components/Dashboard/ReviewsTable';
 import AspectRadar from '@/components/SharedComponents/AspectRadar';
+import Footer from '@/components/Layout/Footer';
 
 interface Review {
     _id: string;
@@ -22,6 +20,7 @@ interface Review {
     date: string;
 }
 interface Business {
+    _id: string;
     name: string;
     address: string;
     city: string;
@@ -82,8 +81,6 @@ function Dashboard() {
                     }
                 );
 
-                console.log('response.data', response.data);
-
                 const newVectorText = [
                     'Food',
                     'Service',
@@ -105,7 +102,6 @@ function Dashboard() {
                 setVectorScores(newVector);
 
                 setBusiness(response.data);
-
             } catch (error) {
                 console.log(
                     'There was an error fetching the business data',
@@ -124,17 +120,17 @@ function Dashboard() {
                 <UseLoadingAnimation isLoading={isLoading} />
             ) : (
                 <>
-                    <div className="bg-[#1f283b] relative h-44 px-10">
+                    <div className="bg-[#1f283b] relative h-44">
                         <DashboardNavbar />
 
-                        <div className="flex flex-row justify-start items-start w-full">
+                        <div className="flex flex-row justify-start items-start w-full px-10">
                             <CardProfile
                                 business={business}
                                 defaultPic={defaultPic}
                             />
-                            <div className="flex flex-col justify-start items-center w-8/12 ">
+                            <div className="flex flex-col justify-start items-center w-8/12 h-52">
                                 <DashboardHeader business={business} />
-                                <h1 className="text-2xl font-bold leading-relaxed  text-gray-900">
+                                <h1 className="text-2xl font-bold leading-relaxed text-gray-900">
                                     Aspect Analysis
                                 </h1>
                                 <AspectRadar
@@ -144,9 +140,9 @@ function Dashboard() {
                                 />
                             </div>
                         </div>
-                        <hr className="mt-9 mb-4 border-1 border-gray-300 w-full" />
+                        <hr className="mt-9 mb-4 border-1 border-gray-300 mx-10" />
                         <ReviewsTable business={business} />
-                        <DashboardFooter />
+                        <Footer />
                     </div>
                 </>
             )}

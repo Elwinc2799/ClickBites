@@ -98,10 +98,10 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
                 <RadarChart
                     className="text-lg font-medium"
                     cx={500}
-                    cy={350}
-                    outerRadius={300}
+                    cy={300}
+                    outerRadius={250}
                     width={1000}
-                    height={700}
+                    height={600}
                     data={data}>
                     <PolarGrid />
                     <PolarAngleAxis dataKey="name" />
