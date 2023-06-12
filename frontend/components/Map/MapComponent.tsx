@@ -1,3 +1,5 @@
+/// <reference types="googlemaps" />
+
 import React, { useEffect, useContext } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import { LocationContext } from '@/components/utils/LocationContext';
@@ -54,10 +56,9 @@ function MapComponent({ setLat, setLng }: MapComponentProps) {
                         console.log(
                             'Current Latitude:',
                             evt.latLng.lat(),
-                            
+
                             'Current Longitude:',
-                            evt.latLng.lng(),
-                            
+                            evt.latLng.lng()
                         );
                         setLat(evt.latLng.lat());
                         setLng(evt.latLng.lng());

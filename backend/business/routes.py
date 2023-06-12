@@ -212,6 +212,8 @@ def getSearchResults():
                 # Sort documents by cosine similarity in descending order
                 documents.sort(key=lambda x: x["similarity"], reverse=True)
             else:
+                for document in documents:
+                    document["similarity"] = 0
                 # Sort documents by average stars in descending order
                 documents.sort(key=lambda x: x["stars"], reverse=True)
 

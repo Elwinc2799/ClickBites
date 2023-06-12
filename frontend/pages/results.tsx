@@ -8,6 +8,7 @@ import { getCookie } from 'cookies-next';
 import ResultCard from '@/components/ResultCard/ResultCard';
 import UseLoadingAnimation from '@/components/utils/UseLoadingAnimation';
 import MapComponent from '@/components/Map/MapComponent';
+import Image from 'next/image';
 
 interface Business {
     _id: string;
@@ -252,6 +253,7 @@ function Results() {
                                         <span>|</span>
                                         <span>|</span>
                                         <span>|</span>
+                                        <span>|</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-row justify-between items-start mb-6">
@@ -316,7 +318,15 @@ function Results() {
                                 </div>
                             </div>
                             <div className="h-screen w-4/12 shrink-0 flex px-4 py-4 border-l-2 border-gray-200">
-                                {/* <MapComponent setLng={setLongitude} setLat={setLatitude} /> */}
+                                <MapComponent setLng={setLongitude} setLat={setLatitude} />
+                                {/* <Image
+                                    src="/images/map.jpg"
+                                    alt="Map"
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw, 48vw"
+                                    className="object-cover h-full w-full"
+                                /> */}
                             </div>
                         </div>
                     </Background>

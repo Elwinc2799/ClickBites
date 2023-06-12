@@ -216,15 +216,7 @@ function Profile() {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex w-4/12 px-4 order-4 text-right self-center justify-between">
-                                                    <div className="mr-4 p-3 text-center">
-                                                        <span className="text-xl font-bold block tracking-wide text-gray-900">
-                                                            {city}
-                                                        </span>
-                                                        <span className="text-sm text-gray-900">
-                                                            City
-                                                        </span>
-                                                    </div>
+                                                <div className="flex w-4/12 px-4 order-4 text-right self-center justify-around items-end">
                                                     <div className="mr-4 p-3 text-center">
                                                         <span className="text-xl font-bold block uppercase tracking-wide text-gray-900">
                                                             {reviewCount}
@@ -244,7 +236,7 @@ function Profile() {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="px-4 order-1">
+                                                <div className="px-4 order-1 items-end">
                                                     <div className="flex justify-between py-4 lg:pt-4 pt-8">
                                                         <div className="mr-4 p-3 text-center">
                                                             <span className="text-xl font-bold block tracking-wide text-gray-900">
@@ -271,7 +263,7 @@ function Profile() {
                                                 </h3>
                                                 <div className="text-lg leading-normal mt-0 mb-2 text-gray-900 font-bold uppercase">
                                                     <i className="fas fa-map-marker-alt mr-2 text-lg text-gray-900"></i>{' '}
-                                                    {address}, {state}
+                                                    {address}, {city}, {state}
                                                 </div>
                                             </div>
 

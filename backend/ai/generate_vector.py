@@ -42,10 +42,15 @@ print("Loading the model...")
 # Initialize the VADER sentiment analyzer
 analyzer = SentimentIntensityAnalyzer()
 
+# Get the absolute path of the current script
+script_dir = os.path.dirname(os.path.realpath(__file__))
 
-# Load punkt and stopwords nltk packages
-nltk.download("punkt")
-nltk.download("stopwords")
+# Construct the NLTK data path
+nltk_data_path = os.path.join(script_dir, "nltk_data")
+
+# Download the NLTK data
+nltk.download("punkt", download_dir=nltk_data_path)
+nltk.download("stopwords", download_dir=nltk_data_path)
 stop_words = set(stopwords.words("english"))
 
 
