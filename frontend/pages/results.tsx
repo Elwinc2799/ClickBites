@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import { Background } from '@/components/Background/Background';
 import NavBar from '@/components/NavigationBar/NavBar';
 import Footer from '@/components/Layout/Footer';
@@ -8,6 +7,7 @@ import axios from 'axios';
 import { getCookie } from 'cookies-next';
 import ResultCard from '@/components/ResultCard/ResultCard';
 import UseLoadingAnimation from '@/components/utils/UseLoadingAnimation';
+import MapComponent from '@/components/Map/MapComponent';
 
 interface Business {
     _id: string;
@@ -36,6 +36,34 @@ interface Business {
     similarity: number;
 }
 
+function haversineDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+) {
+    function toRad(x: number) {
+        return (x * Math.PI) / 180;
+    }
+
+    var R = 6371; // km
+    var x1 = lat2 - lat1;
+    var dLat = toRad(x1);
+    var x2 = lon2 - lon1;
+    var dLon = toRad(x2);
+    var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) *
+            Math.cos(toRad(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+
+    return d;
+}
+
+
 function Results() {
     const router = useRouter();
     const search_query = router.query.search_query;
@@ -50,6 +78,10 @@ function Results() {
     const [isLoading, setIsLoading] = useState(true);
 
     const [isToggled, setIsToggled] = useState(false);
+
+    const [longitude, setLongitude] = useState<number>(0);
+    const [latitude, setLatitude] = useState<number>(0);
+    const [searchRadius, setSearchRadius] = useState<number>(100); // in km
 
     useEffect(() => {
         const fetchData = async () => {
@@ -99,7 +131,19 @@ function Results() {
     // Filter and sort businesses
     useEffect(() => {
         const filterAndSortBusinesses = () => {
-            let filteredBusinesses = businesses.filter((business: Business) => {
+            let filteredLocationBusinesses = businesses.filter((business: Business) => {
+                
+                const distance = haversineDistance(
+                    latitude,
+                    longitude,
+                    business.latitude,
+                    business.longitude
+                );
+                
+                return distance <= searchRadius;
+            });
+            
+            let filteredBusinesses = filteredLocationBusinesses.filter((business: Business) => {
                 let meetsStarsCondition = business.stars >= starsFilter;
                 let meetsOpenNowCondition = !isOpenNowFilter;
 
@@ -167,7 +211,7 @@ function Results() {
         };
 
         filterAndSortBusinesses();
-    }, [isToggled, businesses, starsFilter, isOpenNowFilter]);
+    }, [isToggled, businesses, starsFilter, isOpenNowFilter, latitude, longitude, searchRadius]);
 
     return (
         <>
@@ -272,14 +316,7 @@ function Results() {
                                 </div>
                             </div>
                             <div className="h-screen w-4/12 shrink-0 flex px-4 py-4 border-l-2 border-gray-200">
-                                <Image
-                                    src="/images/map.jpg"
-                                    alt="Map"
-                                    width={0}
-                                    height={0}
-                                    sizes="100vw, 48vw"
-                                    className="object-cover h-full w-full"
-                                />
+                                {/* <MapComponent setLng={setLongitude} setLat={setLatitude} /> */}
                             </div>
                         </div>
                     </Background>

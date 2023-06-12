@@ -42,12 +42,10 @@ print("Loading the model...")
 # Initialize the VADER sentiment analyzer
 analyzer = SentimentIntensityAnalyzer()
 
-# Set the NLTK_DATA environment variable to point to the NLTK data location
-os.environ["NLTK_DATA"] = "./ai/nltk_data/"
 
 # Load punkt and stopwords nltk packages
-nltk.download("punkt", download_dir=os.getenv("NLTK_DATA"))
-nltk.download("stopwords", download_dir=os.getenv("NLTK_DATA"))
+nltk.download("punkt")
+nltk.download("stopwords")
 stop_words = set(stopwords.words("english"))
 
 
