@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import { Background } from '@/components/Background/Background';
 import NavBar from '@/components/NavigationBar/NavBar';
@@ -8,7 +8,7 @@ import { getCookie } from 'cookies-next';
 import ResultCard from '@/components/ResultCard/ResultCard';
 import UseLoadingAnimation from '@/components/utils/UseLoadingAnimation';
 import MapComponent from '@/components/Map/MapComponent';
-import Image from 'next/image';
+import { LocationContext } from '@/components/utils/LocationContext';
 
 interface Business {
     _id: string;
@@ -38,13 +38,17 @@ interface Business {
 }
 
 function haversineDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
+    lat1: number | null,
+    lon1: number | null,
+    lat2: number | null,
+    lon2: number | null
 ) {
     function toRad(x: number) {
         return (x * Math.PI) / 180;
+    }
+
+    if (lat1 === null || lon1 === null || lat2 === null || lon2 === null) {
+        return 99999999;
     }
 
     var R = 6371; // km
@@ -79,8 +83,11 @@ function Results() {
 
     const [isToggled, setIsToggled] = useState(false);
 
-    const [longitude, setLongitude] = useState<number>(0);
-    const [latitude, setLatitude] = useState<number>(0);
+    // set default latitude and longitude to be default location based on location provider
+    const { latitude: defaultLatitude, longitude: defaultLongitude } =
+        useContext(LocationContext);
+    const [latitude, setLatitude] = useState<number | null>(defaultLatitude);
+    const [longitude, setLongitude] = useState<number | null>(defaultLongitude);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -123,27 +130,25 @@ function Results() {
             setBusinesses(newBusinessData);
             setIsLoading(false);
         };
-
         fetchData();
     }, [search_query]);
 
     // Filter and sort businesses
     useEffect(() => {
         const filterAndSortBusinesses = () => {
-            let filteredBusinesses = businesses.filter(
-                (business: Business) => {
-                    const distance = haversineDistance(
-                        latitude,
-                        longitude,
-                        business.latitude,
-                        business.longitude
-                    );
-                    console.log(distance);
+            setLatitude(defaultLatitude);
+            setLongitude(defaultLongitude);
 
-                    return distance <= 20;
-                }
-            );
+            let filteredBusinesses = businesses.filter((business: Business) => {
+                const distance = haversineDistance(
+                    latitude,
+                    longitude,
+                    business.latitude,
+                    business.longitude
+                );
 
+                return distance <= 20;
+            });
 
             filteredBusinesses = filteredBusinesses.filter(
                 (business: Business) => {
@@ -222,6 +227,8 @@ function Results() {
         isOpenNowFilter,
         latitude,
         longitude,
+        defaultLatitude,
+        defaultLongitude,
     ]);
 
     return (
@@ -321,6 +328,13 @@ function Results() {
                                                 isToggled={isToggled}
                                             />
                                         )
+                                    )}
+                                    {filteredSortedBusinesses.length === 0 && (
+                                        <div className="flex flex-col items-center justify-center">
+                                            <p className="mb-4 text-lg font-medium leading-relaxed text-gray-900">
+                                                No restaurant found
+                                            </p>
+                                        </div>
                                     )}
                                     <div className="divider mt-10">END</div>
                                 </div>

@@ -27,6 +27,7 @@ function UpdateUserModal(business: Business) {
     const [categories, setCategories] = useState('');
     const [description, setDescription] = useState('');
     const [businessPic, setBusinessPic] = useState<File | null>(null);
+    const [disabled, setDisabled] = useState(true);
     const router = useRouter();
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -114,12 +115,28 @@ function UpdateUserModal(business: Business) {
         }
     };
 
+    useEffect(() => {
+        if (
+            name ||
+            address ||
+            city ||
+            state ||
+            categories ||
+            description ||
+            businessPic
+        ) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    }, [name, address, city, state, categories, description, businessPic]);
+
     return (
         <>
             <button className="" onClick={openModal}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 mr-2 -ml-1 dark:text-gray-700"
+                    className="w-6 h-6 dark:text-gray-700"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -144,7 +161,7 @@ function UpdateUserModal(business: Business) {
                                         alt="Business picture"
                                         src={
                                             business.business_pic
-                                                ? `${business.business_pic}`
+                                                ? `/business_photo/${business.business_pic}`
                                                 : '/images/blank-businesspic.jpg'
                                         }
                                         width="0"
@@ -239,6 +256,7 @@ function UpdateUserModal(business: Business) {
                                 </button>
                                 <button
                                     type="submit"
+                                    disabled={disabled}
                                     className="btn bg-blue-500 hover:bg-blue-700 text-white rounded-md border-none">
                                     Save
                                 </button>
@@ -252,5 +270,3 @@ function UpdateUserModal(business: Business) {
 }
 
 export default UpdateUserModal;
-
-

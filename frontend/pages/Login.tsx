@@ -16,7 +16,7 @@ function Login() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const expiryDate = new Date();
-        expiryDate.setTime(expiryDate.getTime() + 60 * 60 * 1000); // 1 hour from now
+        expiryDate.setTime(expiryDate.getTime() + (60 * 60 * 1000) * 2); // 2 hour from now
 
         try {
             const response = await axios.post(

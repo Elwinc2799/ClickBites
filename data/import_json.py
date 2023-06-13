@@ -14,7 +14,7 @@ collections_files = [
 ]
 
 # Define directory path for the photos
-photo_dir_path = "/Users/elwin/Desktop/yelp_photos/business_photo"
+photo_dir_path = "./frontend/public/business_photo"
 
 i = 0
 for collection_name, file_path in collections_files:
@@ -33,18 +33,18 @@ for collection_name, file_path in collections_files:
 
                 # If photo exists, store in the document
                 if os.path.exists(photo_path):
-                    document["business_pic"] = photo_path
+                    document["business_pic"] =  document["business_id"] + ".jpg"
                 else:
                     # Generate a random number between 1 and 10 to get a random photo
                     random_num = str(random.randint(1, 10))
-                    random_photo_path = os.path.join(photo_dir_path, "business_" + random_num + ".jpg")
+                    random_photo_path = "business_" + random_num + ".jpg"
                     document["business_pic"] = random_photo_path
             
             # If it's the user collection, handle the photo
             if collection_name == "user":
                 # Generate a random number between 1 and 10 to get a random photo
                 random_num = str(random.randint(1, 10))
-                random_photo_path = os.path.join(photo_dir_path, "user_" + random_num + ".jpg")
+                random_photo_path = "user_" + random_num + ".jpg"
                 document["profile_pic"] = random_photo_path
 
             requests.append(InsertOne(document))

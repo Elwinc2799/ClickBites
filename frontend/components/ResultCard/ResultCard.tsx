@@ -82,7 +82,7 @@ function ResultCard({ business, index, isToggled }: ResultCardProps) {
                             <Image
                                 src={
                                     business.business_pic
-                                        ? `${business.business_pic}`
+                                        ? `/business_photo/${business.business_pic}`
                                         : `/images/${defaultPic}`
                                 }
                                 alt="Business Image"

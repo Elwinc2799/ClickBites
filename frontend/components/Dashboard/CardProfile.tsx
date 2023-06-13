@@ -37,7 +37,7 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
 
     return (
         <>
-            <div className="flex flex-col min-w-0 break-words bg-white w-4/12 h-[840px] mb-6 shadow-xl rounded-lg mt-20">
+            <div className="flex flex-col min-w-0 break-words bg-white w-4/12 h-auto min-h-[840px] mb-6 shadow-xl rounded-lg mt-20">
                 <div className="flex flex-wrap justify-center">
                     <div className="w-full flex justify-center">
                         <div className="w-full">
@@ -45,7 +45,7 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
                                 alt="..."
                                 src={
                                     business?.business_pic
-                                        ? `${business.business_pic}`
+                                        ? `/business_photo/${business.business_pic}`
                                         : `/images/${defaultPic}`
                                 }
                                 width="0"
@@ -57,7 +57,7 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
                     </div>
                 </div>
                 <div className="relative">
-                    <div className="absolute top-5 right-5">
+                    <div className="absolute top-3 right-2">
                         <UpdateBusinessModal
                             _id={business?._id}
                             name={business?.name}
@@ -73,7 +73,7 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
                     </div>
                 </div>
                 <div className="text-center mt-5">
-                    <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-900">
+                    <h3 className="text-4xl font-semibold leading-normal mb-2 text-gray-900 px-10">
                         {business?.name}
                     </h3>
                     <Link

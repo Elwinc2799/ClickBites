@@ -6,9 +6,7 @@ from bson.objectid import ObjectId
 import jwt
 from werkzeug.utils import secure_filename
 import os
-import base64
-from PIL import Image
-import io
+import uuid
 
 
 # Create a Flask blueprint for user related routes
@@ -20,7 +18,8 @@ db_review = Database.get_instance().get_db("review")
 db_business = Database.get_instance().get_db("business")
 
 # Define directory path for the photos
-photo_dir_path = "/Users/elwin/Desktop/yelp_photos/user_photo"
+photo_dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'frontend', 'public', 'user_photo')
+
 
 # signup
 @user_bp.route("/api/signup", methods=["POST"])
@@ -35,11 +34,20 @@ def signUp():
 
         # Handle the image file
         if profile_pic:
-            filename = secure_filename(profile_pic.filename)
-            filepath = os.path.join(photo_dir_path, filename)
-            profile_pic.save(filepath)
+            # Generate a random UUID
+            random_id = uuid.uuid4()
 
-            # Save the image filepath to user_details
+            filepath = os.path.join(photo_dir_path, str(random_id) + ".jpg")
+            
+            try:
+                profile_pic.save(filepath)
+                print(f'Successfully saved image at {filepath}')
+            except Exception as e:
+                print(f'Failed to save image: {str(e)}')
+            
+            # trim the file path to be relative to the frontend
+            filepath = filepath.split("user_photo/")[1]
+
             user["profile_pic"] = filepath
 
         # initialize other necessary fields with 0/null
@@ -289,18 +297,28 @@ def updateProfile(user_id):
 
         # Handle the image file
         if profile_pic:
-            filename = secure_filename(profile_pic.filename)
-            filepath = os.path.join(photo_dir_path, filename)
-            profile_pic.save(filepath)
+            # Generate a random UUID
+            random_id = uuid.uuid4()
 
-            # Save the image filepath to user_details
-            user["profile_pic"] = filepath
+            filepath = os.path.join(photo_dir_path, str(random_id) + ".jpg")
+            
+            try:
+                profile_pic.save(filepath)
+                print(f'Successfully saved image at {filepath}')
+            except Exception as e:
+                print(f'Failed to save image: {str(e)}')
+            
+            # trim the file path to be relative to the frontend
+            filepath = filepath.split("user_photo/")[1]
+
+            updated_info['profile_pic'] = filepath
 
         # search for user in database
         user = db_user.find_one({"_id": ObjectId(user_id)})
 
         # check if user exists
         if user is None:
+
             return Response(
                 response=json.dumps(
                     {
@@ -311,6 +329,12 @@ def updateProfile(user_id):
                 mimetype="application/json",
             )
         else:
+            # retrieve the image file
+            if profile_pic:
+                filepath = os.path.join(photo_dir_path, user['profile_pic'])
+
+                os.remove(filepath)
+
             # update user object in database with this list of data
             db_user.update_one(
                 {"_id": ObjectId(user_id)},

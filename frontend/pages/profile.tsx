@@ -205,7 +205,7 @@ function Profile() {
                                                             alt="Profile picture"
                                                             src={
                                                                 profilePic
-                                                                    ? `${profilePic}`
+                                                                    ? `/user_photo/${profilePic}`
                                                                     : `/images/${defaultPic}`
                                                             }
                                                             width="0"

@@ -1,5 +1,5 @@
 import { getCookie } from 'cookies-next';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
@@ -31,6 +31,7 @@ function formatDateTime(date: Date) {
 const AddReviewForm = ({ businessId, setShowForm }: Props) => {
     const router = useRouter();
     const [selectedStar, setSelectedStar] = useState<number>(1);
+    const [disabled, setDisabled] = useState<boolean>(true);
 
     const closeModal = () => {
         setShowForm(false);
@@ -121,6 +122,14 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
         setReview((prevState) => ({ ...prevState, [name]: value }));
     };
 
+    useEffect(() => {
+        if (review.text.length > 0) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    }, [review.text]);
+
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
             <div className="modal modal-open">
@@ -163,7 +172,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
                         value={review.text}
                         onChange={handleChange}
                         required
-                        className="textarea textarea-bordered w-full mb-5 "
+                        className="textarea textarea-bordered w-full mb-5 h-44"
                     />
                     <div className="modal-action justify-between">
                         <button
@@ -174,6 +183,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
                         </button>
                         <button
                             type="submit"
+                            disabled={disabled}
                             className="btn bg-blue-500 hover:bg-blue-700 text-white rounded-md border-none">
                             Save
                         </button>

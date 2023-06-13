@@ -46,6 +46,8 @@ function SignUp() {
                 if (profilePic) {
                     formData.append('profile_pic', profilePic);
                 }
+
+                console.log(formData)
     
                 const response = await axios.post(
                     process.env.API_URL + '/api/signup',
@@ -119,6 +121,7 @@ function SignUp() {
                                         onChange={(event) =>
                                             setEmail(event.target.value)
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -132,6 +135,7 @@ function SignUp() {
                                         onChange={(event) =>
                                             setName(event.target.value)
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -145,6 +149,7 @@ function SignUp() {
                                         onChange={(event) =>
                                             setPassword(event.target.value)
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -162,6 +167,7 @@ function SignUp() {
                                                 event.target.value
                                             )
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -175,6 +181,7 @@ function SignUp() {
                                         onChange={(event) =>
                                             setPhone(event.target.value)
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -188,6 +195,7 @@ function SignUp() {
                                         onChange={(event) =>
                                             setAddress(event.target.value)
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -201,6 +209,7 @@ function SignUp() {
                                         onChange={(event) =>
                                             setCity(event.target.value)
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -214,6 +223,7 @@ function SignUp() {
                                         onChange={(event) =>
                                             setState(event.target.value)
                                         }
+                                        required
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
@@ -228,7 +238,7 @@ function SignUp() {
                                             if (event.target.files && event.target.files[0]) {
                                                 setProfilePic(event.target.files[0]);
                                             }
-                                        }}                   
+                                        }}                  
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>

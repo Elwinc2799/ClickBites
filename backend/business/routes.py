@@ -8,12 +8,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from werkzeug.utils import secure_filename
 import os
-import base64
 from user.routes import decodeToken
 from urllib.parse import unquote
-from PIL import Image
-import io
-import time
+import uuid
 
 # Create a Flask blueprint for business related routes
 business_bp = Blueprint("business", __name__)
@@ -24,7 +21,10 @@ db_review = Database.get_instance().get_db("review")
 db_user = Database.get_instance().get_db("user")
 
 # Define directory path for the photos
-photo_dir_path = "/Users/elwin/Desktop/yelp_photos/business_photo"
+photo_dir_path = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "..", "..", "frontend", "public", "business_photo"
+)
+
 
 # register a new business
 @business_bp.route("/api/business", methods=["POST"])
@@ -53,16 +53,23 @@ def registerBusiness():
             else:
                 # Handle the image file
                 if business_pic:
-                    filename = secure_filename(business_pic.filename)
-                    filepath = os.path.join(photo_dir_path, filename)
-                    business_pic.save(filepath)
+                    # Generate a random UUID
+                    random_id = uuid.uuid4()
 
-                    # Add the encoded image to user_details
+                    filepath = os.path.join(photo_dir_path, str(random_id) + ".jpg")
+
+                    try:
+                        business_pic.save(filepath)
+                        print(f"Successfully saved image at {filepath}")
+                    except Exception as e:
+                        print(f"Failed to save image: {str(e)}")
+
+                    # trim the file path to be relative to the frontend
+                    filepath = filepath.split("business_photo/")[1]
+
                     business["business_pic"] = filepath
 
                 # initialize other necessary fields with 0/null
-                business["latitude"] = 0
-                business["longitude"] = 0
                 business["stars"] = 0
                 business["review_count"] = 0
                 business["view_count"] = 0
@@ -177,11 +184,11 @@ def getSearchResults():
             db_business.find(
                 {
                     "$or": [
-                        {"categories": {"$regex": search_query_regex}},
-                        {"name": {"$regex": search_query_regex}},
-                        {"address": {"$regex": search_query_regex}},
-                        {"city": {"$regex": search_query_regex}},
-                        {"state": {"$regex": search_query_regex}},
+                        {"categories": {"$regex": search_query_regex, "$options": "i"}},
+                        {"name": {"$regex": search_query_regex, "$options": "i"}},
+                        {"address": {"$regex": search_query_regex, "$options": "i"}},
+                        {"city": {"$regex": search_query_regex, "$options": "i"}},
+                        {"state": {"$regex": search_query_regex, "$options": "i"}},
                     ]
                 }
             )
@@ -297,12 +304,21 @@ def updateBusiness(business_id):
 
         # Handle the image file
         if business_pic:
-            filename = secure_filename(business_pic.filename)
-            filepath = os.path.join(photo_dir_path, filename)
-            business_pic.save(filepath)
+            # Generate a random UUID
+            random_id = uuid.uuid4()
 
-            # Add the encoded image to user_details
-            business["business_pic"] = filepath
+            filepath = os.path.join(photo_dir_path, str(random_id) + ".jpg")
+
+            try:
+                business_pic.save(filepath)
+                print(f"Successfully saved image at {filepath}")
+            except Exception as e:
+                print(f"Failed to save image: {str(e)}")
+
+            # trim the file path to be relative to the frontend
+            filepath = filepath.split("business_photo/")[1]
+
+            updated_info["business_pic"] = filepath
 
         # search for business in database
         business = db_business.find_one({"_id": ObjectId(business_id)})
@@ -319,6 +335,12 @@ def updateBusiness(business_id):
                 mimetype="application/json",
             )
         else:
+            # retrieve the image file
+            if business_pic:
+                filepath = os.path.join(photo_dir_path, business["business_pic"])
+
+                os.remove(filepath)
+
             # update business object in database with this list of data
             db_business.update_one(
                 {"_id": ObjectId(business_id)},

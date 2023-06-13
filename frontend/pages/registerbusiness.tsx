@@ -1,4 +1,10 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, {
+    useState,
+    ChangeEvent,
+    FormEvent,
+    useContext,
+    useEffect,
+} from 'react';
 import NavBar from '@/components/NavigationBar/NavBar';
 import { Background } from '@/components/Background/Background';
 import Footer from '@/components/Layout/Footer';
@@ -6,6 +12,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { getCookie } from 'cookies-next';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { LocationContext } from '@/components/utils/LocationContext';
 
 interface Business {
     name: string;
@@ -18,6 +26,27 @@ interface Business {
 }
 
 function RegisterBusiness() {
+    const { latitude: defaultLatitude, longitude: defaultLongitude } =
+        useContext(LocationContext);
+
+    console.log(defaultLatitude, defaultLongitude);
+
+    const defaultCenter = {
+        lat: defaultLatitude || 0,
+        lng: defaultLongitude || 0,
+    };
+
+    const [selectedLocation, setSelectedLocation] = useState(defaultCenter);
+
+    useEffect(() => {
+        const newCenter = {
+            lat: defaultLatitude || 0,
+            lng: defaultLongitude || 0,
+        };
+
+        setSelectedLocation(newCenter);
+    }, [defaultLatitude, defaultLongitude]);
+
     const initialBusinessState: Business = {
         name: '',
         address: '',
@@ -60,11 +89,17 @@ function RegisterBusiness() {
 
         const formData = new FormData();
 
-        formData.append('business', JSON.stringify(business));
-
         if (businessPic) {
             formData.append('business_pic', businessPic);
         }
+
+        const businessWithLocation = {
+            ...business,
+            latitude: selectedLocation.lat,
+            longitude: selectedLocation.lng,
+        };
+
+        formData.append('business', JSON.stringify(businessWithLocation));
 
         try {
             const response = await axios.post(
@@ -78,19 +113,23 @@ function RegisterBusiness() {
                 }
             );
 
-            toast('Business created succesfully. ', {
-                hideProgressBar: true,
-                autoClose: 2000,
-                type: 'success',
-                position: 'bottom-right',
-            });
+            if (response.status !== 200) {
+                throw new Error('Error creating business');
+            } else {
+                toast('Business created succesfully. ', {
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                    type: 'success',
+                    position: 'bottom-right',
+                });
 
-            // Clear form after submission
-            setBusiness(initialBusinessState);
-            setBusinessPic(null);
+                // Clear form after submission
+                setBusiness(initialBusinessState);
+                setBusinessPic(null);
 
-            router.push('/dashboard');
-        } catch (error : any) {
+                router.push('/dashboard');
+            }
+        } catch (error: any) {
             if (error.response) {
                 const responseData = error.response.data;
                 toast(responseData.message, {
@@ -114,7 +153,7 @@ function RegisterBusiness() {
         <>
             <NavBar isLanding={false} />
             <Background color="bg-gray-100">
-                <div className="pb-24 pt-40 flex flex-col justify-center items-center">
+                <div className="pb-24 pt-28 flex flex-col justify-center items-center">
                     <div className="w-full px-20">
                         <div className="flex justify-center items-center">
                             <h1 className="text-3xl font-bold text-gray-800">
@@ -191,13 +230,31 @@ function RegisterBusiness() {
                                             value={business.categories}
                                             onChange={handleInputChange}
                                         />
+                                        <label htmlFor="image">Image:</label>
+                                        <input
+                                            id="image"
+                                            name="image"
+                                            type="file"
+                                            accept="image/*"
+                                            className="mb-4 border-2 border-gray-300 bg-white p-2 rounded-md focus:outline-none mr-4"
+                                            onChange={(event) => {
+                                                if (
+                                                    event.target.files &&
+                                                    event.target.files[0]
+                                                ) {
+                                                    setBusinessPic(
+                                                        event.target.files[0]
+                                                    );
+                                                }
+                                            }}
+                                        />
                                         <label htmlFor="description">
                                             Description:
                                         </label>
                                         <textarea
                                             id="description"
                                             name="description"
-                                            className="mb-4 h-40 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
+                                            className="mb-4 h-60 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
                                             placeholder="Description"
                                             value={business.description}
                                             onChange={handleInputChange}
@@ -233,24 +290,41 @@ function RegisterBusiness() {
                                                 )
                                             )}
                                         </div>
-                                        <label htmlFor="image">Image:</label>
-                                        <input
-                                            id="image"
-                                            name="image"
-                                            type="file"
-                                            accept="image/*"
-                                            className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
-                                            onChange={(event) => {
-                                                if (
-                                                    event.target.files &&
-                                                    event.target.files[0]
-                                                ) {
-                                                    setBusinessPic(
-                                                        event.target.files[0]
-                                                    );
-                                                }
-                                            }}
-                                        />
+
+                                        <label htmlFor="location">
+                                            Location:
+                                        </label>
+                                        <div className="pt-2">
+                                            <LoadScript
+                                                googleMapsApiKey={
+                                                    process.env
+                                                        .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+                                                    ''
+                                                }>
+                                                <GoogleMap
+                                                    mapContainerStyle={{
+                                                        height: '400px',
+                                                        width: '100%',
+                                                    }}
+                                                    center={selectedLocation}
+                                                    zoom={10}>
+                                                    <Marker
+                                                        position={
+                                                            selectedLocation
+                                                        }
+                                                        onDragEnd={(e) => {
+                                                            setSelectedLocation(
+                                                                {
+                                                                    lat: e.latLng.lat(),
+                                                                    lng: e.latLng.lng(),
+                                                                }
+                                                            );
+                                                        }}
+                                                        draggable={true}
+                                                    />
+                                                </GoogleMap>
+                                            </LoadScript>
+                                        </div>
                                     </div>
                                 </div>
 

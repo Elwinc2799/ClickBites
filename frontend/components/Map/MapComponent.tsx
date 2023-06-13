@@ -52,7 +52,7 @@ function MapComponent({ setLat, setLng }: MapComponentProps) {
                 google.maps.event.addListener(
                     marker,
                     'dragend',
-                    function (evt) {
+                    function (evt: google.maps.MouseEvent) {
                         console.log(
                             'Current Latitude:',
                             evt.latLng.lat(),
