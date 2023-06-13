@@ -1,9 +1,10 @@
 import json
 from pymongo import MongoClient, InsertOne
 import os
+import random
 
 client = MongoClient("mongodb+srv://windev:windev@cluster0.mkcvmve.mongodb.net/")
-db = client.ckbt_db2
+db = client.ckbt_db
 
 # List of collections and corresponding file paths
 collections_files = [
@@ -33,6 +34,18 @@ for collection_name, file_path in collections_files:
                 # If photo exists, store in the document
                 if os.path.exists(photo_path):
                     document["business_pic"] = photo_path
+                else:
+                    # Generate a random number between 1 and 10 to get a random photo
+                    random_num = str(random.randint(1, 10))
+                    random_photo_path = os.path.join(photo_dir_path, "business_" + random_num + ".jpg")
+                    document["business_pic"] = random_photo_path
+            
+            # If it's the user collection, handle the photo
+            if collection_name == "user":
+                # Generate a random number between 1 and 10 to get a random photo
+                random_num = str(random.randint(1, 10))
+                random_photo_path = os.path.join(photo_dir_path, "user_" + random_num + ".jpg")
+                document["profile_pic"] = random_photo_path
 
             requests.append(InsertOne(document))
             i += 1
@@ -44,6 +57,7 @@ for collection_name, file_path in collections_files:
 
 print("Importing complete!")
 print("Creating mapping indexes...")
+choice = input("Do you want to create mapping indexes? (y/n): ")
 
 # Create dictionary mapping business_id and user_id to _id in the 'business' and 'user' collections
 business_id_map = {doc["business_id"]: doc["_id"] for doc in db.business.find()}
