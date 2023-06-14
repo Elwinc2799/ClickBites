@@ -307,6 +307,21 @@ function RegisterBusiness() {
                                         <label htmlFor="location">
                                             Location:
                                         </label>
+                                        <div className="flex flex-row justify-start items-center">
+                                            <p className="mr-5">
+                                                Lat:{' '}
+                                                <span className="font-bold">
+                                                    {latitude}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                Lng:{' '}
+                                                <span className="font-bold">
+                                                    {longitude}
+                                                </span>
+                                            </p>
+                                        </div>
+
                                         <div className="pt-1 h-full">
                                             <MapComponent
                                                 height="100%"
