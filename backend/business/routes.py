@@ -161,23 +161,30 @@ def getAllBusinessesId():
 @business_bp.route("/api/results", methods=["GET"])
 def getSearchResults():
     try:
+        isLoggedIn = False
         # Get user ID from token
         user_id = decodeToken()
 
+        if isinstance(user_id, str):
+            isLoggedIn = True
+
         search_query = request.args.get("search_query")
 
-        # Fetch user document by user_id
-        user_document = db_user.find_one({"_id": ObjectId(user_id)})
+        user_document = None
+        user_vector = None
 
-        # Get user vector
-        user_vector = np.array(user_document["vector"])
+        if isLoggedIn:
+            # Fetch user document by user_id
+            user_document = db_user.find_one({"_id": ObjectId(user_id)})
+
+            # Get user vector
+            user_vector = np.array(user_document["vector"])
 
         def search_query_to_regex(search_query):
-            words = search_query.split()
-            return "|".join(words)
+            return r"\b" + search_query + r"\b"
 
         # Get the search query regex
-        search_query_regex = search_query
+        search_query_regex = search_query_to_regex(search_query)
 
         # Perform a case-insensitive search for the search query in the business
         documents = list(
@@ -197,8 +204,9 @@ def getSearchResults():
         print(len(documents))
 
         if documents is not None:
+            
             # check is user vector is not numpy array of 5 zeros
-            if not np.array_equal(user_vector, np.zeros(5)):
+            if not np.array_equal(user_vector, np.zeros(5)) and isLoggedIn:
                 user_vector = user_vector.reshape(1, -1)
                 # Compute cosine similarity for each business and store it with the business document
                 for document in documents:
@@ -243,6 +251,7 @@ def getSearchResults():
 @business_bp.route("/api/business/<string:business_id>", methods=["GET"])
 def getBusinessDetails(business_id):
     try:
+
         # get business object from database
         document = db_business.find_one({"_id": ObjectId(business_id)})
 

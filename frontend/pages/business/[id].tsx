@@ -9,10 +9,20 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ReviewCard from '@/components/Review/ReviewCard';
 import HoursTable from '@/components/BusinessDetails/HoursTable';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import AddReviewForm from '@/components/BusinessDetails/AddReviewForm';
-import AspectRadar from '@/components/SharedComponents/AspectRadar';
+import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
+import dynamic from 'next/dynamic';
+
+// Component that will be dynamically imported
+const ReviewFormButton = dynamic(() => import('@/components/BusinessDetails/AddReviewButton'), {
+  loading: () => null, // Display nothing while loading
+  ssr: false, // This component will not be rendered on the server
+});
+
+const AspectRadar = dynamic(() => import('@/components/SharedComponents/AspectRadar'), {
+    loading: () => null, // Display nothing while loading
+    ssr: false, // This component will not be rendered on the server
+  });
+
 
 interface Business {
     _id: string;
@@ -60,6 +70,8 @@ const blankBusinessPics = [
 function Business(props: { business: Business }) {
     const { business } = props;
     const [showForm, setShowForm] = useState(false);
+
+    console.log(UseLoginStatus())
 
     if (business.vector == null) {
         business.vector = [0, 0, 0, 0, 0];
@@ -205,9 +217,11 @@ function Business(props: { business: Business }) {
                                             <h1 className="text-2xl font-bold leading-relaxed  text-gray-900">
                                                 Reviews
                                             </h1>
-                                            <button
+
+                                            {/* <button
                                                 className="btn bg-blue-500 hover:bg-blue-700 text-white mx-4 btn-circle"
-                                                onClick={handleClick}>
+                                                onClick={handleClick}
+                                                disabled={!UseLoginStatus()}>
                                                 <FontAwesomeIcon
                                                     icon={faPlus}
                                                 />
@@ -220,7 +234,8 @@ function Business(props: { business: Business }) {
                                                     }
                                                     setShowForm={setShowForm}
                                                 />
-                                            )}
+                                            )} */}
+                                            <ReviewFormButton businessId={props.business._id} />
                                         </div>
 
                                         <div className="w-full">
@@ -295,29 +310,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 };
 export default Business;
-
-// radial progress bar
-// {vectorScores.map((value, index) => (
-//     <div
-//         key={index}
-//         className={`border-4 border-gray-200 mx-2 text-xl radial-progress  ${
-//             // if score is less than 0, make text red, else make text green
-//             parseFloat(value.score) < 0
-//                 ? 'text-red-500'
-//                 : 'text-green-500'
-//         }`}
-//         style={
-//             {
-//                 '--value':
-//                     parseFloat(value.score) < 0
-//                         ? (-parseFloat(
-//                               value.score
-//                           )).toString()
-//                         : value.score,
-//                 '--size': '10rem',
-//                 '--thickness': '1rem',
-//             } as React.CSSProperties
-//         }>
-//         {value.text}
-//     </div>
-// ))}

@@ -9,8 +9,10 @@ import {
     PolarRadiusAxis,
     Legend,
     Tooltip,
+    TooltipProps,
 } from 'recharts';
 import UseLoadingAnimation from '../utils/UseLoadingAnimation';
+import { UseLoginStatus } from '../utils/UseLoginStatus';
 
 interface VectorScore {
     text: string;
@@ -23,6 +25,58 @@ interface AspectRadarProps {
     isBusiness: boolean;
     isUser: boolean;
 }
+
+interface CustomTooltipProps extends TooltipProps<number, string> {
+    isUser: boolean;
+    isBusiness: boolean;
+    loginStatus: boolean;
+}
+
+// Custom tooltip component
+const CustomTooltip = ({
+    active,
+    payload,
+    label,
+    isUser,
+    isBusiness,
+    loginStatus,
+}: CustomTooltipProps) => {
+    if (active && payload && payload.length) {
+        return (
+            <div
+                style={{
+                    backgroundColor: '#fff',
+                    border: '1px solid #999',
+                    margin: '0px',
+                    padding: '10px',
+                    whiteSpace: 'nowrap',
+                }}>
+                <p className="label">{`${label}`}</p>
+                {payload[0].value && !loginStatus && (
+                    <p className="intro" style={{ color: payload[0].value < 0 ? 'red' : 'green' }}>{`Business Score: ${payload[0].value}%`}</p>
+                )}
+                {isUser && isBusiness && loginStatus && payload[1].value && payload[0] && (
+                    <>
+                        <p className="intro text-orange-400">{`User Score: ${payload[0].value}%`}</p>
+                        <p className="intro" style={{ color: payload[1].value < 0 ? 'red' : 'green' }}>{`Business Score: ${payload[1].value}%`}</p>
+                    </>
+                )}
+                {isUser && !isBusiness && loginStatus && payload[0] && (
+                    <>
+                        <p className="intro text-orange-400">{`User Score: ${payload[0].value}%`}</p>
+                    </>
+                )}
+                {!isUser && isBusiness && loginStatus && payload[0].value && (
+                    <>
+                        <p className="intro" style={{ color: payload[0].value < 0 ? 'red' : 'green' }}>{`Business Score: ${payload[0].value}%`}</p>
+                    </>
+                )}
+            </div>
+        );
+    }
+
+    return null;
+};
 
 const AspectRadar: React.FC<AspectRadarProps> = ({
     vectorScores,
@@ -72,7 +126,7 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
                 (value: number, index: number) => {
                     return {
                         text: newVectorText[index],
-                        userScore: (value * 100).toFixed(2).toString(),
+                        userScore: (value * 100).toFixed(1).toString(),
                     };
                 }
             );
@@ -81,13 +135,17 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
             setIsLoading(false);
         };
 
-        fetchDataAndUserData();
+        if (UseLoginStatus()) {
+            fetchDataAndUserData();
+        } else {
+            setIsLoading(false);
+        }
     }, []);
 
     const data = vectorScores.map((v: VectorScore, i: number) => ({
         name: v.text,
-        businessScore: parseInt(v.score, 10),
-        userScore: parseInt(vectorUserScores[i]?.userScore || '0', 10),
+        businessScore: parseFloat(v.score),
+        userScore: parseFloat(vectorUserScores[i]?.userScore || '0'),
     }));
 
     return (
@@ -106,7 +164,7 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
                     <PolarGrid />
                     <PolarAngleAxis dataKey="name" />
                     <PolarRadiusAxis domain={[0, 100]} />
-                    {isUser && (
+                    {isUser && UseLoginStatus() && (
                         <Radar
                             name="User Score"
                             dataKey="userScore"
@@ -124,7 +182,15 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
                             fillOpacity={0.6}
                         />
                     )}
-                    <Tooltip />
+                    <Tooltip
+                        content={
+                            <CustomTooltip
+                                isUser={isUser}
+                                isBusiness={isBusiness}
+                                loginStatus={UseLoginStatus()}
+                            />
+                        }
+                    />
                     <Legend />
                 </RadarChart>
             )}

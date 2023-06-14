@@ -9,6 +9,7 @@ import ResultCard from '@/components/ResultCard/ResultCard';
 import UseLoadingAnimation from '@/components/utils/UseLoadingAnimation';
 import MapComponent from '@/components/Map/MapComponent';
 import { LocationContext } from '@/components/utils/LocationContext';
+import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
 
 interface Business {
     _id: string;
@@ -244,7 +245,7 @@ function Results() {
                             </p>
                         </div>
                         <div className="flex flex-col justify-center items-start mb-8">
-                            <label className="mb-2">Min Stars</label>
+                            <label className="mb-2">Min Rating</label>
                             <input
                                 type="range"
                                 min={0}
@@ -315,6 +316,7 @@ function Results() {
                                             onChange={(e) =>
                                                 setIsToggled(e.target.checked)
                                             }
+                                            disabled={!UseLoginStatus()}
                                         />
                                     </label>
                                 </div>
