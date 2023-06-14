@@ -145,7 +145,7 @@ function UpdateUserModal(user: User) {
                                         src={
                                             user.profilePic
                                                 ? `/user_photo/${user.profilePic}`
-                                                : '/images/blank-profilepic.png'
+                                                : '/images/blank-profilepic.jpg'
                                         }
                                         width="0"
                                         height="0"

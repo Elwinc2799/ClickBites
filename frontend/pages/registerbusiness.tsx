@@ -12,8 +12,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { getCookie } from 'cookies-next';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { LocationContext } from '@/components/utils/LocationContext';
+import MapComponent from '@/components/Map/MapComponent';
 
 interface Business {
     name: string;
@@ -67,6 +67,10 @@ function RegisterBusiness() {
 
     const [business, setBusiness] = useState<Business>(initialBusinessState);
     const [businessPic, setBusinessPic] = useState<File | null>(null);
+
+    const [latitude, setLatitude] = useState<number | null>(defaultLatitude);
+    const [longitude, setLongitude] = useState<number | null>(defaultLongitude);
+
     const router = useRouter();
 
     const handleInputChange = (
@@ -95,11 +99,13 @@ function RegisterBusiness() {
 
         const businessWithLocation = {
             ...business,
-            latitude: selectedLocation.lat,
-            longitude: selectedLocation.lng,
+            latitude: latitude,
+            longitude: longitude,
         };
 
         formData.append('business', JSON.stringify(businessWithLocation));
+
+        console.log(formData);
 
         try {
             const response = await axios.post(
@@ -175,6 +181,7 @@ function RegisterBusiness() {
                                             placeholder="Name"
                                             value={business.name}
                                             onChange={handleInputChange}
+                                            required
                                         />
                                         <label htmlFor="address">
                                             Address:
@@ -187,6 +194,7 @@ function RegisterBusiness() {
                                             placeholder="Address"
                                             value={business.address}
                                             onChange={handleInputChange}
+                                            required
                                         />
                                         <div className="flex flex-row mb-4 justify-between">
                                             <div className="flex flex-col w-1/2 pr-4">
@@ -201,6 +209,7 @@ function RegisterBusiness() {
                                                     placeholder="City"
                                                     value={business.city}
                                                     onChange={handleInputChange}
+                                                    required
                                                 />
                                             </div>
                                             <div className="flex flex-col w-1/2 pr-4">
@@ -215,6 +224,7 @@ function RegisterBusiness() {
                                                     placeholder="State"
                                                     value={business.state}
                                                     onChange={handleInputChange}
+                                                    required
                                                 />
                                             </div>
                                         </div>
@@ -229,6 +239,7 @@ function RegisterBusiness() {
                                             placeholder="Categories"
                                             value={business.categories}
                                             onChange={handleInputChange}
+                                            required
                                         />
                                         <label htmlFor="image">Image:</label>
                                         <input
@@ -247,6 +258,7 @@ function RegisterBusiness() {
                                                     );
                                                 }
                                             }}
+                                            required
                                         />
                                         <label htmlFor="description">
                                             Description:
@@ -254,10 +266,11 @@ function RegisterBusiness() {
                                         <textarea
                                             id="description"
                                             name="description"
-                                            className="mb-4 h-60 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
+                                            className="h-60 border-2 border-gray-300 p-2 rounded-md focus:outline-none mr-4"
                                             placeholder="Description"
                                             value={business.description}
                                             onChange={handleInputChange}
+                                            required
                                         />
                                     </div>
                                     <div className="flex flex-col my-4 w-1/2">
@@ -294,36 +307,12 @@ function RegisterBusiness() {
                                         <label htmlFor="location">
                                             Location:
                                         </label>
-                                        <div className="pt-2">
-                                            <LoadScript
-                                                googleMapsApiKey={
-                                                    process.env
-                                                        .NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-                                                    ''
-                                                }>
-                                                <GoogleMap
-                                                    mapContainerStyle={{
-                                                        height: '400px',
-                                                        width: '100%',
-                                                    }}
-                                                    center={selectedLocation}
-                                                    zoom={10}>
-                                                    <Marker
-                                                        position={
-                                                            selectedLocation
-                                                        }
-                                                        onDragEnd={(e) => {
-                                                            setSelectedLocation(
-                                                                {
-                                                                    lat: e.latLng.lat(),
-                                                                    lng: e.latLng.lng(),
-                                                                }
-                                                            );
-                                                        }}
-                                                        draggable={true}
-                                                    />
-                                                </GoogleMap>
-                                            </LoadScript>
+                                        <div className="pt-1 h-full">
+                                            <MapComponent
+                                                height="100%"
+                                                setLng={setLongitude}
+                                                setLat={setLatitude}
+                                            />
                                         </div>
                                     </div>
                                 </div>

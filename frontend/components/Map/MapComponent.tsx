@@ -13,9 +13,10 @@ declare global {
 interface MapComponentProps {
     setLat: (lat: number) => void;
     setLng: (lng: number) => void;
+    height: string;
 }
 
-function MapComponent({ setLat, setLng }: MapComponentProps) {
+function MapComponent({ setLat, setLng, height }: MapComponentProps) {
     const { latitude, longitude } = useContext(LocationContext);
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -68,7 +69,7 @@ function MapComponent({ setLat, setLng }: MapComponentProps) {
         });
     }, [apiKey, latitude, longitude, setLat, setLng]); // Add latitude and longitude to the dependencies array
 
-    return <div id="map" style={{ height: '100vh', width: '100%' }}></div>;
+    return <div id="map" style={{ height: `${height}`, width: '100%' }}></div>;
 }
 
 export default MapComponent;

@@ -22,7 +22,7 @@ function ReviewsTable({ business }: ReviewsTableProps) {
             <h1 className="text-2xl font-bold leading-relaxed text-gray-900 pl-4">
                 Reviews
             </h1>
-            <div className="overflow-y-auto h-[600px] w-full px-4 my-5 no-scrollbar">
+            <div className="overflow-y-auto max-h-[600px] w-full px-4 my-5 no-scrollbar">
                 {business?.reviews.length === 0 ? (
                     <div className="flex flex-col items-center justify-center">
                         <p className="mb-4 text-lg font-medium leading-relaxed text-gray-900">

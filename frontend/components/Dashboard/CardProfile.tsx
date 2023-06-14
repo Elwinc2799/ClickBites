@@ -19,10 +19,9 @@ interface Business {
 
 interface CardProfileProps {
     business: Business | null;
-    defaultPic: string;
 }
 
-function CardProfile({ business, defaultPic }: CardProfileProps) {
+function CardProfile({ business}: CardProfileProps) {
     const [showMore, setShowMore] = useState(false);
 
     const handleShowMoreClick = (
@@ -46,7 +45,7 @@ function CardProfile({ business, defaultPic }: CardProfileProps) {
                                 src={
                                     business?.business_pic
                                         ? `/business_photo/${business.business_pic}`
-                                        : `/images/${defaultPic}`
+                                        : '/images/blank-businesspic.jpg'
                                 }
                                 width="0"
                                 height="0"

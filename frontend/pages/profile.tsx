@@ -33,14 +33,6 @@ type VectorScore = {
     score: string;
 };
 
-const blankProfilePics = [
-    'user_1.jpg',
-    'user_2.jpg',
-    'user_3.jpg',
-    'user_4.jpg',
-    'user_5.jpg',
-];
-
 function Profile() {
     const [id, setId] = useState('');
     const [name, setName] = useState('');
@@ -66,16 +58,6 @@ function Profile() {
     ]);
     const [isLoading, setIsLoading] = useState(true);
     const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
-
-    const [defaultPic, setDefaultPic] = useState('');
-
-    useEffect(() => {
-        const randomPic =
-            blankProfilePics[
-                Math.floor(Math.random() * blankProfilePics.length)
-            ];
-        setDefaultPic(randomPic);
-    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -206,7 +188,7 @@ function Profile() {
                                                             src={
                                                                 profilePic
                                                                     ? `/user_photo/${profilePic}`
-                                                                    : `/images/${defaultPic}`
+                                                                    : '/images/blank-profilepic.jpg' 
                                                             }
                                                             width="0"
                                                             height="0"

@@ -43,29 +43,11 @@ type VectorScore = {
     score: string;
 };
 
-const blankBusinessPics = [
-    'business_1.jpg',
-    'business_2.jpg',
-    'business_3.jpg',
-    'business_4.jpg',
-    'business_5.jpg',
-];
-
 function Dashboard() {
     const [business, setBusiness] = useState<Business | null>(null);
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
-
-    const [defaultPic, setDefaultPic] = useState('');
-
-    useEffect(() => {
-        const randomPic =
-            blankBusinessPics[
-                Math.floor(Math.random() * blankBusinessPics.length)
-            ];
-        setDefaultPic(randomPic);
-    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -124,10 +106,7 @@ function Dashboard() {
                         <DashboardNavbar />
 
                         <div className="flex flex-row justify-start items-start w-full px-10">
-                            <CardProfile
-                                business={business}
-                                defaultPic={defaultPic}
-                            />
+                            <CardProfile business={business} />
                             <div className="flex flex-col justify-start items-center w-8/12 h-52">
                                 <DashboardHeader business={business} />
                                 <h1 className="text-2xl font-bold leading-relaxed text-gray-900">
@@ -152,44 +131,3 @@ function Dashboard() {
 
 export default Dashboard;
 
-{
-    /* <Image
-    src={`data:image/jpeg;base64,${business?.business_pic}`}
-    alt="restaurant image"
-    width={0}
-    height={0}
-    sizes="(max-width: 640px) 640px, 100vw"
-    className="w-full h-96 object-cover rounded-tl-lg rounded-tr-lg"
-/>
-<h1 className="text-4xl mb-4">{business?.name}</h1>
-<p className="mb-2">Address: {business?.address}</p>
-<p className="mb-2">City: {business?.city}</p>
-<p className="mb-2">State: {business?.state}</p>
-<p className="mb-2">
-    Latitude: {business?.latitude}
-</p>
-<p className="mb-2">
-    Longitude: {business?.longitude}
-</p>
-<p className="mb-2">Stars: {business?.stars}</p>
-<p className="mb-2">
-    Review count: {business?.review_count}
-</p>
-<p className="mb-2">
-    Categories: {business?.categories}
-</p>
-<p className="mb-2">
-    Hours:{' '}
-    {JSON.stringify(business?.hours, null, 2)}
-</p>
-<p className="mb-2">
-    Description: {business?.description}
-</p>
-<p className="mb-2">
-    View count: {business?.view_count}
-</p>
-<p className="mb-2">
-    Vector:{' '}
-    {JSON.stringify(business?.vector, null, 2)}
-</p> */
-}

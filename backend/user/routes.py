@@ -18,7 +18,9 @@ db_review = Database.get_instance().get_db("review")
 db_business = Database.get_instance().get_db("business")
 
 # Define directory path for the photos
-photo_dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'frontend', 'public', 'user_photo')
+photo_dir_path = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "..", "..", "frontend", "public", "user_photo"
+)
 
 
 # signup
@@ -38,13 +40,13 @@ def signUp():
             random_id = uuid.uuid4()
 
             filepath = os.path.join(photo_dir_path, str(random_id) + ".jpg")
-            
+
             try:
                 profile_pic.save(filepath)
-                print(f'Successfully saved image at {filepath}')
+                print(f"Successfully saved image at {filepath}")
             except Exception as e:
-                print(f'Failed to save image: {str(e)}')
-            
+                print(f"Failed to save image: {str(e)}")
+
             # trim the file path to be relative to the frontend
             filepath = filepath.split("user_photo/")[1]
 
@@ -301,24 +303,23 @@ def updateProfile(user_id):
             random_id = uuid.uuid4()
 
             filepath = os.path.join(photo_dir_path, str(random_id) + ".jpg")
-            
+
             try:
                 profile_pic.save(filepath)
-                print(f'Successfully saved image at {filepath}')
+                print(f"Successfully saved image at {filepath}")
             except Exception as e:
-                print(f'Failed to save image: {str(e)}')
-            
+                print(f"Failed to save image: {str(e)}")
+
             # trim the file path to be relative to the frontend
             filepath = filepath.split("user_photo/")[1]
 
-            updated_info['profile_pic'] = filepath
+            updated_info["profile_pic"] = filepath
 
         # search for user in database
         user = db_user.find_one({"_id": ObjectId(user_id)})
 
         # check if user exists
         if user is None:
-
             return Response(
                 response=json.dumps(
                     {
@@ -330,10 +331,13 @@ def updateProfile(user_id):
             )
         else:
             # retrieve the image file
-            if profile_pic:
-                filepath = os.path.join(photo_dir_path, user['profile_pic'])
-
-                os.remove(filepath)
+            try:
+                if user["profile_pic"]:
+                    filepath = os.path.join(photo_dir_path, user["profile_pic"])
+                    os.remove(filepath)
+                    print(f"Successfully removed image at {filepath}")
+            except Exception as e:
+                print(f"Image not found: {str(e)}")
 
             # update user object in database with this list of data
             db_user.update_one(

@@ -133,12 +133,14 @@ function Results() {
         fetchData();
     }, [search_query]);
 
+    useEffect(() => {
+        setLatitude(defaultLatitude);
+        setLongitude(defaultLongitude);
+    }, [defaultLatitude, defaultLongitude]);
+
     // Filter and sort businesses
     useEffect(() => {
         const filterAndSortBusinesses = () => {
-            setLatitude(defaultLatitude);
-            setLongitude(defaultLongitude);
-
             let filteredBusinesses = businesses.filter((business: Business) => {
                 const distance = haversineDistance(
                     latitude,
@@ -227,18 +229,16 @@ function Results() {
         isOpenNowFilter,
         latitude,
         longitude,
-        defaultLatitude,
-        defaultLongitude,
     ]);
 
     return (
         <>
             <NavBar isLanding={false} />
             <Background color="bg-gray-100">
-                <div className="w-full h-full pl-10  pt-24 pb-4 flex flex-row justify-around items-start">
-                    <div className="w-2/12 px-4 py-4 shrink-0 h-screen flex flex-col border-r-2 border-gray-200">
+                <div className="w-full h-full pl-10 pt-24 pb-4 flex flex-row justify-around items-start">
+                    <div className="w-2/12 px-4 pt-2 shrink-0 h-screen flex flex-col border-r-2 border-gray-200">
                         {/* Filters for categories*/}
-                        <div className="w-full flex flex-row items-center justify-between mt-2 mb-4">
+                        <div className="w-full flex flex-row items-center justify-between mb-4">
                             <p className="text-2xl font-bold leading-relaxed text-gray-900">
                                 Filters
                             </p>
@@ -281,7 +281,7 @@ function Results() {
                             />
                         </div>
                     </div>
-                    <div className="w-6/12 px-4 pt-4 shrink-0 flex flex-col justify-start items-start h-screen">
+                    <div className="w-6/12 px-4 pt-2 shrink-0 flex flex-col justify-start items-start h-screen">
                         {isLoading ? (
                             <div className="w-full flex flex-row justify-center">
                                 <UseLoadingAnimation isLoading={isLoading} />
@@ -289,15 +289,15 @@ function Results() {
                         ) : (
                             <>
                                 <div className="w-full flex flex-row items-center justify-between">
-                                    <p className="text-2xl font-bold leading-relaxed text-gray-900 py-2">
+                                    <p className="text-2xl font-bold leading-relaxed text-gray-900 ">
                                         Search Results: {search_query}
                                     </p>
-                                    <p className="text-xl font-semibold leading-relaxed text-gray-700 py-2">
+                                    <p className="text-xl font-semibold leading-relaxed text-gray-700">
                                         Total: {filteredSortedBusinesses.length}
                                     </p>
                                 </div>
                                 <hr className="my-4 border-1 border-gray-300 w-full" />
-                                <div className="form-control ml-5 mb-4 w-full pr-10 items-end">
+                                <div className="form-control ml-5 w-full pr-10 items-end">
                                     <label className="label cursor-pointer">
                                         <span className="label-text">
                                             {isToggled
@@ -341,8 +341,9 @@ function Results() {
                             </>
                         )}
                     </div>
-                    <div className="h-screen w-4/12 shrink-0 flex px-4 py-4 border-l-2 border-gray-200">
+                    <div className="h-screen w-4/12 shrink-0 flex flex-col items-center px-4 py-2 border-l-2 border-gray-200">
                         <MapComponent
+                            height="100%"
                             setLng={setLongitude}
                             setLat={setLatitude}
                         />
