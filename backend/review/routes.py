@@ -64,13 +64,10 @@ def calc_need_scores(group):
 def calculate_scores(user_df, review_df):
     # Merge the user and review dataframes based on user_id
     global merged_df
-    print("hello")
     merged_df = pd.merge(user_df, review_df, left_on="_id", right_on="user_id")
-    print(merged_df.info())
 
     # Normalize review vectors
     merged_df["normalized_review_vector"] = merged_df["vector_y"].apply(normalize_vector)
-    print(merged_df.info())
 
     def calc_scores(group):
         aspect_importance_scores = calc_importance_scores(group)
@@ -79,7 +76,6 @@ def calculate_scores(user_df, review_df):
         return pd.Series({"vector": preference_scores.tolist()})
 
     user_scores = merged_df.groupby("user_id").apply(calc_scores)
-    print(user_scores.info())
     
     # return the vector of user_scores
     return user_scores
@@ -87,33 +83,24 @@ def calculate_scores(user_df, review_df):
 
 # Function to update user vector after a new review
 def update_user_vector_after_new_review(review):
-    print(review)
     # Retrieve all reviews for the user
     user_reviews = list(db_review.find({"user_id": ObjectId(review["user_id"])}))
-    print(user_reviews)
 
     # Calculate the average stars
     average_stars = sum([user_review["stars"] for user_review in user_reviews]) / len(user_reviews)
-    print(average_stars)
 
     # Convert the list of reviews to a DataFrame
     review_df = pd.DataFrame(user_reviews)
-    print(review_df.info())
 
     # Retrieve user data and convert it to a DataFrame
     user_data = list(db_user.find({"_id": ObjectId(review["user_id"])}))
     user_df = pd.DataFrame(user_data)
 
-    print(user_df.info())
-
     # Calculate new preference scores
     updated_user_df = calculate_scores(user_df, review_df)
-    print("hello2")
-    print(updated_user_df.info())
 
     # Update user's vector and average stars in MongoDB
     new_vector = updated_user_df.loc[review["user_id"], "vector"]
-    print(new_vector)
     db_user.update_one(
         {"_id": ObjectId(review["user_id"])},
         {"$set": {"vector": new_vector, "average_stars": average_stars}, "$inc": {"review_count": 1}},
