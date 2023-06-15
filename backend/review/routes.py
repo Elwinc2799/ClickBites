@@ -5,6 +5,8 @@ from review.models import Review
 from bson.objectid import ObjectId
 from ai.generate_vector import generate_vector
 from bson.objectid import ObjectId
+import pandas as pd
+import numpy as np
 
 
 # Create a Flask blueprint for review related routes
@@ -14,6 +16,108 @@ review_bp = Blueprint("review", __name__)
 db_review = Database.get_instance().get_db("review")
 db_user = Database.get_instance().get_db("user")
 db_business = Database.get_instance().get_db("business")
+
+
+# Define normalization function
+def normalize_vector(vector):
+    return [(x + 1) / 2 * 4 + 1 for x in vector]
+
+
+# Function to calculate aspect importance scores
+def calc_importance_scores(group):
+    aspect_importance_scores = []
+    for i in range(5):
+        aspect_values = np.array(group["normalized_review_vector"].tolist())[:, i]
+        weighted_scores_sum = np.sum(group["stars"].values * aspect_values)
+        rating_sqrt = np.sqrt(np.sum(group["stars"].values ** 2))
+        sentiment_sqrt = np.sqrt(np.sum(aspect_values**2))
+        aspect_importance_scores.append(
+            weighted_scores_sum / (rating_sqrt * sentiment_sqrt) if rating_sqrt * sentiment_sqrt != 0 else 0
+        )
+    return aspect_importance_scores
+
+
+# Function to calculate aspect need scores
+def calc_need_scores(group):
+    aspect_need_scores = []
+    for i in range(5):
+        aspect_values = np.array(group["normalized_review_vector"].tolist())[:, i]
+        if np.any(aspect_values != 0):
+            user_business_scores = []
+            for business_id, business_group in group.groupby("business_id"):
+                aspect_df = merged_df[
+                    (merged_df["business_id"] == business_id)
+                    & (merged_df["normalized_review_vector"].apply(lambda x: x[i] != 0))
+                ]
+                Zi = aspect_df["normalized_review_vector"].apply(lambda x: x[i]).mean()
+                user_score = business_group["normalized_review_vector"].apply(lambda x: x[i]).mean()
+                user_business_scores.append((Zi - user_score + 1) / Zi)
+            aspect_need_scores.append(np.mean(user_business_scores))
+        else:
+            aspect_df = merged_df[merged_df["normalized_review_vector"].apply(lambda x: x[i] != 0)]
+            Z = aspect_df["normalized_review_vector"].apply(lambda x: x[i]).mean()
+            aspect_need_scores.append(np.sum(0.1 / Z) / len(aspect_df))
+    return aspect_need_scores
+
+
+# Function to calculate aspect importance, need and preference scores for each user
+def calculate_scores(user_df, review_df):
+    # Merge the user and review dataframes based on user_id
+    global merged_df
+    print("hello")
+    merged_df = pd.merge(user_df, review_df, left_on="_id", right_on="user_id")
+    print(merged_df.info())
+
+    # Normalize review vectors
+    merged_df["normalized_review_vector"] = merged_df["vector_y"].apply(normalize_vector)
+    print(merged_df.info())
+
+    def calc_scores(group):
+        aspect_importance_scores = calc_importance_scores(group)
+        aspect_need_scores = calc_need_scores(group)
+        preference_scores = np.array(aspect_importance_scores) * np.array(aspect_need_scores)
+        return pd.Series({"vector": preference_scores.tolist()})
+
+    user_scores = merged_df.groupby("user_id").apply(calc_scores)
+    print(user_scores.info())
+    
+    # return the vector of user_scores
+    return user_scores
+
+
+# Function to update user vector after a new review
+def update_user_vector_after_new_review(review):
+    print(review)
+    # Retrieve all reviews for the user
+    user_reviews = list(db_review.find({"user_id": ObjectId(review["user_id"])}))
+    print(user_reviews)
+
+    # Calculate the average stars
+    average_stars = sum([user_review["stars"] for user_review in user_reviews]) / len(user_reviews)
+    print(average_stars)
+
+    # Convert the list of reviews to a DataFrame
+    review_df = pd.DataFrame(user_reviews)
+    print(review_df.info())
+
+    # Retrieve user data and convert it to a DataFrame
+    user_data = list(db_user.find({"_id": ObjectId(review["user_id"])}))
+    user_df = pd.DataFrame(user_data)
+
+    print(user_df.info())
+
+    # Calculate new preference scores
+    updated_user_df = calculate_scores(user_df, review_df)
+    print("hello2")
+    print(updated_user_df.info())
+
+    # Update user's vector and average stars in MongoDB
+    new_vector = updated_user_df.loc[review["user_id"], "vector"]
+    print(new_vector)
+    db_user.update_one(
+        {"_id": ObjectId(review["user_id"])},
+        {"$set": {"vector": new_vector, "average_stars": average_stars}, "$inc": {"review_count": 1}},
+    )
 
 
 # create a review for a business
@@ -38,26 +142,32 @@ def createReview(business_id):
         # post review object to database
         db_review.insert_one(review)
 
-        # retrieve the all reviews for the user
-        user_reviews = list(db_review.find({"user_id": ObjectId(review["user_id"])}))
+        print(review)
 
-        # calculate the average stars and average user 5d vector score
-        average_stars = 0
-        average_vector_score = [0] * 5
-        for user_review in user_reviews:
-            average_stars += int(user_review["stars"])
-            for i in range(5):
-                average_vector_score[i] += float(user_review["vector"][i])
-        average_stars /= len(user_reviews)
+        # update the user vector using average
+        # # retrieve the all reviews for the user
+        # user_reviews = list(db_review.find({"user_id": ObjectId(review["user_id"])}))
 
-        for i in range(5):
-            average_vector_score[i] /= len(user_reviews)
+        # # calculate the average stars and average user 5d vector score
+        # average_stars = 0
+        # average_vector_score = [0] * 5
+        # for user_review in user_reviews:
+        #     average_stars += int(user_review["stars"])
+        #     for i in range(5):
+        #         average_vector_score[i] += float(user_review["vector"][i])
+        # average_stars /= len(user_reviews)
 
-        # update the user object with the average stars and vector score and increment the review count
-        db_user.update_one(
-            {"_id": ObjectId(review["user_id"])},
-            {"$set": {"average_stars": average_stars, "vector": average_vector_score}, "$inc": {"review_count": 1}},
-        )
+        # for i in range(5):
+        #     average_vector_score[i] /= len(user_reviews)
+
+        # # update the user object with the average stars and vector score and increment the review count
+        # db_user.update_one(
+        #     {"_id": ObjectId(review["user_id"])},
+        #     {"$set": {"average_stars": average_stars, "vector": average_vector_score}, "$inc": {"review_count": 1}},
+        # )
+
+        # update user vector using research paper "Finding users preferences from large-scale online reviews for personalized recommendation" algorithm
+        update_user_vector_after_new_review(review)
 
         # retrieve all reviews for the business
         business_reviews = list(db_review.find({"business_id": ObjectId(review["business_id"])}))

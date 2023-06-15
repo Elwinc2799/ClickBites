@@ -4,7 +4,7 @@ import os
 import random
 
 client = MongoClient("mongodb+srv://windev:windev@cluster0.mkcvmve.mongodb.net/")
-db = client.ckbt_db
+db = client.ckbt_db2
 
 # List of collections and corresponding file paths
 collections_files = [

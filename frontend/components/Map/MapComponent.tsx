@@ -12,9 +12,10 @@ interface MapComponentProps {
     setLat: (lat: number) => void;
     setLng: (lng: number) => void;
     height: string;
+    width: string;
 }
 
-function MapComponent({ setLat, setLng, height }: MapComponentProps) {
+function MapComponent({ setLat, setLng, height, width }: MapComponentProps) {
     const { latitude, longitude } = useContext(LocationContext);
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -104,7 +105,7 @@ function MapComponent({ setLat, setLng, height }: MapComponentProps) {
 
     return (
         <div style={{ height: `${height}`, width: '100%' }}>
-            <input ref={searchBoxRef} type="text" placeholder="Search places..." className='rounded-sm w-80 h-11 mt-2 text-lg'/>
+            <input style={{ width: `${width}` }} ref={searchBoxRef} type="text" placeholder="Search places..." className='rounded-sm w-80 h-11 mt-2 text-lg p-2'/>
             <div id="map" style={{ height: '100%', width: '100%' }}></div>
         </div>
     );

@@ -157,6 +157,7 @@ def getAllBusinessesId():
         )
 
 
+
 # retrieve a list of businesses based on search query
 @business_bp.route("/api/results", methods=["GET"])
 def getSearchResults():

@@ -346,6 +346,7 @@ function Results() {
                     <div className="h-screen w-4/12 shrink-0 flex flex-col items-center px-4 py-2 border-l-2 border-gray-200">
                         <MapComponent
                             height="100%"
+                            width="250px"
                             setLng={setLongitude}
                             setLat={setLatitude}
                         />

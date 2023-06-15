@@ -325,6 +325,7 @@ function RegisterBusiness() {
                                         <div className="pt-1 h-full">
                                             <MapComponent
                                                 height="100%"
+                                                width="400px"
                                                 setLng={setLongitude}
                                                 setLat={setLatitude}
                                             />
