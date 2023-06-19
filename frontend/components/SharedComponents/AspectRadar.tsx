@@ -53,14 +53,27 @@ const CustomTooltip = ({
                 }}>
                 <p className="label">{`${label}`}</p>
                 {payload[0].value && !loginStatus && (
-                    <p className="intro" style={{ color: payload[0].value < 0 ? 'red' : 'green' }}>{`Business Score: ${payload[0].value}%`}</p>
+                    <p
+                        className="intro"
+                        style={{
+                            color: payload[0].value < 0 ? 'red' : 'green',
+                        }}>{`Business Score: ${payload[0].value}%`}</p>
                 )}
-                {isUser && isBusiness && loginStatus && payload[1].value && payload[0] && (
-                    <>
-                        <p className="intro text-orange-400">{`User Score: ${payload[0].value}%`}</p>
-                        <p className="intro" style={{ color: payload[1].value < 0 ? 'red' : 'green' }}>{`Business Score: ${payload[1].value}%`}</p>
-                    </>
-                )}
+                {isUser &&
+                    isBusiness &&
+                    loginStatus &&
+                    payload[1].value &&
+                    payload[0] && (
+                        <>
+                            <p className="intro text-orange-400">{`User Score: ${payload[0].value}%`}</p>
+                            <p
+                                className="intro"
+                                style={{
+                                    color:
+                                        payload[1].value < 0 ? 'red' : 'green',
+                                }}>{`Business Score: ${payload[1].value}%`}</p>
+                        </>
+                    )}
                 {isUser && !isBusiness && loginStatus && payload[0] && (
                     <>
                         <p className="intro text-orange-400">{`User Score: ${payload[0].value}%`}</p>
@@ -68,7 +81,11 @@ const CustomTooltip = ({
                 )}
                 {!isUser && isBusiness && loginStatus && payload[0].value && (
                     <>
-                        <p className="intro" style={{ color: payload[0].value < 0 ? 'red' : 'green' }}>{`Business Score: ${payload[0].value}%`}</p>
+                        <p
+                            className="intro"
+                            style={{
+                                color: payload[0].value < 0 ? 'red' : 'green',
+                            }}>{`Business Score: ${payload[0].value}%`}</p>
                     </>
                 )}
             </div>
@@ -182,15 +199,7 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
                             fillOpacity={0.6}
                         />
                     )}
-                    <Tooltip
-                        content={
-                            <CustomTooltip
-                                isUser={isUser}
-                                isBusiness={isBusiness}
-                                loginStatus={UseLoginStatus()}
-                            />
-                        }
-                    />
+                    <Tooltip />
                     <Legend />
                 </RadarChart>
             )}

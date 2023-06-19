@@ -207,17 +207,18 @@ function UpdateUserModal(user: User) {
                             <input
                                 className="input input-bordered w-full mb-5"
                                 type="text"
-                                placeholder={user.state}
-                                value={state}
-                                onChange={(e) => setState(e.target.value)}
-                            />
-                            <input
-                                className="input input-bordered w-full mb-5"
-                                type="text"
                                 placeholder={user.city}
                                 value={city}
                                 onChange={(e) => setCity(e.target.value)}
                             />
+                            <input
+                                className="input input-bordered w-full mb-5"
+                                type="text"
+                                placeholder={user.state}
+                                value={state}
+                                onChange={(e) => setState(e.target.value)}
+                            />
+                            
                             <div className="modal-action justify-between">
                                 <button
                                     type="button"
