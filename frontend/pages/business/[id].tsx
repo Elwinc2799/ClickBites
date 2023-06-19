@@ -13,16 +13,21 @@ import { UseLoginStatus } from '@/components/utils/UseLoginStatus';
 import dynamic from 'next/dynamic';
 
 // Component that will be dynamically imported
-const ReviewFormButton = dynamic(() => import('@/components/BusinessDetails/AddReviewButton'), {
-  loading: () => null, // Display nothing while loading
-  ssr: false, // This component will not be rendered on the server
-});
+const ReviewFormButton = dynamic(
+    () => import('@/components/BusinessDetails/AddReviewButton'),
+    {
+        loading: () => null, // Display nothing while loading
+        ssr: false, // This component will not be rendered on the server
+    }
+);
 
-const AspectRadar = dynamic(() => import('@/components/SharedComponents/AspectRadar'), {
-    loading: () => null, // Display nothing while loading
-    ssr: false, // This component will not be rendered on the server
-  });
-
+const AspectRadar = dynamic(
+    () => import('@/components/SharedComponents/AspectRadar'),
+    {
+        loading: () => null, // Display nothing while loading
+        ssr: false, // This component will not be rendered on the server
+    }
+);
 
 interface Business {
     _id: string;
@@ -70,8 +75,6 @@ const blankBusinessPics = [
 function Business(props: { business: Business }) {
     const { business } = props;
     const [showForm, setShowForm] = useState(false);
-
-    console.log(UseLoginStatus())
 
     if (business.vector == null) {
         business.vector = [0, 0, 0, 0, 0];
@@ -235,7 +238,9 @@ function Business(props: { business: Business }) {
                                                     setShowForm={setShowForm}
                                                 />
                                             )} */}
-                                            <ReviewFormButton businessId={props.business._id} />
+                                            <ReviewFormButton
+                                                businessId={props.business._id}
+                                            />
                                         </div>
 
                                         <div className="w-full">
