@@ -131,28 +131,6 @@ def createReview(business_id):
 
         print(review)
 
-        # update the user vector using average
-        # # retrieve the all reviews for the user
-        # user_reviews = list(db_review.find({"user_id": ObjectId(review["user_id"])}))
-
-        # # calculate the average stars and average user 5d vector score
-        # average_stars = 0
-        # average_vector_score = [0] * 5
-        # for user_review in user_reviews:
-        #     average_stars += int(user_review["stars"])
-        #     for i in range(5):
-        #         average_vector_score[i] += float(user_review["vector"][i])
-        # average_stars /= len(user_reviews)
-
-        # for i in range(5):
-        #     average_vector_score[i] /= len(user_reviews)
-
-        # # update the user object with the average stars and vector score and increment the review count
-        # db_user.update_one(
-        #     {"_id": ObjectId(review["user_id"])},
-        #     {"$set": {"average_stars": average_stars, "vector": average_vector_score}, "$inc": {"review_count": 1}},
-        # )
-
         # update user vector using research paper "Finding users preferences from large-scale online reviews for personalized recommendation" algorithm
         update_user_vector_after_new_review(review)
 

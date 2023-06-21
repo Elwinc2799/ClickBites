@@ -160,7 +160,7 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
     }, []);
 
     const data = vectorScores.map((v: VectorScore, i: number) => ({
-        name: v.text,
+        name: v.text + " (%)",
         businessScore: parseFloat(v.score),
         userScore: parseFloat(vectorUserScores[i]?.userScore || '0'),
     }));
