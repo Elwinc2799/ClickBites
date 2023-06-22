@@ -32,6 +32,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
     const router = useRouter();
     const [selectedStar, setSelectedStar] = useState<number>(1);
     const [disabled, setDisabled] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const closeModal = () => {
         setShowForm(false);
@@ -76,6 +77,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
     }, []);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        setIsLoading(true);
         event.preventDefault();
 
         // Add selectedStar to review
@@ -109,6 +111,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
             type: 'success',
             position: 'bottom-right',
         });
+        setIsLoading(false);
 
         setTimeout(() => {
             router.reload();
@@ -185,7 +188,11 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
                             type="submit"
                             disabled={disabled}
                             className="btn bg-blue-500 hover:bg-blue-700 text-white rounded-md border-none">
-                            Save
+                            {isLoading ? (
+                                <span className="loading loading-spinner"></span>
+                            ) : (
+                                <>Save</>
+                            )}
                         </button>
                     </div>
                 </form>
