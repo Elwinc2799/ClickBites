@@ -7,6 +7,7 @@ from ai.generate_vector import generate_vector
 from bson.objectid import ObjectId
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 
 # Create a Flask blueprint for review related routes
@@ -71,12 +72,22 @@ def calculate_scores(user_df, review_df):
 
     def calc_scores(group):
         aspect_importance_scores = calc_importance_scores(group)
+        # Print the aspect importance
+        print("Aspect Importance Scores: ", aspect_importance_scores)
+
         aspect_need_scores = calc_need_scores(group)
+        # Print the aspect need
+        print("Aspect Need Scores: ", aspect_need_scores)
+
         preference_scores = np.array(aspect_importance_scores) * np.array(aspect_need_scores)
+
+        # Print the preference_scores
+        print("Preference Scores: ", preference_scores)
+
         return pd.Series({"vector": preference_scores.tolist()})
 
     user_scores = merged_df.groupby("user_id").apply(calc_scores)
-    
+
     # return the vector of user_scores
     return user_scores
 
@@ -96,14 +107,53 @@ def update_user_vector_after_new_review(review):
     user_data = list(db_user.find({"_id": ObjectId(review["user_id"])}))
     user_df = pd.DataFrame(user_data)
 
+    print("Review Vector:", review["vector"])
+    print("User Vector (before):", str(user_df["vector"].to_string(index=False)))
+
     # Calculate new preference scores
     updated_user_df = calculate_scores(user_df, review_df)
 
     # Update user's vector and average stars in MongoDB
     new_vector = updated_user_df.loc[review["user_id"], "vector"]
+    vector_to_update = []
+
+    for i in range(5):
+        if review["vector"][i] != 0:
+            initial_score = 0.5 if user_df["vector"].values[0][i] == 0 else user_df["vector"].values[0][i]
+            if abs(review["vector"][i]) > 0.5:
+                vector_to_update.append((1 + (new_vector[i] * abs(review["vector"][i]))) * initial_score)
+                print("New Vector:", i, vector_to_update)
+            elif abs(review["vector"][i]) < 0.5:
+                vector_to_update.append((1 - (new_vector[i] * abs(review["vector"][i]))) * initial_score)
+                print("New Vector:", i, vector_to_update)
+        else:
+            vector_to_update.append(user_df["vector"].values[0][i])
+            print("New Vector:", i, vector_to_update)
+
+    print("User Vector (after):", vector_to_update)
+
+    def normalize(lst, new_min=0, new_max=0.9):
+        old_min = min(lst)
+        old_max = max(lst)
+
+        # Normalize to 0-1 range
+        normalized_lst = [(value - old_min) / (old_max - old_min) for value in lst]
+
+        # Scale to new range
+        scaled_lst = [new_min + value * (new_max - new_min) for value in normalized_lst]
+
+        return scaled_lst
+
+    print("User Vector (normalized):", normalize(vector_to_update))
+
+    vector_to_update = normalize(vector_to_update)
+
     db_user.update_one(
         {"_id": ObjectId(review["user_id"])},
-        {"$set": {"vector": new_vector, "average_stars": average_stars}, "$inc": {"review_count": 1}},
+        {
+            "$set": {"vector": vector_to_update, "average_stars": average_stars},
+            "$inc": {"review_count": 1},
+        },
     )
 
 
@@ -129,8 +179,6 @@ def createReview(business_id):
         # post review object to database
         db_review.insert_one(review)
 
-        print(review)
-
         # update user vector using research paper "Finding users preferences from large-scale online reviews for personalized recommendation" algorithm
         update_user_vector_after_new_review(review)
 
@@ -149,8 +197,8 @@ def createReview(business_id):
         for i in range(5):
             average_vector_score[i] /= len(business_reviews)
 
-        print("average stars: ", average_stars)
-        print("average vector score: ", average_vector_score)
+        # print("average stars: ", average_stars)
+        # print("average vector score: ", average_vector_score)
 
         # update the business object with the average stars and vector score and increment the review count
         db_business.update_one(

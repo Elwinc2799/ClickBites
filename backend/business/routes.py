@@ -252,7 +252,6 @@ def getSearchResults():
 @business_bp.route("/api/business/<string:business_id>", methods=["GET"])
 def getBusinessDetails(business_id):
     try:
-
         # get business object from database
         document = db_business.find_one({"_id": ObjectId(business_id)})
 
@@ -274,8 +273,12 @@ def getBusinessDetails(business_id):
             for review in reviews:
                 # get user name
                 user = db_user.find_one({"_id": ObjectId(review["user_id"])})
-                review["user_name"] = user["name"]
 
+                if user is not None:
+                    review["user_name"] = user["name"]
+                else:
+                    review["user_name"] = "Deleted User"
+            
             document["reviews"] = reviews
 
             # Increment the view count

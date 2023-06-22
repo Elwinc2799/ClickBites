@@ -157,7 +157,12 @@ function Business(props: { business: Business }) {
                                                 <span
                                                     key={index}
                                                     className="badge bg-[#39c1f6] text-[#f7fafc] badge-lg mr-3">
-                                                    {category}
+                                                    {category.length > 10
+                                                        ? `${category.substring(
+                                                              0,
+                                                              10
+                                                          )}...`
+                                                        : category}
                                                 </span>
                                             ))}
                                     </div>
@@ -221,23 +226,6 @@ function Business(props: { business: Business }) {
                                                 Reviews
                                             </h1>
 
-                                            {/* <button
-                                                className="btn bg-blue-500 hover:bg-blue-700 text-white mx-4 btn-circle"
-                                                onClick={handleClick}
-                                                disabled={!UseLoginStatus()}>
-                                                <FontAwesomeIcon
-                                                    icon={faPlus}
-                                                />
-                                            </button>
-
-                                            {showForm && (
-                                                <AddReviewForm
-                                                    businessId={
-                                                        props.business._id
-                                                    }
-                                                    setShowForm={setShowForm}
-                                                />
-                                            )} */}
                                             <ReviewFormButton
                                                 businessId={props.business._id}
                                             />
