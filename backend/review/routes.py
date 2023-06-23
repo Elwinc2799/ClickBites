@@ -8,6 +8,7 @@ from bson.objectid import ObjectId
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+from scipy import stats
 
 
 # Create a Flask blueprint for review related routes
@@ -108,7 +109,7 @@ def update_user_vector_after_new_review(review):
     user_df = pd.DataFrame(user_data)
 
     print("Review Vector:", review["vector"])
-    print("User Vector (before):", str(user_df["vector"].to_string(index=False)))
+    print("User Vector (before):", user_df["vector"].tolist()[0])
 
     # Calculate new preference scores
     updated_user_df = calculate_scores(user_df, review_df)
@@ -132,21 +133,37 @@ def update_user_vector_after_new_review(review):
 
     print("User Vector (after):", vector_to_update)
 
-    def normalize(lst, new_min=0, new_max=0.9):
-        old_min = min(lst)
-        old_max = max(lst)
+    # def normalize(lst, new_min=0, new_max=0.8):
+    #     old_min = min(lst)
+    #     old_max = max(lst)
 
-        # Normalize to 0-1 range
-        normalized_lst = [(value - old_min) / (old_max - old_min) for value in lst]
+    #     # Normalize to 0-1 range
+    #     normalized_lst = [(value - old_min) / (old_max - old_min) for value in lst]
 
-        # Scale to new range
-        scaled_lst = [new_min + value * (new_max - new_min) for value in normalized_lst]
+    #     # Scale to new range
+    #     scaled_lst = [new_min + value * (new_max - new_min) for value in normalized_lst]
 
-        return scaled_lst
+    #     return scaled_lst
 
-    print("User Vector (normalized):", normalize(vector_to_update))
+    def normalize_to_distribution(lst, new_mean=0.5, new_std_dev=0.25):
+        # Normalize to a standard normal distribution
+        standardized_lst = stats.zscore(lst)
+        
+        # Shift mean to 0.5 and scale to desired range
+        normalized_lst = new_std_dev * standardized_lst + new_mean
+        
+        # Clip values outside the desired range (0-1)
+        normalized_lst = np.clip(normalized_lst, 0, 1)
+        
+        # Convert the numpy array to a list
+        normalized_lst = normalized_lst.tolist()
+        
+        return normalized_lst
 
-    vector_to_update = normalize(vector_to_update)
+
+    print("User Vector (normalized):", normalize_to_distribution(vector_to_update))
+
+    vector_to_update = normalize_to_distribution(vector_to_update)
 
     db_user.update_one(
         {"_id": ObjectId(review["user_id"])},
