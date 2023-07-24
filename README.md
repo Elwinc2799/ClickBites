@@ -96,7 +96,6 @@ Ensure the following technologies are installed on your machine:
         ```
         https://drive.google.com/drive/folders/1KruFCU66A7bPACEN3owDbu7JeC3wR6QY?usp=sharing
         ```
-        Replace `xxx` with the actual link.
     4. Save these files into the `backend/ai` directory of your local project repository.
     5. Create a new Conda environment and activate it:
         ```
@@ -129,9 +128,8 @@ Ensure the following technologies are installed on your machine:
     3. Download the `fine_tuned_model` folder and `label_encoder.pkl` file from the provided link:
 
         ```
-        https://xxx
+        https://drive.google.com/drive/folders/1KruFCU66A7bPACEN3owDbu7JeC3wR6QY?usp=sharing
         ```
-        Replace `xxx` with the actual link.
     4. Save these files into the `backend/ai` directory of your local project repository.
     5. Create a new Conda environment and activate it:
         ```
@@ -165,32 +163,35 @@ Ensure the following technologies are installed on your machine:
     2. Move the downloaded photos.json to the directory which contains the photos_mapping.py and business.json file. 
 
     3. Start the mapping process to select the photos based on available business ids:
+    For Unix or MacOS, 
 
     ```
     cd data
     python3 photos_mapping.py 
     ```
-    (Unix or MacOS) or 
+    
+    For Windows, 
+
     ```
     cd data
     py photos_mapping.py
     ```
-    (Windows)
 
     A `business_photo` folder containing all required business photos is created.
 
     4. Move the `business_photo` folder to `./frontend/public`
 
     5. Start the import process:
+    For Unix or MacOS,
 
     ```
     python3 import_json.py
     ```
-    (Unix or MacOS) or 
+    
+    For Windows,
     ```
     py import_json.py
     ```
-    (Windows)
     
     The application will automatically create the necessary database and collections based on the provided schema in the code.
 
