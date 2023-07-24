@@ -71,6 +71,7 @@ dependencies:
   - markupsafe=2.1.1=py310h1a28f6b_0
   - mpc=1.1.0=h8c48613_1
   - mpfr=4.0.2=h695f6f0_1
+  - mpmath=1.3.0=pyhd8ed1ab_0
   - murmurhash=1.0.7=py310hc377ac9_0
   - ncurses=6.4=h313beb8_0
   - nettle=3.7.3=h84b5d62_1
@@ -141,6 +142,4 @@ dependencies:
   - zipp=3.11.0=py310hca03da5_0
   - zlib=1.2.13=h5a0b063_0
   - zstd=1.5.5=hd90d995_0
-  - pip:
-      - mpmath==1.2.1
 prefix: /opt/homebrew/Caskroom/miniconda/base/envs/ckbt

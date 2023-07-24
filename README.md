@@ -1,3 +1,7 @@
+I'll add the instructions to create the `next.config.js` file after the Front-End setup and before the Back-End setup section.
+
+Here's the updated content:
+
 # ClickBites - ABSA Restaurant Recommendation System
 
 Welcome to ClickBites, an innovative full-stack restaurant recommendation system that leverages the power of aspect-based sentiment analysis of reviews. Our system analyses a vast range of restaurant reviews, primarily focusing on the Yelp Open Dataset (US restaurants), but we have also included a selection of local Malaysian restaurants to broaden your dining horizon.  
@@ -44,6 +48,23 @@ Ensure the following technologies are installed on your machine:
     ```
     npm install
     ```
+
+    Create a `next.config.js` file in the root of your frontend folder. Paste the following code into the file:
+
+    ```javascript
+    /** @type {import('next').NextConfig} */
+    const nextConfig = {
+        reactStrictMode: true,
+    };
+
+    module.exports = {
+        env: {
+            API_URL: 'http://127.0.0.1:5000',
+            NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: 'xxxxxxxx',
+        },
+    };
+    ```
+    Replace `'xxxxxxxx'` with your Google Maps API Key.
 
     Start the Next.js server:
 
