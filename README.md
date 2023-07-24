@@ -1,7 +1,3 @@
-Absolutely, I've included your requirement into the Back-End Setup section.
-
-Here's the modified content:
-
 # ClickBites - ABSA Restaurant Recommendation System
 
 Welcome to ClickBites, an innovative full-stack restaurant recommendation system that leverages the power of aspect-based sentiment analysis of reviews. Our system analyses a vast range of restaurant reviews, primarily focusing on the Yelp Open Dataset (US restaurants), but we have also included a selection of local Malaysian restaurants to broaden your dining horizon.  
