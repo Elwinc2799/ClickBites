@@ -204,4 +204,10 @@ Ensure the following technologies are installed on your machine:
 
 ## Conclusion
 
-With ClickBites, we aim to revolutionize the way you choose your dining experiences.
+With ClickBites, we aim to revolutionize the way you choose your dining experiences. By using AI technologies to understand your unique preferences, we provide highly personalized restaurant recommendations that cater to your taste. Enjoy discovering new restaurants with ClickBites!
+
+Please feel free to contribute to this project by submitting issues or pull requests.
+
+## License
+
+This project is licensed under the terms of the MIT license.
