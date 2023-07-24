@@ -88,16 +88,22 @@ Ensure the following technologies are installed on your machine:
         ```
         cd backend
         ```
-    2. Create a new Conda environment and activate it:
+    2. Create a `config.py` file in the root of your backend folder. Paste the following code into the file:
+        ```
+        MONGO_URI = "xxxxxxxx"
+        MONGO_PORT = 5000
+        MONGO_TIMEOUT = 1000
+        ```
+    3. Create a new Conda environment and activate it:
         ```
         conda create --name myenv python=3.10
         conda activate myenv
         ```
-    3. Install the necessary packages:
+    4. Install the necessary packages:
         ```
         conda env update --name myenv --file environment.yml
         ```
-    4. Start the Flask server:
+    5. Start the Flask server:
         ```
         python3 app.py
         ```
@@ -109,16 +115,22 @@ Ensure the following technologies are installed on your machine:
         ```
         cd backend
         ```
-    2. Create a new Conda environment and activate it:
+    2. Create a `config.py` file in the root of your backend folder. Paste the following code into the file:
+        ```
+        MONGO_URI = "xxxxxxxx"
+        MONGO_PORT = 5000
+        MONGO_TIMEOUT = 1000
+        ```
+    3. Create a new Conda environment and activate it:
         ```
         conda create --name myenv python=3.8
         activate myenv
         ```
-    3. Install the necessary packages:
+    4. Install the necessary packages:
         ```
         conda env update --file environment.yml
         ```
-    4. Start the Flask server:
+    5. Start the Flask server:
         ```
         python app.py
         ```
