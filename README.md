@@ -1,6 +1,6 @@
-I'll add the instructions to create the `next.config.js` file after the Front-End setup and before the Back-End setup section.
+Absolutely, I've included your requirement into the Back-End Setup section.
 
-Here's the updated content:
+Here's the modified content:
 
 # ClickBites - ABSA Restaurant Recommendation System
 
@@ -94,16 +94,24 @@ Ensure the following technologies are installed on your machine:
         MONGO_PORT = 5000
         MONGO_TIMEOUT = 1000
         ```
-    3. Create a new Conda environment and activate it:
+        Replace "xxxxxxxx" with your MongoDB connection string.
+    3. Download the `fine_tuned_model` folder and `label_encoder.pkl` file from the provided link:
+
+        ```
+        https://drive.google.com/drive/folders/1KruFCU66A7bPACEN3owDbu7JeC3wR6QY?usp=sharing
+        ```
+        Replace `xxx` with the actual link.
+    4. Save these files into the `backend/ai` directory of your local project repository.
+    5. Create a new Conda environment and activate it:
         ```
         conda create --name myenv python=3.10
         conda activate myenv
         ```
-    4. Install the necessary packages:
+    6. Install the necessary packages:
         ```
         conda env update --name myenv --file environment.yml
         ```
-    5. Start the Flask server:
+    7. Start the Flask server:
         ```
         python3 app.py
         ```
@@ -121,16 +129,24 @@ Ensure the following technologies are installed on your machine:
         MONGO_PORT = 5000
         MONGO_TIMEOUT = 1000
         ```
-    3. Create a new Conda environment and activate it:
+        Replace "xxxxxxxx" with your MongoDB connection string.
+    3. Download the `fine_tuned_model` folder and `label_encoder.pkl` file from the provided link:
+
+        ```
+        https://xxx
+        ```
+        Replace `xxx` with the actual link.
+    4. Save these files into the `backend/ai` directory of your local project repository.
+    5. Create a new Conda environment and activate it:
         ```
         conda create --name myenv python=3.8
         activate myenv
         ```
-    4. Install the necessary packages:
+    6. Install the necessary packages:
         ```
         conda env update --file environment.yml
         ```
-    5. Start the Flask server:
+    7. Start the Flask server:
         ```
         python app.py
         ```
@@ -141,7 +157,6 @@ Ensure the following technologies are installed on your machine:
     - Before starting, ensure that you have [Anaconda](https://www.anaconda.com/products/distribution) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed. These distribution packages include Conda, Python, and other commonly used packages in scientific computing and data science.
 
     Ensure you have the necessary permissions to execute these commands in your terminal/command prompt. If there are permission issues, try running the Command Prompt as an Administrator or consult the respective software documentation.
-
 
 4. **Database Setup**:
 
@@ -189,10 +204,4 @@ Ensure the following technologies are installed on your machine:
 
 ## Conclusion
 
-With ClickBites, we aim to revolutionize the way you choose your dining experiences. By using AI technologies to understand your unique preferences, we provide highly personalized restaurant recommendations that cater to your taste. Enjoy discovering new restaurants with ClickBites!
-
-Please feel free to contribute to this project by submitting issues or pull requests.
-
-## License
-
-This project is licensed under the terms of the MIT license.
+With ClickBites, we aim to revolutionize the way you choose your dining experiences.
