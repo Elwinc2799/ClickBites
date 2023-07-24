@@ -1,5 +1,3 @@
-Of course, here's the reformatting using ``` for code snippets:
-
 # ClickBites - ABSA Restaurant Recommendation System
 
 Welcome to ClickBites, an innovative full-stack restaurant recommendation system that leverages the power of aspect-based sentiment analysis of reviews. Our system analyses a vast range of restaurant reviews, primarily focusing on the Yelp Open Dataset (US restaurants), but we have also included a selection of local Malaysian restaurants to broaden your dining horizon.  
@@ -71,7 +69,7 @@ Ensure the following technologies are installed on your machine:
         ```
     2. Create a new Conda environment and activate it:
         ```
-        conda create --name myenv python=3.8
+        conda create --name myenv python=3.10
         conda activate myenv
         ```
     3. Install the necessary packages:
