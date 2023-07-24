@@ -1,9 +1,9 @@
-name: ckbt2
+name: ckbt
 channels:
   - huggingface
   - pytorch
-  - anaconda
   - conda-forge
+  - anaconda
   - defaults
 dependencies:
   - appdirs=1.4.4=pyhd3eb1b0_0
@@ -11,9 +11,9 @@ dependencies:
   - bottleneck=1.3.5=py310h96f19d2_0
   - brotlipy=0.7.0=py310h1a28f6b_1002
   - bzip2=1.0.8=h620ffc9_4
-  - ca-certificates=2023.7.22=hf0a4a13_0
+  - ca-certificates=2022.4.26=hca03da5_0
   - catalogue=2.0.7=py310hca03da5_0
-  - certifi=2023.7.22=pyhd8ed1ab_0
+  - certifi=2022.6.15=py310hca03da5_0
   - cffi=1.15.1=py310h80987f9_3
   - charset-normalizer=2.0.4=pyhd3eb1b0_0
   - click=8.0.4=py310hca03da5_0
@@ -80,7 +80,7 @@ dependencies:
   - numpy=1.22.3=py310hdb36b11_0
   - numpy-base=1.22.3=py310h5e3e9f0_0
   - openh264=1.8.0=h98b2900_0
-  - openssl=1.1.1u=h53f4e23_0
+  - openssl=1.1.1o=h1a28f6b_0
   - packaging=23.0=py310hca03da5_0
   - pandas=1.5.3=py310h46d7db6_0
   - pathy=0.10.1=py310hca03da5_0
@@ -114,6 +114,7 @@ dependencies:
   - spacy=3.5.3=py310hb6aeb05_0
   - spacy-legacy=3.0.12=py310hca03da5_0
   - spacy-loggers=1.0.4=py310hca03da5_0
+  - spacy-model-en_core_web_sm=3.5.0=pyhd8ed1ab_0
   - sqlite=3.41.2=h80987f9_0
   - srsly=2.4.6=py310h313beb8_0
   - sympy=1.11.1=py310hca03da5_0
@@ -141,6 +142,5 @@ dependencies:
   - zlib=1.2.13=h5a0b063_0
   - zstd=1.5.5=hd90d995_0
   - pip:
-      - en-core-web-sm==3.5.0
       - mpmath==1.2.1
-prefix: /opt/homebrew/Caskroom/miniconda/base/envs/ckbt2
+prefix: /opt/homebrew/Caskroom/miniconda/base/envs/ckbt

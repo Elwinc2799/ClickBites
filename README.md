@@ -74,7 +74,7 @@ Ensure the following technologies are installed on your machine:
         ```
     3. Install the necessary packages:
         ```
-        conda env update --file environment.yml
+        conda env update --name myenv --file environment.yml
         ```
     4. Start the Flask server:
         ```
