@@ -163,6 +163,7 @@ Ensure the following technologies are installed on your machine:
     2. Move the downloaded photos.json to the directory which contains the photos_mapping.py and business.json file. 
 
     3. Start the mapping process to select the photos based on available business ids:
+    
     For Unix or MacOS, 
 
     ```
@@ -182,6 +183,7 @@ Ensure the following technologies are installed on your machine:
     4. Move the `business_photo` folder to `./frontend/public`
 
     5. Start the import process:
+    
     For Unix or MacOS,
 
     ```
