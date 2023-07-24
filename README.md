@@ -1,4 +1,6 @@
-# ClickBites - Your Personalized Restaurant Recommendation System
+Of course, here's the reformatting using ``` for code snippets:
+
+# ClickBites - ABSA Restaurant Recommendation System
 
 Welcome to ClickBites, an innovative full-stack restaurant recommendation system that leverages the power of aspect-based sentiment analysis of reviews. Our system analyses a vast range of restaurant reviews, primarily focusing on the Yelp Open Dataset (US restaurants), but we have also included a selection of local Malaysian restaurants to broaden your dining horizon.  
 
@@ -23,21 +25,37 @@ Ensure the following technologies are installed on your machine:
 
 1. **Clone the Repository**: 
 
-   `git clone https://github.com/Elwinc2799/ClickBites.git`
+   ```
+   git clone https://github.com/Elwinc2799/ClickBites.git
+   ```
    
 2. **Front-End Setup**:
 
     Navigate to the front-end directory:
 
-    `cd frontend`
+    ```
+    cd frontend
+    ```
 
-    Install the necessary npm packages:
+    Install the necessary npm packages using yarn or npm:
 
-    `yarn install`
+    ```
+    yarn install 
+    ```
+    or 
+    ```
+    npm install
+    ```
 
     Start the Next.js server:
 
-    `yarn dev`
+    ```
+    yarn dev
+    ```
+    or 
+    ```
+    npm run dev
+    ```
 
     By default, the server runs on `http://localhost:3000`
 
@@ -45,74 +63,94 @@ Ensure the following technologies are installed on your machine:
 
     Follow these steps to set up the back-end for different operating systems:
 
-    #### For Unix or MacOS:
+    ### For Unix or MacOS:
 
     1. Open a new terminal window, navigate to the back-end directory:
-
-   `cd backend`
-
-    2. Create a virtual environment and activate it:
-
-   `python3 -m venv venv`
-
-   `source venv/bin/activate`
-
-    3. Install the necessary pip packages:
-
-   `pip install -r requirements.txt`
-
+        ```
+        cd backend
+        ```
+    2. Create a new Conda environment and activate it:
+        ```
+        conda create --name myenv python=3.8
+        conda activate myenv
+        ```
+    3. Install the necessary packages:
+        ```
+        conda env update --file environment.yml
+        ```
     4. Start the Flask server:
-
-   `python3 app.py`
-
+        ```
+        python3 app.py
+        ```
     By default, the server runs on `http://localhost:5000`
 
-    #### For Windows:
+    ### For Windows:
 
     1. Open Command Prompt, navigate to the back-end directory:
-
-    `cd backend`
-
-    2. Create a virtual environment and activate it:
-
-    `py -m venv venv`
-
-    `.\venv\Scripts\activate`
-
-    3. Install the necessary pip packages:
-
-    `pip install -r requirements.txt`
-
+        ```
+        cd backend
+        ```
+    2. Create a new Conda environment and activate it:
+        ```
+        conda create --name myenv python=3.8
+        activate myenv
+        ```
+    3. Install the necessary packages:
+        ```
+        conda env update --file environment.yml
+        ```
     4. Start the Flask server:
-
-    `py app.py`
-
+        ```
+        python app.py
+        ```
     By default, the server runs on `http://localhost:5000`
 
-    **Note:** Ensure you have the necessary permissions to execute these commands in your terminal/command prompt. If there are permission issues, try running the Command Prompt as an Administrator or consult the respective software documentation.
+    **Note:** 
+    - The `environment.yml` file is a file you should create when you export your Conda environment using the command `conda env export > environment.yml`.
+    - Before starting, ensure that you have [Anaconda](https://www.anaconda.com/products/distribution) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed. These distribution packages include Conda, Python, and other commonly used packages in scientific computing and data science.
+
+    Ensure you have the necessary permissions to execute these commands in your terminal/command prompt. If there are permission issues, try running the Command Prompt as an Administrator or consult the respective software documentation.
 
 
 4. **Database Setup**:
 
     Make sure MongoDB service is running on your machine. To set up the database:
 
-    `cd data`
-
-    Start the import process:
-
-    `python3 import_json.py` (Unix or MacOS) or `py import_json.py` (Windows)
-    
-    The application will automatically create the necessary database and collections based on the provided schema in the code.
-
-    **Note:** To download the photos for each restaurant:
+    1. To download the photos for each restaurant:
 
     Navigate to `https://www.yelp.com/dataset/download` to download the photos content.
 
-    Move the photos folder to the directory which contains the photos_mapping.py file. The directory must contain the all the json data files too. 
+    2. Move the downloaded photos.json to the directory which contains the photos_mapping.py and business.json file. 
 
-    Start the mapping process to modify the photos id and import to the MongoDB database:
+    3. Start the mapping process to select the photos based on available business ids:
 
-    `python3 photos_mapping.py` (Unix or MacOS) or `py photos_mapping.py` (Windows)
+    ```
+    cd data
+    python3 photos_mapping.py 
+    ```
+    (Unix or MacOS) or 
+    ```
+    cd data
+    py photos_mapping.py
+    ```
+    (Windows)
+
+    A `business_photo` folder containing all required business photos is created.
+
+    4. Move the `business_photo` folder to `./frontend/public`
+
+    5. Start the import process:
+
+    ```
+    python3 import_json.py
+    ```
+    (Unix or MacOS) or 
+    ```
+    py import_json.py
+    ```
+    (Windows)
+    
+    The application will automatically create the necessary database and collections based on the provided schema in the code.
 
 5. **Connecting the Dots**:
 
