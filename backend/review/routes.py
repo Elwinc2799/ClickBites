@@ -29,12 +29,21 @@ def normalize_vector(vector):
 def calc_importance_scores(group):
     aspect_importance_scores = []
     for i in range(5):
+        # Calculate the weighted sum of the scores for each aspect
         aspect_values = np.array(group["normalized_review_vector"].tolist())[:, i]
         weighted_scores_sum = np.sum(group["stars"].values * aspect_values)
+
+        # Calculate the square root of the sum of the squares of the ratings
         rating_sqrt = np.sqrt(np.sum(group["stars"].values ** 2))
+
+        # Calculate the square root of the sum of the squares of the sentiment scores
         sentiment_sqrt = np.sqrt(np.sum(aspect_values**2))
+
+        # Calculate the aspect importance score
         aspect_importance_scores.append(
-            weighted_scores_sum / (rating_sqrt * sentiment_sqrt) if rating_sqrt * sentiment_sqrt != 0 else 0
+            weighted_scores_sum / (rating_sqrt * sentiment_sqrt)
+            if rating_sqrt * sentiment_sqrt != 0
+            else 0  # Avoid division by zero
         )
     return aspect_importance_scores
 
@@ -44,21 +53,42 @@ def calc_need_scores(group):
     aspect_need_scores = []
     for i in range(5):
         aspect_values = np.array(group["normalized_review_vector"].tolist())[:, i]
+
+        # Calculate the aspect need score for the aspect if it is mentioned in the review
         if np.any(aspect_values != 0):
             user_business_scores = []
+
+            # For each business that the user has reviewed
             for business_id, business_group in group.groupby("business_id"):
+                # Retrieve all reviews for the business that mention the aspect
                 aspect_df = merged_df[
                     (merged_df["business_id"] == business_id)
                     & (merged_df["normalized_review_vector"].apply(lambda x: x[i] != 0))
                 ]
+
+                # Calculate the average of the aspect scores for the business
                 Zi = aspect_df["normalized_review_vector"].apply(lambda x: x[i]).mean()
+
+                # Calculate the average of the aspect scores for all the businesses that the user has reviewed
                 user_score = business_group["normalized_review_vector"].apply(lambda x: x[i]).mean()
+
+                # Calculate the aspect need score for the business
                 user_business_scores.append((Zi - user_score + 1) / Zi)
+
+            # Calculate the aspect need score for the aspect
             aspect_need_scores.append(np.mean(user_business_scores))
         else:
+            # Calculate the aspect need score for the aspect if it is not mentioned in the review
+
+            # Retrieve all scores for the aspect if it is mentioned in the review
             aspect_df = merged_df[merged_df["normalized_review_vector"].apply(lambda x: x[i] != 0)]
+
+            # Calculate the average of the aspect scores for the aspect
             Z = aspect_df["normalized_review_vector"].apply(lambda x: x[i]).mean()
+
+            # Calculate the aspect need score for the aspect
             aspect_need_scores.append(np.sum(0.1 / Z) / len(aspect_df))
+
     return aspect_need_scores
 
 
@@ -118,50 +148,46 @@ def update_user_vector_after_new_review(review):
     new_vector = updated_user_df.loc[review["user_id"], "vector"]
     vector_to_update = []
 
+    # Update the user's vector based on the new review vector and the user's previous vector values
     for i in range(5):
+        # If the review vector value is not 0, update the user's vector value
         if review["vector"][i] != 0:
+            # Set the initial score to 0.5 if the user's vector value is 0, otherwise set it to the user's vector value
             initial_score = 0.5 if user_df["vector"].values[0][i] == 0 else user_df["vector"].values[0][i]
+
+            # To prevent overflow of newly computed vector score, we will use the following formula to update the user's vector value
+
+            # If the review vector value is positive, update the user's vector value by the formula (1 + (new_vector[i] * review["vector"][i])) * initial_score
             if abs(review["vector"][i]) > 0.5:
                 vector_to_update.append((1 + (new_vector[i] * abs(review["vector"][i]))) * initial_score)
                 print("New Vector:", i, vector_to_update)
             elif abs(review["vector"][i]) < 0.5:
+                # If the review vector value is negative, update the user's vector value by the formula (1 - (new_vector[i] * review["vector"][i])) * initial_score
                 vector_to_update.append((1 - (new_vector[i] * abs(review["vector"][i]))) * initial_score)
                 print("New Vector:", i, vector_to_update)
+
         else:
+            # If the review vector value is 0, do not update the user's vector value
             vector_to_update.append(user_df["vector"].values[0][i])
             print("New Vector:", i, vector_to_update)
 
     print("User Vector (after):", vector_to_update)
 
-    # def normalize(lst, new_min=0, new_max=0.8):
-    #     old_min = min(lst)
-    #     old_max = max(lst)
-
-    #     # Normalize to 0-1 range
-    #     normalized_lst = [(value - old_min) / (old_max - old_min) for value in lst]
-
-    #     # Scale to new range
-    #     scaled_lst = [new_min + value * (new_max - new_min) for value in normalized_lst]
-
-    #     return scaled_lst
-
+    # Normalize the vector to a standard normal distribution
     def normalize_to_distribution(lst, new_mean=0.5, new_std_dev=0.25):
         # Normalize to a standard normal distribution
         standardized_lst = stats.zscore(lst)
-        
+
         # Shift mean to 0.5 and scale to desired range
         normalized_lst = new_std_dev * standardized_lst + new_mean
-        
+
         # Clip values outside the desired range (0-1)
         normalized_lst = np.clip(normalized_lst, 0, 1)
-        
+
         # Convert the numpy array to a list
         normalized_lst = normalized_lst.tolist()
-        
+
         return normalized_lst
-
-
-    print("User Vector (normalized):", normalize_to_distribution(vector_to_update))
 
     vector_to_update = normalize_to_distribution(vector_to_update)
 
@@ -196,13 +222,13 @@ def createReview(business_id):
         # post review object to database
         db_review.insert_one(review)
 
-        # update user vector using research paper "Finding users preferences from large-scale online reviews for personalized recommendation" algorithm
+        # update user vector using enhanced algorithm from the research paper "Finding users preferences from large-scale online reviews for personalized recommendation"
         update_user_vector_after_new_review(review)
 
         # retrieve all reviews for the business
         business_reviews = list(db_review.find({"business_id": ObjectId(review["business_id"])}))
 
-        # calculate the average stars and average business 5d vector score
+        # calculate the average stars and the business' aspect scores using average of all review scores
         average_stars = 0
         average_vector_score = [0] * 5
         for business_review in business_reviews:

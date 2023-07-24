@@ -13,6 +13,7 @@ export default function ReviewFormButton({
 }: ReviewFormButtonProps) {
     const [showForm, setShowForm] = useState(false);
 
+    // Show the form when the button is clicked
     const handleClick = () => {
         setShowForm(true);
     };

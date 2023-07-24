@@ -47,13 +47,15 @@ function UpdateUserModal(user: User) {
                     city: city || user.city,
                 })
             );
-
+            
+            // If the user uploaded a new profile picture, append it to the form data
             if (profilePic) {
                 formData.append('profile_pic', profilePic || user.profilePic);
             }
 
             console.log(formData);
 
+            // Send a PUT request with update user form data to the API
             const response = await axios.put(
                 process.env.API_URL + '/api/profile/' + user.id,
                 formData,
@@ -106,6 +108,7 @@ function UpdateUserModal(user: User) {
         }
     };
 
+    // Enable the submit button if any of the input boxes are filled
     useEffect(() => {
         if (name || phone || address || state || city || profilePic) {
             setDisabled(false);

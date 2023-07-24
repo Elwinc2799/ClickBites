@@ -38,6 +38,7 @@ interface Business {
     similarity: number;
 }
 
+// function to calculate the distance between two coordinates in km
 function haversineDistance(
     lat1: number | null,
     lon1: number | null,
@@ -71,6 +72,8 @@ function haversineDistance(
 
 function Results() {
     const router = useRouter();
+
+    // get search query from url
     const search_query = router.query.search_query;
 
     const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -90,6 +93,7 @@ function Results() {
     const [latitude, setLatitude] = useState<number | null>(defaultLatitude);
     const [longitude, setLongitude] = useState<number | null>(defaultLongitude);
 
+    // get all businesses based on search query from backend
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
@@ -123,17 +127,13 @@ function Results() {
                 similarity: business.similarity,
             }));
 
-            // set all cities
-            const allCities = newBusinessData.map(
-                (business: Business) => business.city
-            );
-
             setBusinesses(newBusinessData);
             setIsLoading(false);
         };
         fetchData();
     }, [search_query]);
 
+    // set default latitude and longitude to be default location based on location provider
     useEffect(() => {
         setLatitude(defaultLatitude);
         setLongitude(defaultLongitude);
@@ -150,9 +150,10 @@ function Results() {
                     business.longitude
                 );
 
-                return distance <= 20;
+                return distance <= 20;      // filter by distance <= 20km
             });
 
+            // filter by stars and open now
             filteredBusinesses = filteredBusinesses.filter(
                 (business: Business) => {
                     let meetsStarsCondition = business.stars >= starsFilter;
@@ -208,7 +209,8 @@ function Results() {
                     return meetsStarsCondition && meetsOpenNowCondition;
                 }
             );
-
+            
+            // sort businesses by similarity or stars
             if (isToggled) {
                 filteredBusinesses.sort(
                     (a: Business, b: Business) => b.similarity - a.similarity
@@ -350,14 +352,6 @@ function Results() {
                             setLng={setLongitude}
                             setLat={setLatitude}
                         />
-                        {/* <Image
-                                    src="/images/map.jpg"
-                                    alt="Map"
-                                    width={0}
-                                    height={0}
-                                    sizes="100vw, 48vw"
-                                    className="object-cover h-full w-full"
-                                /> */}
                     </div>
                 </div>
             </Background>

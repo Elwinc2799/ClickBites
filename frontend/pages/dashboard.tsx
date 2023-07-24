@@ -49,6 +49,7 @@ function Dashboard() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
 
+    // Fetch the business data from the API
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);

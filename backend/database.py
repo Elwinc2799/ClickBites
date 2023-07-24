@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from config import MONGO_URI, MONGO_PORT, MONGO_TIMEOUT
 
-
+# Singleton class for MongoDB connection
 class Database:
     __instance = None
 

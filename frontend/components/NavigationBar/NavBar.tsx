@@ -22,7 +22,6 @@ function NavBar(props: Props) {
     const [textColor, setTextColor] = useState('white');
     const [borderColor, setBorderColor] = useState('transparent');
     const businessStatus = UseHasBusinessStatus();
-    // const [businessStatus, setBusinessStatus] = useState(false);
     const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +29,7 @@ function NavBar(props: Props) {
 
     const [status, setStatus] = useState(false);
 
+    // change color of navbar and text when scrolling
     useEffect(() => {
         if (props.isLanding) {
             const changeColor = () => {
@@ -49,12 +49,14 @@ function NavBar(props: Props) {
         }
     }, [props.isLanding]);
 
+    // get user vector scores and set it to radial progress bar
     useEffect(() => {
         if (UseLoginStatus()) {
             setStatus(true);
 
             setIsLoading(true);
 
+            // fetch user id
             const fetchData = async () => {
                 const res = await axios.get<{ userId: string }>(
                     process.env.API_URL + '/api/getUserId',
@@ -68,6 +70,7 @@ function NavBar(props: Props) {
                 return res.data.userId;
             };
 
+            // fetch user data
             const fetchUserData = async (userId: string) => {
                 const res = await axios.get(
                     process.env.API_URL + '/api/profile/' + userId,

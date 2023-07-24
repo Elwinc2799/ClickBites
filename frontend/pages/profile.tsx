@@ -59,6 +59,7 @@ function Profile() {
     const [isLoading, setIsLoading] = useState(true);
     const [vectorScores, setVectorScores] = useState<VectorScore[]>([]);
 
+    // get user id and user data including reviews, vector, and average stars
     useEffect(() => {
         const fetchData = async () => {
             const res = await axios.get<{ userId: string }>(

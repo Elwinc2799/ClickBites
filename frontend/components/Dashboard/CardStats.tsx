@@ -66,6 +66,7 @@ function CardStats({ statSubtitle, statTitle, statIconColor }: CardStatsProps) {
         'Total Reviews': <TotalReviewsIcon />,
         Rating: <RatingIcon />,
     }[statSubtitle];
+    
     return (
         <>
             <div className="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 shadow-lg h-full">

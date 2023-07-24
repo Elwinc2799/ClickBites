@@ -52,7 +52,8 @@ function UpdateUserModal(business: Business) {
                     description: description || business.description,
                 })
             );
-
+            
+            // If the user uploaded a new business picture, append it to the form data
             if (businessPic) {
                 formData.append(
                     'business_pic',
@@ -62,6 +63,7 @@ function UpdateUserModal(business: Business) {
 
             console.log(formData);
 
+            // Send a PUT request to the API to update the business
             const response = await axios.put(
                 process.env.API_URL + '/api/business/' + business._id,
                 formData,
@@ -115,6 +117,7 @@ function UpdateUserModal(business: Business) {
         }
     };
 
+    // Enable submit button when at least one input box is not empty
     useEffect(() => {
         if (
             name ||

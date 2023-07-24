@@ -17,6 +17,7 @@ interface Props {
     setShowForm: (showForm: boolean) => void;
 }
 
+// Format date to YYYY-MM-DD HH:MM:SS
 function formatDateTime(date: Date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed in JS
@@ -34,6 +35,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
     const [disabled, setDisabled] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    // Close the form when the cancel button is clicked
     const closeModal = () => {
         setShowForm(false);
     };
@@ -46,6 +48,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
         date: '',
     });
 
+    // Get user id and date
     useEffect(() => {
         const fetchData = async () => {
             const res = await axios.get<{ userId: string }>(
@@ -76,6 +79,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
         addUserIdDate();
     }, []);
 
+    // Post review to database
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         setIsLoading(true);
         event.preventDefault();
@@ -83,7 +87,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
         // Add selectedStar to review
         const reviewWithStar = { ...review, stars: selectedStar };
 
-        // post review to database
+        // Send POST request with review form data to API
         const response = await axios.post(
             process.env.API_URL + '/api/business/' + businessId,
             reviewWithStar,
@@ -125,6 +129,7 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
         setReview((prevState) => ({ ...prevState, [name]: value }));
     };
 
+    // Enable submit button when review text is not empty
     useEffect(() => {
         if (review.text.length > 0) {
             setDisabled(false);
@@ -153,18 +158,6 @@ const AddReviewForm = ({ businessId, setShowForm }: Props) => {
                             />
                         ))}
                     </div>
-
-                    {/* <input
-                        type="number"
-                        name="stars"
-                        id="stars"
-                        min="1"
-                        max="5"
-                        value={review.stars}
-                        onChange={handleChange}
-                        required
-                        className="input input-bordered w-full mb-5"
-                    /> */}
                     <label htmlFor="text" className="block font-medium mb-1">
                         Review
                     </label>

@@ -9,28 +9,15 @@ function SearchBox() {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // if (!UseLoginStatus()) {
-        //     toast('Please log in first', {
-        //         hideProgressBar: true,
-        //         autoClose: 2000,
-        //         type: 'error',
-        //         position: 'bottom-right',
-        //     });
-        //     setTimeout(() => {
-        //         router.push('/login');
-        //     }, 2100);
-        // } else {
-            const search_query = e.currentTarget.search_query.value;
-            router.push({
-                pathname: '/results',
-                query: { search_query },
-            });
-        // }
+        const search_query = e.currentTarget.search_query.value;
+        router.push({
+            pathname: '/results',
+            query: { search_query },
+        });
     };
 
     return (
         <form className="flex items-center" onSubmit={handleSubmit}>
-            {/* <label for="voice-search" className="sr-only">Search</label> */}
             <div className="relative w-full rounded-md">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg

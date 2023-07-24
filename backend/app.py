@@ -11,8 +11,10 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 
+# Set up CORS to allow requests from the frontend
 CORS(app, origins=['http://localhost:3000'], resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
+# Register blueprints for business, review, and user routes
 app.register_blueprint(business_bp)
 app.register_blueprint(review_bp)
 app.register_blueprint(user_bp)

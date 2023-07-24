@@ -16,11 +16,15 @@ interface MapComponentProps {
 }
 
 function MapComponent({ setLat, setLng, height, width }: MapComponentProps) {
+    // Get the latitude and longitude from the LocationContext
     const { latitude, longitude } = useContext(LocationContext);
+
+    // Get the Google Maps API key from the next.config.js file
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+    // Create a ref for the search box
     const searchBoxRef = useRef<HTMLInputElement>(null);
-
+    
     useEffect(() => {
         if (!apiKey) {
             throw new Error('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is not set');
@@ -33,9 +37,11 @@ function MapComponent({ setLat, setLng, height, width }: MapComponentProps) {
 
         let map: google.maps.Map
 
+        // Load the Google Maps API
         loader.load().then(() => {
             const mapElement = document.getElementById('map');
             if (mapElement) {
+                // Create a new map instance and set the center to the user's location
                 const pos = {
                     lat: latitude ?? 0,
                     lng: longitude ?? 0,
@@ -46,12 +52,14 @@ function MapComponent({ setLat, setLng, height, width }: MapComponentProps) {
                     zoom: 8,
                 });
 
+                // Create a new marker instance
                 const marker = new google.maps.Marker({
                     position: pos,
                     map,
                     draggable: true,
                 });
-
+                
+                // Add a listener to the marker to update the latitude and longitude when the marker is dragged
                 google.maps.event.addListener(
                     marker,
                     'dragend',
@@ -60,7 +68,8 @@ function MapComponent({ setLat, setLng, height, width }: MapComponentProps) {
                         setLng(evt.latLng.lng());
                     }
                 );
-
+                
+                // Create a new search box instance and add it to the map
                 const searchBox = new google.maps.places.SearchBox(searchBoxRef.current as HTMLInputElement);
                 map.controls[window.google.maps.ControlPosition.TOP_LEFT].push(searchBoxRef.current as Node);
 
@@ -69,6 +78,7 @@ function MapComponent({ setLat, setLng, height, width }: MapComponentProps) {
                     searchBox.setBounds(map.getBounds() as google.maps.LatLngBounds);
                 });
 
+                // Listen for the event fired when the user selects a prediction and retrieve
                 searchBox.addListener('places_changed', function () {
                     const places = searchBox.getPlaces();
 
@@ -76,7 +86,7 @@ function MapComponent({ setLat, setLng, height, width }: MapComponentProps) {
                         return;
                     }
 
-                    // Clear out the old markers.
+                    // Clear out the old markers
                     marker.setMap(null);
 
                     // For each place, get the icon, name and location.

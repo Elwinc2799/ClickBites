@@ -11,25 +11,13 @@ interface Props {
 
 const CategoryCard = ({ categoryImg, categoryName }: Props) => {
     const router = useRouter();
-
+    
     const handleClick = () => {
-        // if (!UseLoginStatus()) {
-        //     toast('Please log in first', {
-        //         hideProgressBar: true,
-        //         autoClose: 2000,
-        //         type: 'error',
-        //         position: 'bottom-right',
-        //     });
-        //     setTimeout(() => {
-        //         router.push('/login');
-        //     }, 2100);
-        // } else {
-            const search_query = categoryName;
-            router.push({
-                pathname: '/results',
-                query: { search_query },
-            });
-        // }
+        const search_query = categoryName;
+        router.push({
+            pathname: '/results',
+            query: { search_query },
+        });
     };
 
     return (

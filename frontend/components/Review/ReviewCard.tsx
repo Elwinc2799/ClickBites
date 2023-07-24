@@ -21,9 +21,12 @@ interface ReviewCardProps {
 }
 
 export default function ReviewCard({ review, isUser }: ReviewCardProps) {
+    // create stars for review
     const stars = Array.from({ length: review.stars }, (_, i) => (
         <FontAwesomeIcon key={i} icon={faStar} className="text-yellow-300" />
     ));
+
+    // create empty stars for review
     const emptyStars = Array.from({ length: 5 - review.stars }, (_, i) => (
         <FontAwesomeIcon key={i} icon={farStar} className="text-yellow-300" />
     ));

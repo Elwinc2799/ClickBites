@@ -31,7 +31,7 @@ function CardProfile({ business}: CardProfileProps) {
         setShowMore(!showMore);
     };
 
-    const shortDescription = `${business?.description.substring(0, 250)}...`;
+    const shortDescription = `${business?.description.substring(0, 250)}...`;   // Show only the first 250 characters of the description
     const fullDescription = business?.description;
 
     return (

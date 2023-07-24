@@ -19,6 +19,7 @@ function Login() {
         expiryDate.setTime(expiryDate.getTime() + (60 * 60 * 1000) * 2); // 2 hour from now
 
         try {
+            // Send a POST request to the API to log in
             const response = await axios.post(
                 process.env.API_URL + '/api/login',
                 {
@@ -26,11 +27,13 @@ function Login() {
                     password: password,
                 }
             );
+
+            // Set the cookie with the token
             setCookie('token', response.data?.access_token, {
                 expires: expiryDate,
-                path: '/', // recommended to set the path to '/' to make the cookie accessible to all pages
-                secure: true, // recommended for HTTPS connections
-                sameSite: 'strict', // recommended to prevent cross-site request forgery (CSRF) attacks
+                path: '/', // set the path to '/' to make the cookie accessible to all pages
+                secure: true, // for HTTPS connections
+                sameSite: 'strict', // to prevent cross-site request forgery (CSRF) attacks
             });
 
             // Clear input boxes
@@ -104,7 +107,6 @@ function Login() {
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
-                                {/* <div className="mt-4">{message}</div> */}
                                 <div className="flex flex-row justify-end items-center">
                                     <button
                                         type="submit"

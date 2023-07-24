@@ -3,6 +3,7 @@ import { getCookie } from 'cookies-next';
 import axios from 'axios';
 import { UseLoginStatus } from './UseLoginStatus';
 
+// This hook checks if the user has a business, return boolean value
 function useHasBusinessStatus() {
     const [hasBusiness, setHasBusiness] = useState<Boolean | null>(null);
 

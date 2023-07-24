@@ -14,11 +14,13 @@ interface LocationProviderProps {
     children: ReactNode;
 }
 
+// LocationProvider provides the latitude and longitude of the user
 export function LocationProvider({ children }: LocationProviderProps) {
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
 
     useEffect(() => {
+        // get user's location
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function (position) {

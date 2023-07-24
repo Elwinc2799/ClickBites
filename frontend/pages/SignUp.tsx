@@ -43,12 +43,15 @@ function SignUp() {
                     state: state,
                     city: city,
                 }));
+
+                // Append profile picture if it exists
                 if (profilePic) {
                     formData.append('profile_pic', profilePic);
                 }
 
                 console.log(formData)
-    
+                
+                // Send POST request with sign up form data to backend
                 const response = await axios.post(
                     process.env.API_URL + '/api/signup',
                     formData,
@@ -242,7 +245,6 @@ function SignUp() {
                                         className="border-2 border-gray-300 p-2 rounded-md focus:outline-none"
                                     />
                                 </div>
-                                {/* <div className="mt-4">{message}</div> */}
                                 <div className="flex flex-row justify-end items-center">
                                     <button
                                         type="submit"

@@ -103,6 +103,7 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
     const [vectorUserScores, setVectorUserScores] = useState<VectorScore[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    // get user and business vector scores
     useEffect(() => {
         setIsLoading(true);
         const fetchData = async () => {
@@ -159,6 +160,7 @@ const AspectRadar: React.FC<AspectRadarProps> = ({
         }
     }, []);
 
+    // map user and business scores to data 
     const data = vectorScores.map((v: VectorScore, i: number) => ({
         name: v.text + " (%)",
         businessScore: parseFloat(v.score),

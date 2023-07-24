@@ -26,6 +26,7 @@ interface Business {
 }
 
 function RegisterBusiness() {
+    // Get default location from context
     const { latitude: defaultLatitude, longitude: defaultLongitude } =
         useContext(LocationContext);
 
@@ -38,6 +39,7 @@ function RegisterBusiness() {
 
     const [selectedLocation, setSelectedLocation] = useState(defaultCenter);
 
+    // Set default location to context
     useEffect(() => {
         const newCenter = {
             lat: defaultLatitude || 0,
@@ -73,6 +75,7 @@ function RegisterBusiness() {
 
     const router = useRouter();
 
+    // Handle business registration form input changes
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -88,6 +91,7 @@ function RegisterBusiness() {
         });
     };
 
+    // Handle business registration form submission
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -97,6 +101,7 @@ function RegisterBusiness() {
             formData.append('business_pic', businessPic);
         }
 
+        // Add latitude and longitude to business object
         const businessWithLocation = {
             ...business,
             latitude: latitude,
@@ -108,6 +113,7 @@ function RegisterBusiness() {
         console.log(formData);
 
         try {
+            // Send POST request with form data to backend
             const response = await axios.post(
                 process.env.API_URL + '/api/business',
                 formData,
