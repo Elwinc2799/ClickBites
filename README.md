@@ -62,11 +62,10 @@ Ensure the following technologies are installed on your machine:
     ```
     Replace `'xxxxxxxx'` with your Google Maps API Key.
 
-    Start the Next.js server:
+    To run the application, start the Next.js server by running:
 
     ```
     yarn dev
-    ```
     or 
     ```
     npm run dev
@@ -78,7 +77,7 @@ Ensure the following technologies are installed on your machine:
 
     Follow these steps to set up the back-end for different operating systems:
 
-    ### For Unix or MacOS:
+    For Unix or MacOS:
 
     1. Open a new terminal window, navigate to the back-end directory:
         ```
@@ -112,7 +111,7 @@ Ensure the following technologies are installed on your machine:
         ```
     By default, the server runs on `http://localhost:5000`
 
-    ### For Windows:
+    For Windows:
 
     1. Open Command Prompt, navigate to the back-end directory:
         ```
