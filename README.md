@@ -66,7 +66,8 @@ Ensure the following technologies are installed on your machine:
 
     ```
     yarn dev
-    or 
+    ```
+    or
     ```
     npm run dev
     ```
@@ -101,7 +102,11 @@ Ensure the following technologies are installed on your machine:
         conda create --name myenv python=3.10
         conda activate myenv
         ```
-    6. Install the necessary packages:
+    6. Install the necessary packages using:
+        ```
+        conda install --file requirements.txt
+        ```
+        or
         ```
         conda env update --name myenv --file environment.yml
         ```
@@ -137,7 +142,11 @@ Ensure the following technologies are installed on your machine:
         ```
     6. Install the necessary packages:
         ```
-        conda env update --file environment.yml
+        conda install --file requirements.txt
+        ```
+        or
+        ```
+        conda env update --name myenv --file environment.yml
         ```
     7. Start the Flask server:
         ```
